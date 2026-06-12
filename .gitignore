@@ -10,7 +10,13 @@
 # VS Code
 .vscode/
 *.code-workspace
+
 # Environment variables (secrets)
 .env
+
+# Dependencies
 node_modules
-node_modules
+
+# Build output
+dist/
+packages/*/dist/
