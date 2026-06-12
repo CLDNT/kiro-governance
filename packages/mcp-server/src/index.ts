@@ -57,17 +57,7 @@ async function bootstrap(): Promise<void> {
     key: tlsKey,
   });
 
-  // 5. Create MCP server instance
-  const mcpServer = new McpServer({
-    name: 'kiro-governance',
-    version: '1.0.0',
-  });
-
-  // 6. Register MCP tools
-  registerRecordProgress(mcpServer, config);
-  registerNotifySlack(mcpServer, { ssmClient });
-
-  // 7. Attach HTTP routing
+  // 5. Attach HTTP routing
   httpsServer.on('request', (req, res) => {
     // Health check endpoint (no API key required)
     if (req.url === '/health' && req.method === 'GET') {
@@ -88,8 +78,13 @@ async function bootstrap(): Promise<void> {
         try {
           const body = Buffer.concat(chunks).toString();
           const parsedBody = body ? JSON.parse(body) : undefined;
+          // Create a fresh McpServer per request — the SDK does not support
+          // reusing a single instance across concurrent connections.
+          const requestServer = new McpServer({ name: 'kiro-governance', version: '1.0.0' });
+          registerRecordProgress(requestServer, config);
+          registerNotifySlack(requestServer, { ssmClient });
           const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
-          await mcpServer.connect(transport);
+          await requestServer.connect(transport);
           await transport.handleRequest(req, res, parsedBody);
         } catch (err) {
           console.error('MCP transport error:', err);
