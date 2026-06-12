@@ -82,3 +82,4 @@
 - [x] KG-13 End-to-end integration test runbook via Kiro CLI — approved (2026-06-11)
 - [x] KG-14 Runbooks (cert-rotation, ec2-deploy, auto-recovery alarm) — approved (2026-06-11)
 
+- [x] SRS approved by Faraz
