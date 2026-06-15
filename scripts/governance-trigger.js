@@ -23,6 +23,7 @@ const MCP_CERT_FINGERPRINT = process.env.MCP_CERT_FINGERPRINT;
 const PROJECT_ID = process.env.PROJECT_ID;
 const ACTOR = process.env.ACTOR;
 const SOURCE_REF = process.env.SOURCE_REF;
+const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY; // e.g. CODEZAX-CE/kiro-governance
 
 // Validate required env vars
 if (!MCP_SERVER_URL || !MCP_API_KEY || !MCP_CERT_FINGERPRINT || !PROJECT_ID || !ACTOR || !SOURCE_REF) {
@@ -196,9 +197,15 @@ async function main() {
 
       // Call notify_slack only if record_progress succeeded
       const shortSha = SOURCE_REF.slice(0, 7);
+      const commitUrl = GITHUB_REPOSITORY
+        ? `https://github.com/${GITHUB_REPOSITORY}/commit/${SOURCE_REF}`
+        : null;
+      const refPart = commitUrl
+        ? `(<${commitUrl}|${shortSha}>)`
+        : `(ref: ${shortSha})`;
       await callMcpTool('notify_slack', {
         project_id: PROJECT_ID,
-        message: `${gate} — committed by ${ACTOR} (ref: ${shortSha})`,
+        message: `${gate} — committed by ${ACTOR} ${refPart}`,
         event_type: 'macro',
       });
 
