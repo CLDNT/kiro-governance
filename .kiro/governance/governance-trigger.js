@@ -189,13 +189,19 @@ async function main() {
         : null;
       const refPart = commitUrl ? `(<${commitUrl}|${shortSha}>)` : `(ref: ${shortSha})`;
 
-      await callMcpTool('notify_slack', {
+      const notifyResult = await callMcpTool('notify_slack', {
         project_id: PROJECT_ID,
         message: `${gate} — committed by ${ACTOR} ${refPart}`,
         event_type: 'macro',
       });
 
-      console.log(`  → Recorded and notified.`);
+      const notifyContent = notifyResult?.result?.content?.[0]?.text;
+      const notifyParsed = notifyContent ? JSON.parse(notifyContent) : {};
+      if (notifyParsed.notified) {
+        console.log(`  → Recorded and Slack notified.`);
+      } else {
+        console.log(`  → Recorded. Slack skipped: ${notifyParsed.reason || 'unknown'}`);
+      }
     } catch (err) {
       console.error(`  → ERROR: ${err.message}`);
       failures++;

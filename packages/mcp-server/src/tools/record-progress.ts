@@ -106,6 +106,7 @@ async function handleRecordProgress(
       return { written: false, reason: 'duplicate' };
     }
 
+    console.log('[record_progress] Written', { project_id: input.project_id, gate: resolvedGate, type: resolvedType, idempotency_key: idempotencyKey });
     return { written: true };
   } catch (err) {
     console.error('[record_progress] PostgreSQL write failed', { error: String(err) });
