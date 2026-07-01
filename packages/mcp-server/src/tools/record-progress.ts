@@ -15,6 +15,7 @@ export const RecordProgressInputSchema = z.object({
   type: z.enum(['macro', 'micro']).optional(),
   gate: z.string().optional(),
   phase: z.string().optional(),
+  phase_name: z.string().optional(),
   source_ref: z.string().min(1),
   actor: z.string().min(1),
   flag_override: z.boolean().optional(),
@@ -94,6 +95,7 @@ async function handleRecordProgress(
       idempotency_key: idempotencyKey,
       ...(resolvedGate && { gate: resolvedGate }),
       ...(input.phase && { phase: input.phase }),
+      ...(input.phase_name && { phase_name: input.phase_name }),
       ...(input.flag_override !== undefined && { flag_override: input.flag_override }),
     };
 

@@ -77,8 +77,8 @@ export async function writeGovernanceEvent(
 
     const result = await db.query(
       `INSERT INTO governance_events
-         (project_id, update_text, type, flag_override, gate, phase, source_ref, actor, idempotency_key, created_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+         (project_id, update_text, type, flag_override, gate, phase, phase_name, source_ref, actor, idempotency_key, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
        ON CONFLICT (idempotency_key) DO NOTHING`,
       [
         record.project_id,
@@ -87,6 +87,7 @@ export async function writeGovernanceEvent(
         record.flag_override ?? null,
         record.gate ?? null,
         record.phase ?? null,
+        record.phase_name ?? null,
         record.source_ref,
         record.actor,
         idempotencyKey,
