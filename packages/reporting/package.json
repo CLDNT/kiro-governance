@@ -1,0 +1,21 @@
+{
+  "name": "@kiro-governance/reporting",
+  "version": "1.0.0",
+  "description": "Reporting domain — leadership dashboard views for cross-project visibility",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@kiro-governance/shared": "*",
+    "aws-lambda": "^1.0.7",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.136",
+    "@types/pg": "^8.11.3"
+  }
+}

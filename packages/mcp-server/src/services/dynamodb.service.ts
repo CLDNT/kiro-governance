@@ -1,86 +1,26 @@
-import { DynamoDBClient, PutItemCommand, ConditionalCheckFailedException } from '@aws-sdk/client-dynamodb';
-import { marshall } from '@aws-sdk/util-dynamodb';
-import { GovernanceEventRecord } from '@kiro-governance/shared/types/governance-event';
-
-let client: DynamoDBClient | null = null;
-
 /**
- * Get singleton DynamoDB client — initialized once at server startup.
- * Reused across requests for connection pooling.
+ * DEPRECATED — Replaced by postgres.service.ts
+ *
+ * This file was previously used for DynamoDB-based event persistence.
+ * As of 2026-06-24, all governance events are persisted to RDS PostgreSQL.
+ *
+ * See docs/phase1/data-persistence-architecture.md v2.0 for details.
+ * 
+ * @deprecated Use postgres.service.ts instead
  */
-export function getDynamoDBClient(): DynamoDBClient {
-  if (!client) {
-    client = new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' });
-  }
-  return client;
+
+export function getDynamoDBClient() {
+  throw new Error('getDynamoDBClient is deprecated. Use PostgreSQL via postgres.service.ts');
 }
 
-/**
- * Build idempotency key per F-04 §4.1.
- * Macro: <project_id>#<gate.toLowerCase().trim()>#<YYYY-MM-DD>
- * Micro: <project_id>#micro#<ULID>
- */
-export function buildIdempotencyKey(
-  projectId: string,
-  type: 'macro' | 'micro',
-  gate: string | undefined,
-  ulid: string,
-): string {
-  if (type === 'macro' && gate) {
-    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-    const normalizedGate = gate.toLowerCase().trim();
-    return `${projectId}#${normalizedGate}#${today}`;
-  }
-  // Micro events: always unique (ULID guarantees)
-  return `${projectId}#micro#${ulid}`;
+export function buildIdempotencyKey() {
+  throw new Error('buildIdempotencyKey is deprecated. Use postgres.service.ts');
 }
 
-/**
- * Attempt dedup sentinel write (conditional PutItem).
- * Returns { written: true } if sentinel created, { written: false } if duplicate detected.
- * Propagates unexpected DynamoDB errors.
- */
-export async function attemptDedupSentinel(
-  client: DynamoDBClient,
-  tableName: string,
-  projectId: string,
-  idempotencyKey: string,
-): Promise<{ written: boolean }> {
-  try {
-    await client.send(
-      new PutItemCommand({
-        TableName: tableName,
-        Item: marshall({
-          pk: `PROJECT#${projectId}`,
-          sk: `DEDUP#${idempotencyKey}`,
-          created_at: new Date().toISOString(),
-          idempotency_key: idempotencyKey,
-        }),
-        ConditionExpression: 'attribute_not_exists(pk)',
-      }),
-    );
-    return { written: true };
-  } catch (err) {
-    if (err instanceof ConditionalCheckFailedException) {
-      return { written: false };
-    }
-    throw err; // Propagate unexpected errors
-  }
+export async function attemptDedupSentinel() {
+  throw new Error('attemptDedupSentinel is deprecated. Use postgres.service.ts with ON CONFLICT');
 }
 
-/**
- * Write governance event record to DynamoDB.
- * Throws on failure (caller catches and returns error response).
- */
-export async function writeGovernanceEvent(
-  client: DynamoDBClient,
-  tableName: string,
-  record: GovernanceEventRecord,
-): Promise<void> {
-  await client.send(
-    new PutItemCommand({
-      TableName: tableName,
-      Item: marshall(record),
-    }),
-  );
+export async function writeGovernanceEvent() {
+  throw new Error('writeGovernanceEvent is deprecated. Use postgres.service.ts');
 }

@@ -35,12 +35,23 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 const cdk = __importStar(require("aws-cdk-lib"));
 const governance_stack_1 = require("../stacks/governance-stack");
+const deliverpro_stack_1 = require("../stacks/deliverpro-stack");
 const app = new cdk.App();
+// Phase 1: Governance infrastructure
 new governance_stack_1.GovernanceStack(app, 'KiroGovernanceStack', {
     env: {
         account: process.env.CDK_DEFAULT_ACCOUNT,
         region: 'us-east-1',
     },
-    description: 'Kiro Governance — F-04 Data & Persistence (DynamoDB + IAM + SSM)',
+    description: 'Kiro Governance — Phase 1 + Phase 2 Data & Persistence (RDS PostgreSQL + EC2 MCP Server)',
+});
+// Phase 2: DeliverPro application infrastructure
+new deliverpro_stack_1.DeliverProStack(app, 'DeliverProStack', {
+    env: {
+        account: process.env.CDK_DEFAULT_ACCOUNT,
+        region: 'us-east-1',
+    },
+    description: 'DeliverPro — Phase 2 Application Infrastructure (Cognito, API Gateway, CloudFront, S3)',
+    environment: 'dev',
 });
 app.synth();

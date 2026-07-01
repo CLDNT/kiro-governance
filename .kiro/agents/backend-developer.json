@@ -2,14 +2,30 @@
   "name": "backend-developer",
   "description": "Backend Developer - Builds serverless Lambda handlers, PostgreSQL queries, domain services, and co-located infrastructure for the project.",
   "prompt": "file://./backend-developer/prompt.md",
-  "model": "claude-haiku-4.5",
+  "model": "claude-opus-4.8",
   "welcomeMessage": "Backend developer ready. What are we building?",
   "keyboardShortcut": "ctrl+b",
-  "tools": ["read", "write", "shell", "grep", "glob", "code", "aws", "knowledge", "todo"],
+  "tools": [
+    "read",
+    "write",
+    "shell",
+    "grep",
+    "glob",
+    "code",
+    "aws",
+    "knowledge",
+    "todo"
+  ],
   "allowedTools": ["read", "grep", "glob", "code", "knowledge"],
   "toolsSettings": {
     "write": {
-      "allowedPaths": ["./packages/**", "./infra/**", "./specs/**", "./migrations/**", "./docs/**"]
+      "allowedPaths": [
+        "./packages/**",
+        "./infra/**",
+        "./specs/**",
+        "./migrations/**",
+        "./docs/**"
+      ]
     },
     "shell": {
       "autoAllowReadonly": true,

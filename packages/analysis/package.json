@@ -1,0 +1,21 @@
+{
+  "name": "@deliverpro/analysis",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-agent-runtime": "^3.600.0",
+    "@aws-sdk/client-s3": "^3.600.0",
+    "@aws-sdk/client-secrets-manager": "^3.600.0",
+    "@aws-sdk/client-ssm": "^3.600.0",
+    "@kiro-governance/shared": "*",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "aws-lambda": "^1.0.7",
+    "@types/aws-lambda": "^8.10.131"
+  }
+}

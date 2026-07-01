@@ -1,0 +1,99 @@
+
+Participants
+• Cloudelligent: Muhammad Faraz, Chris Xenos
+
+Key Takeaways
+• Cross-account placement and governance: the app must live in the correct AWS account (not sandbox) and may require cross-account access or embedding a URL for delivery team access.
+• A new interactive app is needed to track project gates, artifacts, and micro (Kiro) and macro (meeting/transcript) evidence, separate from a reporting dashboard.
+• Meeting transcripts (Avoma/Oscar) or meeting links should be attached as artifacts so automated transcript analysis can verify topics discussed for gate validation.
+• Next-step workflow: Faraz will design and prototype the app and present deliverables; Chris will provide project files/links and resolve account access issues.
+• Start small: build a prototype app that initially displays the items currently tracked in Kiro, then expand to include manual uploads/links for external artifacts.
+
+
+Action Items
+• Chris Xenos
+    • Confirm the correct AWS account for hosting the app and discuss account naming/access with Kasha so delivery team can access the application safely (avoid sandbox).
+    • Clarify the source of evidence added to the interactive dashboard, determining whether it is flagged by Kuros or another method.
+    • Send the specific project file/link (project in 'launch and enable' or the project delivery board) to Muhammad Faraz so he can inspect project details and data sources.
+• Muhammad Faraz
+    • Plan and design the initial prototype app (showing Kiro-tracked items and ability to attach artifacts) and deliver a proposal/working prototype to Chris within a day or two.
+    • Build a small app/prototype that displays data tracked in Kiro and supports adding links/uploads for external artifacts, then present it to Chris for review.
+
+
+Business Goals
+• Allow delivery team access to the app (may require cross-account consideration; avoid using SBX Sandbox because public access is chaotic).
+• Build an interactive project-tracking app that records project gates, artifacts, and phase status (micro = Kiro-tracked items; macro = meetings/artifacts outside Kiro) and exposes data to a Quicksight dashboard for reporting.
+
+
+Market Trends
+
+
+Customer Needs
+• Simple method to link meetings to projects: start with manual entry of meeting link (then fetch transcript/analysis).
+• Capture and display both Kiro database flags (phase/gate completions) and external artifacts (meeting transcripts, links, SOW, SRS, design docs) tied to projects.
+• Role-based views and project metadata (start/end dates, status reports, team members, gates, configurables) to support PM workflow and artifact uploads.
+
+
+Pain Points
+
+
+Product Vision
+• Interactive layer beneath reporting: tactical app for PMs to manage workflow, upload artifacts, and see gate-level details; separate Quicksight layer for aggregated reporting.
+• Long-term vision: a DeliverPro-like product that replaces Jira for delivery, combining micro (Kiro flags) and macro (meeting artifacts/transcripts) views and enabling PMs to upload evidence and view gate status per project.
+
+
+Roadmap Priorities
+• Start small: build an initial app that shows items currently tracked in Kiro and allows artifact/link uploads; iterate to include transcript analysis and Quicksight reporting later.
+
+
+Feature Requests
+• Allow manual entry of meeting links and ingestion of transcripts (prefer link rather than manual transcript upload) to run criteria-based transcript checks.
+• Integrate with Avoma and/or Oscar to fetch meeting transcripts, participants, notes, and analysis for artifact validation.
+• Configurable gates/phases: add/rename phases and gates, upload evidence per gate, and support role-based views and configurable micro/macro mappings.
+
+
+Resource Constraints
+• Need time to design: commitment of 'give me a day or two' from Faraz to plan and produce initial design/deliverable.
+• Limited access to existing project boards/files (Faraz needs access to a live 'launch and enable' project to plan implementation).
+
+
+Dependencies
+• Require access/decisions from: specific AWS account (not sandbox), project files/board shared by team (Nayab/Ross), and coordination with Kasha/AJ for account placement.
+• Third-party integrations: Avoma (meeting links/transcripts) and Oscar (presales transcript data) need integration or fetch capability for artifact analysis.
+
+
+Metrics
+
+
+Impact
+
+
+Timeline
+• Faraz requested 1–2 days to plan and produce an initial design/deliverable to Chris for review.
+
+
+Risk
+• Sandbox AWS account contains shared data; broad access is 'chaotic' and may expose or contaminate project data — requested to move app to a non-sandbox account or request appropriate AWS account for Quik governance.
+• Cross-account access complexity: app may need to be deployed or accessed across AWS accounts, requiring explicit account selection and possibly account requests; risk of deployment/access failures if not resolved.
+• Meetings and artifacts outside Kiro (e.g., kickoff, review meetings, transcripts) are not automatically tracked; risk of missing evidence for governance gates and inaccurate project state.
+• Oscar covers presales only and does not include delivery-phase transcripts; risk of missing delivery meeting artifacts unless Avoma or manual meeting links/transcripts are integrated.
+• Unclear linking/identification of meetings to projects (no consistent keyword); risk of incorrect or missing associations unless meetings are manually linked via the app or a naming convention is enforced.
+
+Application Architecture Design
+• App to be built in QUIC that reads project data from existing Kiro database and supports cross-account access if needed.
+• Interactive application (not just a reporting dashboard) to manage workflow, upload artifacts, and show project gates and artifacts per project.
+
+Data Access and Security
+• Avoid using Sandbox account for production app; use a controlled account (e.g., Crunch account) to prevent chaotic wide access.
+
+Governance Points Tracking
+• Capture meeting-based artifacts (kickoff, internal reviews) with links/transcripts as evidence tied to project gates.
+• Track macro gates (e.g., SRS validated/approved, design docs approved, implementation plan approved, code approved, UAT report approved, run books approved, project docs approved).
+
+Integration Requirements
+• Integrate Avoma meeting links/transcripts for transcript analysis and criteria-based topic coverage checks.
+• Leverage Oscar only for presales transcripts; project-phase transcripts reside in delivery and should be fetched separately.
+
+Development Methodology Considerations
+• App should reflect micro (Kiro-tracked tactical flags) vs. macro (project-level milestones) distinction; dashboard for reporting sits above interactive app.
+

@@ -4,6 +4,8 @@
 
 | Version | Date | Author | Change |
 |---------|------|--------|--------|
+| v1.7 | 2026-06-23 | Orchestrator | CASDM phase alignment: renamed macro gate "Spec file approved" → "Spec strategy approved" (Tariq Khan). Added GATE_PHASES (Phase 0–4) and GATE_PHASE_NAMES (Internal Preparation / Discover & Align / Design & Review / Build & Implement / Launch & Enable). Corrected Discovery/Preliminary SRS gates from Phase 1 → Phase 0. Added backward-compat alias 'spec file approved' → 'Spec strategy approved'. |
+| v1.7b | 2026-06-23 | Orchestrator | CR 2026-06-23: DynamoDB → RDS PostgreSQL approved by Tariq Khan. F-04 architecture doc rewritten (v2.0). Unified data model updated (v1.4): removed pk/sk DynamoDB fields, added phase_name, updated SSM params. Sprint 4 backlog added (KG-15–KG-18, 13 pts). |
 | v1.6 | 2026-06-11 | Product Analyst | Dropped Athena connector, QuickSight dashboard, S3 Athena buckets per customer decision (Faraz, 2026-06-11). FR-08 scope narrowed to DynamoDB delivery boundary only. Cost revised to ~$8.47/mo. |
 | v1.5 | 2026-06-11 | Product Analyst | Resolved OQ-02: project_id = GitHub repository name (customer decision, Tariq Khan 2026-06-11). Removed JIRA blocker. FR-01/FR-02/FR-05 unblocked. |
 | v1.4 | 2026-06-10 | Product Analyst | Architect delta review fixes: added Athena intermediary for QuickSight (FINDING-HIGH), updated cost estimate to ~$25-30/mo, refined OQ-02 blocker scope, added SSM parameter naming convention, clarified Athena connector terminology. |
@@ -242,7 +244,7 @@ The system shall auto-classify governance events as `macro` or `micro` based on 
   3. "SRS approved"
   4. "Design docs approved" / "solution architecture approved"
   5. "Implementation plan approved" / "sprint plan approved"
-  6. "Spec file approved"
+  6. "Spec strategy approved"
   7. "Code approved"
   8. "UAT report approved"
   9. "Runbooks approved" / "documentation approved"
@@ -517,11 +519,12 @@ Both trigger paths (orchestrator hook and GitHub Actions workflow) shall produce
 | Phase | Macro Gate | Validating Sub-Agent |
 |-------|-----------|---------------------|
 | 1 — Discover & Align | Preliminary SRS validated | `product-analyst` |
-| 1 — Discover & Align | Discovery outputs validated | `product-analyst` |
+| 0 — Internal Preparation | Discovery outputs validated | `product-analyst` |
+| 0 — Internal Preparation | Preliminary SRS validated | `product-analyst` |
 | 1 — Discover & Align | SRS approved | `product-analyst` |
 | 2 — Design & Review | Design docs / solution architecture approved | `aws-architect` |
 | 2 — Design & Review | Implementation / sprint plan approved | `plan-reviewer` |
-| 3 — Build & Implement | Spec file approved | `executioner` |
+| 3 — Build & Implement | Spec strategy approved | `executioner` |
 | 3 — Build & Implement | Code approved | `code-reviewer` |
 | 3 — Build & Implement | UAT report approved | `qa-agent` |
 | 4 — Launch & Enable | Runbooks / documentation approved | `aws-architect` |

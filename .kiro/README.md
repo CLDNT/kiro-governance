@@ -9,24 +9,24 @@ This project uses a multi-agent orchestration approach where specialized AI agen
 | Agent                   | Role                                                              | Phase         |
 | ----------------------- | ----------------------------------------------------------------- | ------------- |
 | **Orchestrator**        | Central dispatcher — routes work, enforces gates, tracks progress | All phases    |
-| **Product Analyst**     | Creates SRS from meeting notes and customer docs                  | Phase 1       |
-| **AWS Architect**       | Reviews SRS, designs architecture, creates data model             | Phase 1-2     |
-| **Plan Reviewer**       | Validates architecture, edge cases, cross-feature consistency     | Phase 2-3     |
+| **Product Analyst**     | Creates SRS from meeting notes and customer docs                  | Phase 0–1     |
+| **AWS Architect**       | Reviews SRS, designs architecture, creates data model             | Phase 1–2     |
+| **Plan Reviewer**       | Validates architecture, edge cases, cross-feature consistency     | Phase 2–3     |
 | **Security Reviewer**   | Security + compliance + Well-Architected review                   | Phase 2 gates |
-| **Technical PM**        | Sprint planning, JIRA backlog, timeline estimation                | Phase 3       |
-| **Backend Developer**   | Implements Lambda handlers, services, DB migrations               | Phase 4       |
-| **Frontend Developer**  | Implements UI components, hooks, pages                            | Phase 4       |
-| **Construct Developer** | Implements CDK constructs and infrastructure                      | Phase 4       |
+| **Technical PM**        | Sprint planning, JIRA backlog, timeline estimation                | Phase 2–3     |
+| **Backend Developer**   | Implements Lambda handlers, services, DB migrations               | Phase 3       |
+| **Frontend Developer**  | Implements UI components, hooks, pages                            | Phase 3       |
+| **Construct Developer** | Implements CDK constructs and infrastructure                      | Phase 3       |
 
 ### Delivery Workflow
 
 ```
-Phase 0: Discovery & Compliance
+Phase 0: Internal Preparation
   └─ Determine project type: Greenfield (App Dev) or Modernization/Integration (App Mod)
   └─ Search meetings for HIPAA/SOC2/PCI-DSS/CCPA
   └─ Prompt customer if compliance unclear
 
-Phase 1: SRS Creation
+Phase 1: Discover & Align
   └─ Product Analyst creates SRS (every FR has a Source tag)
   └─ [H1 GATE] Product Analyst self-audits: every FR has exact customer quote,
        no invented constraints, architect decisions labeled
@@ -35,7 +35,7 @@ Phase 1: SRS Creation
        ← Plan Reviewer is NOT used for client-facing docs
   └─ Iterate until all gaps resolved → SRS approved (no round cap)
 
-Phase 2: Architecture (sequential, gated)
+Phase 2: Design & Review (sequential, gated)
   [Modernization projects only — insert before Step 1:]
   Step 0: As-built discovery        → infrastructure inventory + codebase review
                                        + IaC health check + open assumption resolution
@@ -59,7 +59,7 @@ Phase 2: Architecture (sequential, gated)
   Step 7: Security Gate 2          → Security Reviewer (Well-Architected)
   Step 8: Cost estimate            → Plan Reviewer
 
-Phase 3: Sprint Planning
+Phase 3: Build & Implement
   └─ Technical PM asks for team size
   └─ Creates implementation strategy + JIRA backlog CSV
   └─ Dual timeline: spec-based vs traditional development
@@ -71,7 +71,7 @@ Phase 3: Sprint Planning
   └─ AWS Architect reviews technical accuracy
   └─ Plan Reviewer validates capacity and dependencies
 
-Phase 4: Implementation
+Phase 4: Launch & Enable
   └─ [H4 GATE] Orchestrator checks every AC traces to arch doc before dispatching
   └─ Orchestrator dispatches stories from approved backlog
   └─ Backend/Frontend/Construct developers implement

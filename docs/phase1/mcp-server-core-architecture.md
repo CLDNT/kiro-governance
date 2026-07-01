@@ -276,7 +276,7 @@ export const MACRO_GATES = [
   'SRS approved',
   'Design docs approved',
   'Implementation plan approved',
-  'Spec file approved',
+  'Spec strategy approved',
   'Code approved',
   'UAT report approved',
   'Runbooks approved',

@@ -112,3 +112,38 @@
 - EC2 auto-recovery alarm configured (Security Gate 2 REL-1)
 - Runbook for API key rotation: update SSM parameter, update GitHub Secret, restart not needed (loaded from SSM at startup with no cache expiry for API key) per F-01 §7.1
 - Runbook for SSM webhook configuration: adding new project webhook URL per F-01 §6.3","Addresses Medium findings from Security Gate 2."
+"KG-15","Infrastructure (F-04)","Sprint 4","CDK: Replace DynamoDB with RDS PostgreSQL (t3.micro, IAM auth, SG)","Backend","5","High","Backlog","KG-01","data-persistence-architecture.md §3,§5,§6,§7,§8","AC:
+- CDK deploys db.t3.micro PostgreSQL 16 instance, single-AZ, engine version 16.x per F-04 §3, §7
+- Deletion protection enabled, backup retention 7 days, removalPolicy RETAIN per F-04 §7
+- Storage: gp2, allocated 20 GB per F-04 §3
+- IAM authentication enabled on RDS instance per F-04 §5
+- Security group 'kiro-gov-rds-sg' allows inbound TCP 5432 from EC2 security group only per F-04 §6.2
+- EC2 instance role updated with rds-db:connect permission scoped to dbuser:<dbi-resource-id>/kiro_mcp per F-04 §6.1
+- SSM parameters populated: /kiro-governance/config/db-endpoint, /kiro-governance/config/db-port, /kiro-governance/config/db-name, /kiro-governance/config/db-user per F-04 §6.2
+- DynamoDB table, GSIs, and DynamoDB IAM actions removed from CDK stack per CR §2.4
+- cdk synth and cdk deploy succeed with no errors","Replaces KG-01 DynamoDB infra with RDS PostgreSQL per change request 2026-06-23."
+"KG-16","Infrastructure (F-04)","Sprint 4","DB migration script: V001__governance_events.sql","Backend","2","High","Backlog","KG-15","data-persistence-architecture.md §3,§5,§6,§7,§8","AC:
+- File migrations/V001__governance_events.sql exists per F-04 §3
+- Creates governance_events table with columns: id (SERIAL PRIMARY KEY), project_id (VARCHAR(128) NOT NULL), update_text (VARCHAR(4096) NOT NULL), type (VARCHAR(10) NOT NULL CHECK IN macro/micro), gate (VARCHAR(128)), phase_name (VARCHAR(128)), source_ref (VARCHAR(512) NOT NULL), actor (VARCHAR(128) NOT NULL), created_at (TIMESTAMPTZ NOT NULL DEFAULT NOW()), idempotency_key (VARCHAR(512)) per F-04 §3
+- UNIQUE constraint on idempotency_key (WHERE idempotency_key IS NOT NULL) per F-04 §5
+- 3 indexes created: idx_type_created (type, created_at), idx_gate_created (gate, created_at) WHERE gate IS NOT NULL, idx_project_created (project_id, created_at) per F-04 §3
+- Script is idempotent: uses CREATE TABLE IF NOT EXISTS and CREATE INDEX IF NOT EXISTS per F-04 §3
+- Script executes successfully against a clean PostgreSQL 16 database","Migration must run before KG-17 can function."
+"KG-17","MCP Server (F-01)","Sprint 4","MCP Server: replace DynamoDB SDK with pg + RDS IAM auth token","Backend","5","High","Backlog","KG-16; KG-18","data-persistence-architecture.md §3,§5,§6,§7,§8","AC:
+- record_progress tool uses pg Pool for database connections per F-04 §8
+- RDS IAM auth token generated via @aws-sdk/rds-signer (RDSSigner) with token refresh before 15-min expiry per F-04 §8
+- INSERT uses ON CONFLICT DO NOTHING on idempotency_key for macro dedup per F-04 §5
+- On conflict (duplicate), returns {written:false, reason:'duplicate'} — same interface as before per F-01 §5.4
+- On successful insert, returns {written:true} — same interface as before per F-01 §3.2
+- All existing MCP tool input schemas unchanged (RecordProgressInputSchema, NotifySlackInputSchema) per F-01 §3.1, §3.2
+- All existing MCP tool output interfaces unchanged per F-01 §3.1, §3.2
+- @aws-sdk/client-dynamodb and @aws-sdk/util-dynamodb removed from package.json per CR §2.4
+- pg and @aws-sdk/rds-signer added to package.json per F-04 §8
+- Connection pool config: max 5 connections, idle timeout 30s per F-04 §8","Core migration story — replaces DynamoDB service with PostgreSQL."
+"KG-18","MCP Server (F-01)","Sprint 4","Update shared types: flatten GovernanceEventRecord (remove pk/sk)","Backend","1","High","Backlog","","data-persistence-architecture.md §3,§5,§6,§7,§8","AC:
+- GovernanceEventRecord interface in packages/shared/types/governance-event.ts removes pk and sk fields per unified-data-model §2.6
+- Adds id?: number field (auto-increment PK from PostgreSQL) per unified-data-model §2.6
+- Adds phase_name?: string field (replaces DynamoDB 'phase' attribute naming) per unified-data-model §2.6
+- All imports of GovernanceEventRecord across the codebase updated per F-04 §8
+- TypeScript strict mode passes with no errors (npm run type-check)
+- No runtime behavior change — type-only refactor","Can be done in parallel with KG-15. No runtime dependency."

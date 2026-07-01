@@ -1,0 +1,104 @@
+
+Participants
+• Cloudelligent: Chris Xenos, Muhammad Faraz, Tariq Khan
+
+Key Takeaways
+• Primary goal is to track compliance to the new AI/PLC governance methodology; replacing Jira is secondary but desired.
+• Proposed 3‑layer architecture: (1) Kiro/agent -> RDS sync, (2) interactive app for PMs to add evidence and enrich data, (3) Quicksight dashboards for reporting.
+• PMs will use the new app (not Git) to mark gate completion and upload or link evidence (recordings, files, links); solution architects continue using Git/Kiro for artifacts.
+• Transcript evidence will be analyzed via Amazon Bedrock/agent core with configurable prompts per gate/call type to surface key points and disagreements.
+• Next development priorities: (1) ensure Kiro governance events -> RDS sync, (2) build the interactive app for PM evidence and gating, (3) expose structured data for Quicksight; automation via Avoma is a later phase.
+
+
+Action Items
+• Muhammad Faraz
+    • Feed this meeting transcript to Kira/agent and ensure the agent integration uses Amazon Bedrock (agent core) with dynamic, admin‑configurable prompts for evidence analysis.
+    • Deploy the RDS backend (POC) into Chris Xenos's AWS account so the team can attach repositories and test progress MD-based gate detection.
+    • Build the interactive app (PM UI) to mark gates and attach evidence, targeting a 1–2 day turnaround for an initial prototype and then recruit a few users for testing.
+    • Implement evidence handling to accept file uploads or links (including Avoma/Teams/SharePoint links) and attempt to extract metadata/timestamps for each evidence item.
+    • Ensure the RDS data schema is structured and accessible so Quicksight can query it later; make gates and project type configuration extensible for different project categories (AppDev, Migration, AI/ML).
+• Chris Xenos
+    • Review the delivered prototype quickly and provide feedback so the team can iterate (turn something around quickly and react).
+    • Confirm expectations and scope for Corapaxi (hours per day / start details) with Tariq and the customer so onboarding can be organized.
+• Tariq Khan
+    • Provide clarification on Corapaxi staffing/hours and confirm the assigned hours distribution (overall hours for 3 devs) to Muhammad Faraz and Chris.
+
+
+Business Goals
+• Primary goal: track compliance to new AIPLC methodology; secondary goal: replace Jira with internal app if low effort.
+• Deliver a dashboarded application (app layer) to surface governance events, then Quicksight for reporting as third layer.
+
+
+Market Trends
+
+
+Customer Needs
+• PMs need a non‑Git UI to mark gates done and attach evidence (files or links) to avoid committing to Git.
+• Admins/leadership need consolidated dashboard with drilldown and Quicksight-accessible data for reporting (KPIs, burn rate, hours).
+• AI transcript analysis per evidence (Avoma) with configurable prompts per call/gate to extract key points, risks, scope, disagreements.
+
+
+Pain Points
+
+
+Product Vision
+• Single governance app that captures gates, evidence, AI‑analyzed transcripts, configurable per project type, extensible to replace Jira and feed Quicksight.
+
+
+Roadmap Priorities
+• Priority 1: Kiro governance events → RDS sync (already done as layer one). Priority 2: Build interactive app for PMs to mark gates and attach evidence (1–2 days estimated for basic app). Priority 3: Quicksight dashboards and refinements; automation later.
+
+
+Feature Requests
+• Upload evidence (file or link), store metadata (date, meeting link), and allow embedding/metadata extraction from Avoma links.
+• Configurable gates per project type, role-based actions (PM primary user; SAs similar rights), admin editable prompts for AI agents.
+• Expose structured data in RDS so Quicksight can query; drilldown from master dashboard to project details including artifacts.
+
+
+Resource Constraints
+• Hero (Hiro) credits available (~6–7k) to build app quickly; development estimate 1–2 days for MVP.
+• Cotopaxi assignment staffing/hours unclear; discussion of 900 hours total vs. 320 hours for 3 devs needs confirmation.
+
+
+Dependencies
+• Avoma transcripts and standardization of meeting titles required for future automation of gate detection.
+• Kiro governance events and RDS sync must be completed first to populate app (Kiro→DB integration dependency).
+
+
+Metrics
+• Desired metrics: gate completion status, KPIs for operational management, hours vs. budget (burn rate), project counts; no numeric baselines provided.
+
+
+Impact
+• Reducing PM reliance on Git reduces human errors and speeds governance tracking; central app enables consolidated reporting and easier automation later.
+
+
+Timeline
+• Meeting date: 2026-06-25T16:30:00-04:00; immediate deliverable: app MVP estimated 1–2 days; Cotopaxi starts Monday (near-term staffing start).
+
+
+Risk
+• Risk of project managers making incorrect Git commits or using wrong branches (technical error) — raised as a usability/accuracy risk; impact: corrupted or misplaced artifacts and governance tracking; mitigation: avoid requiring PMs to use Git by providing the new app for marking gates and uploading evidence.
+• Risk of artifacts being stored in multiple locations (SharePoint/Teams vs Git) leading to confusion or duplication — raised as a documentation/operational risk; impact: inability to locate definitive artifacts; mitigation: store links or references in the new app rather than forcing duplicate uploads.
+• Risk that different project types require different gate configurations (scalability/configuration risk) — raised as a product design risk; impact: inability to apply one-size-fits-all governance; mitigation: design system to be extensible/configurable per project type so gates can be added per project-class.
+• Risk that full automation is not feasible in the first release (scope/implementation risk) — raised as a development sequencing risk; impact: initial reliance on manual PM actions to mark gates and add evidence; mitigation: phased approach: prioritize Kiro governance→RDS sync first, then app, then Quicksight and later automation via Avoma/standardized meeting naming.
+
+Governance Structure
+• Three-layer architecture: 1) Kiro agent → DB (already implemented), 2) interactive app for enriching data, 3) Quicksight dashboards for reporting.
+• Replace Jira with a new app backed by RDS; initial import of projects from Jira, then full tracking in the new platform.
+• PMs will mark gates and upload evidence (links/files) via the app instead of committing to Git.
+
+Future Development Phases
+• App POC can be developed in ~1–2 days using existing credits for testing with a small user set.
+• Design must be extensible: configurable gates per project type (AIML, app mod, migration) and scalable additions of gates.
+• Automation layer to be planned with team input later; prioritize automation of Kiro governance events first.
+• Short-term: finalize Kiro→RDS sync (layer 1) then build interactive app (layer 2); Quicksight (layer 3) later.
+
+Admin Control Features
+• Admin dashboard will allow queries across projects and surface references with drill-down to project details and artifacts.
+• Admin can dynamically edit prompts used by the analysis agent per evidence/call type to control extracted insights.
+
+Automation Strategy
+• Automate detection of call-based gates via Avoma transcripts using standardized meeting naming/keywords for future auto-marking.
+• Primary automation target: Kiro governance events and RDS sync first, then app-level automation for call evidence.
+

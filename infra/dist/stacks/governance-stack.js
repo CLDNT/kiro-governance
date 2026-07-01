@@ -35,18 +35,17 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GovernanceStack = void 0;
 const cdk = __importStar(require("aws-cdk-lib"));
-const dynamodb = __importStar(require("aws-cdk-lib/aws-dynamodb"));
+const rds = __importStar(require("aws-cdk-lib/aws-rds"));
 const iam = __importStar(require("aws-cdk-lib/aws-iam"));
 const ec2 = __importStar(require("aws-cdk-lib/aws-ec2"));
 const ssm = __importStar(require("aws-cdk-lib/aws-ssm"));
 const logs = __importStar(require("aws-cdk-lib/aws-logs"));
 /**
  * CDK Stack for kiro-governance F-04 Data & Persistence domain.
- * Implements: data-persistence-architecture.md §7.1
- * - DynamoDB table: kiro-governance-tracker
- * - GSIs: gsi-type-created, gsi-gate-created
- * - IAM role: kiro-gov-mcp-server-role
- * - SSM parameters: config values
+ * Implements: data-persistence-architecture.md §2, §6, §7
+ * - RDS PostgreSQL 16: kiro_governance database
+ * - IAM role: kiro-gov-mcp-server-role with rds-db:connect
+ * - SSM parameters: db-endpoint, db-port, db-name, db-user
  * - CloudWatch log group: /kiro-governance/mcp-server
  */
 class GovernanceStack extends cdk.Stack {
@@ -54,59 +53,60 @@ class GovernanceStack extends cdk.Stack {
         super(scope, id, props);
         const accountId = this.account;
         const region = this.region;
-        // ==================== DynamoDB Table ====================
-        // Source: data-persistence-architecture.md §2
-        this.table = new dynamodb.Table(this, 'GovernanceTracker', {
-            tableName: 'kiro-governance-tracker',
-            partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-            sortKey: { name: 'sk', type: dynamodb.AttributeType.STRING },
-            billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+        // ==================== VPC & EC2 Security Group (created first for RDS SG reference) ====================
+        const vpc = ec2.Vpc.fromLookup(this, 'DefaultVpc', { isDefault: true });
+        const adminCidr = this.node.tryGetContext('adminCidr') ?? '0.0.0.0/0';
+        const sg = new ec2.SecurityGroup(this, 'McpServerSg', {
+            vpc,
+            securityGroupName: 'kiro-gov-mcp-server-sg',
+            description: 'kiro-governance MCP server',
+            allowAllOutbound: true,
+        });
+        sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), 'HTTPS MCP server');
+        sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'SSH admin access');
+        // ==================== RDS Security Group ====================
+        // Source: data-persistence-architecture.md §6.2
+        const dbSg = new ec2.SecurityGroup(this, 'RdsSecurityGroup', {
+            vpc,
+            securityGroupName: 'kiro-gov-rds-sg',
+            description: 'RDS PostgreSQL - allow 5432 from MCP server only',
+            allowAllOutbound: false,
+        });
+        // Inbound: TCP 5432 from EC2 MCP server security group
+        dbSg.addIngressRule(sg, ec2.Port.tcp(5432), 'MCP server access to RDS');
+        // ==================== RDS PostgreSQL Instance ====================
+        // Source: data-persistence-architecture.md §2, §7
+        this.dbInstance = new rds.DatabaseInstance(this, 'GovernanceDb', {
+            engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16 }),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+            vpc,
+            vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+            securityGroups: [dbSg],
+            databaseName: 'kiro_governance',
+            credentials: rds.Credentials.fromUsername('kiro_mcp'),
+            allocatedStorage: 20,
+            storageType: rds.StorageType.GP2,
+            multiAz: false,
             deletionProtection: true,
-            pointInTimeRecovery: true,
+            backupRetention: cdk.Duration.days(7),
             removalPolicy: cdk.RemovalPolicy.RETAIN,
-        });
-        // ==================== GSI: gsi-type-created ====================
-        // Partition: type (macro/micro)
-        // Sort: created_at (ISO timestamp)
-        // Purpose: Cross-project rollup by type (FR-08 dashboard)
-        // Source: data-persistence-architecture.md §2.4
-        this.table.addGlobalSecondaryIndex({
-            indexName: 'gsi-type-created',
-            partitionKey: { name: 'type', type: dynamodb.AttributeType.STRING },
-            sortKey: { name: 'created_at', type: dynamodb.AttributeType.STRING },
-            projectionType: dynamodb.ProjectionType.ALL,
-        });
-        // ==================== GSI: gsi-gate-created ====================
-        // Partition: gate (canonical gate name)
-        // Sort: created_at (ISO timestamp)
-        // Purpose: Cross-project queries by gate (FR-08 filter by gate)
-        // Note: Micro events (gate absent) excluded from this GSI
-        // Source: data-persistence-architecture.md §2.4, FINDING-5
-        this.table.addGlobalSecondaryIndex({
-            indexName: 'gsi-gate-created',
-            partitionKey: { name: 'gate', type: dynamodb.AttributeType.STRING },
-            sortKey: { name: 'created_at', type: dynamodb.AttributeType.STRING },
-            projectionType: dynamodb.ProjectionType.ALL,
+            iamAuthentication: true,
         });
         // ==================== IAM Role: kiro-gov-mcp-server-role ====================
         // Trust: EC2 service
-        // Permissions: DynamoDB PutItem + Query, SSM GetParameter, KMS Decrypt
-        // Restrictions: DENY DeleteItem + UpdateItem (append-only enforcement)
-        // Source: data-persistence-architecture.md §6.1, code-structure.md §18
+        // Permissions: RDS IAM auth, SSM GetParameter, KMS Decrypt
+        // Source: data-persistence-architecture.md §6.1
         this.mcpServerRole = new iam.Role(this, 'McpServerRole', {
             roleName: 'kiro-gov-mcp-server-role',
             assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
             description: 'MCP Server EC2 instance role for governance data writes',
         });
-        // ALLOW: DynamoDB PutItem and Query on table + GSIs
+        // ALLOW: RDS IAM database authentication
         this.mcpServerRole.addToPrincipalPolicy(new iam.PolicyStatement({
-            sid: 'DynamoDBWrite',
+            sid: 'RDSIAMConnect',
             effect: iam.Effect.ALLOW,
-            actions: ['dynamodb:PutItem', 'dynamodb:Query'],
-            resources: [
-                this.table.tableArn,
-                `${this.table.tableArn}/index/*`,
-            ],
+            actions: ['rds-db:connect'],
+            resources: [`arn:aws:rds-db:${region}:${accountId}:dbuser:${this.dbInstance.instanceResourceId}/kiro_mcp`],
         }));
         // ALLOW: SSM GetParameter on /kiro-governance/* paths
         this.mcpServerRole.addToPrincipalPolicy(new iam.PolicyStatement({
@@ -116,8 +116,6 @@ class GovernanceStack extends cdk.Stack {
             resources: [`arn:aws:ssm:${region}:${accountId}:parameter/kiro-governance/*`],
         }));
         // ALLOW: KMS Decrypt on AWS-managed SSM key
-        // Scope: alias/aws/ssm (the default key used by SecureString parameters)
-        // Architect decision: aws/ssm key is acceptable for POC. Upgrade to customer-managed CMK if required later.
         this.mcpServerRole.addToPrincipalPolicy(new iam.PolicyStatement({
             sid: 'KmsDecryptSsm',
             effect: iam.Effect.ALLOW,
@@ -129,39 +127,13 @@ class GovernanceStack extends cdk.Stack {
                 },
             },
         }));
-        // DENY: DeleteItem and UpdateItem (append-only enforcement)
-        // Architect decision: Explicit DENY at IAM level enforces immutability and prevents accidental mutations.
-        // DENY overrides any Allow, including from AWS-managed policies.
-        // Source: data-persistence-architecture.md §6.1, Security Gate 1.5 SEC-1
-        this.mcpServerRole.addToPrincipalPolicy(new iam.PolicyStatement({
-            sid: 'DenyAppendOnlyViolation',
-            effect: iam.Effect.DENY,
-            actions: ['dynamodb:DeleteItem', 'dynamodb:UpdateItem'],
-            resources: [this.table.tableArn],
-        }));
         // ==================== Instance Profile ====================
         // Allows EC2 instances to assume the mcpServerRole
         const instanceProfile = new iam.InstanceProfile(this, 'McpServerInstanceProfile', {
             role: this.mcpServerRole,
         });
         cdk.Tags.of(instanceProfile).add('Name', 'kiro-gov-mcp-server-profile');
-        // ==================== EC2 Instance (KG-02) ====================
-        // VPC lookup
-        const vpc = ec2.Vpc.fromLookup(this, 'DefaultVpc', { isDefault: true });
-        // Admin CIDR from context (required)
-        const adminCidr = this.node.tryGetContext('adminCidr');
-        if (!adminCidr) {
-            throw new Error('CDK context value adminCidr is required. Set it in cdk.json or pass --context adminCidr=YOUR_IP/32');
-        }
-        // Security group
-        const sg = new ec2.SecurityGroup(this, 'McpServerSg', {
-            vpc,
-            securityGroupName: 'kiro-gov-mcp-server-sg',
-            description: 'kiro-governance MCP server',
-            allowAllOutbound: true,
-        });
-        sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), 'HTTPS MCP server');
-        sg.addIngressRule(ec2.Peer.ipv4(adminCidr), ec2.Port.tcp(22), 'SSH admin access');
+        // ==================== EC2 Instance ====================
         // User data script
         const userData = ec2.UserData.forLinux();
         userData.addCommands('#!/bin/bash', 'set -euxo pipefail', 
@@ -172,7 +144,7 @@ class GovernanceStack extends cdk.Stack {
         // TLS cert (idempotent)
         'if [ ! -f /opt/kiro-governance/cert.pem ]; then', '  openssl req -x509 -newkey rsa:4096 \\', '    -keyout /opt/kiro-governance/key.pem \\', '    -out /opt/kiro-governance/cert.pem \\', '    -days 365 -nodes \\', '    -subj "/CN=kiro-governance"', '  chmod 600 /opt/kiro-governance/key.pem', '  chmod 644 /opt/kiro-governance/cert.pem', 'fi', 
         // .env.example
-        'cat > /opt/kiro-governance/.env.example << \'EOF\'', 'TABLE_NAME=kiro-governance-tracker', 'AWS_REGION=us-east-1', 'MCP_API_KEY=REPLACE_WITH_REAL_KEY', 'TLS_CERT_PATH=/opt/kiro-governance/cert.pem', 'TLS_KEY_PATH=/opt/kiro-governance/key.pem', 'PORT=443', 'EOF');
+        'cat > /opt/kiro-governance/.env.example << \'EOF\'', 'DB_ENDPOINT=localhost', 'DB_PORT=5432', 'DB_NAME=kiro_governance', 'DB_USER=kiro_mcp', 'AWS_REGION=us-east-1', 'MCP_API_KEY=REPLACE_WITH_REAL_KEY', 'TLS_CERT_PATH=/opt/kiro-governance/cert.pem', 'TLS_KEY_PATH=/opt/kiro-governance/key.pem', 'PORT=443', 'EOF');
         // EC2 Instance (L2 construct)
         const instance = new ec2.Instance(this, 'McpServer', {
             vpc,
@@ -194,19 +166,33 @@ class GovernanceStack extends cdk.Stack {
             allocationId: eip.attrAllocationId,
         });
         // ==================== SSM Parameters ====================
-        // Source: data-persistence-architecture.md §6.2, code-structure.md §8
-        // These are configuration parameters read by the MCP server at startup
-        // Parameter 1: Table name (allows external configuration if needed)
-        new ssm.StringParameter(this, 'TableNameParam', {
-            parameterName: '/kiro-governance/config/table-name',
-            stringValue: this.table.tableName,
-            description: 'DynamoDB table name for governance events',
+        // Source: data-persistence-architecture.md §6.2
+        // RDS connection details
+        new ssm.StringParameter(this, 'DbEndpointParam', {
+            parameterName: '/kiro-governance/config/db-endpoint',
+            stringValue: this.dbInstance.dbInstanceEndpointAddress,
+            description: 'RDS instance endpoint',
         });
-        // Parameter 2: Region (for SDK clients)
+        new ssm.StringParameter(this, 'DbPortParam', {
+            parameterName: '/kiro-governance/config/db-port',
+            stringValue: this.dbInstance.dbInstanceEndpointPort,
+            description: 'RDS instance port',
+        });
+        new ssm.StringParameter(this, 'DbNameParam', {
+            parameterName: '/kiro-governance/config/db-name',
+            stringValue: 'kiro_governance',
+            description: 'PostgreSQL database name',
+        });
+        new ssm.StringParameter(this, 'DbUserParam', {
+            parameterName: '/kiro-governance/config/db-user',
+            stringValue: 'kiro_mcp',
+            description: 'PostgreSQL IAM user for MCP server',
+        });
+        // Parameter: Region (for SDK clients)
         new ssm.StringParameter(this, 'RegionParam', {
             parameterName: '/kiro-governance/config/region',
             stringValue: region,
-            description: 'AWS region for DynamoDB and other services',
+            description: 'AWS region for RDS and other services',
         });
         // Note: /kiro-governance/config/mcp-api-key is a SecureString parameter
         // created outside CDK (manually or via deployment script) with a secret value.
@@ -225,14 +211,23 @@ class GovernanceStack extends cdk.Stack {
             removalPolicy: cdk.RemovalPolicy.DESTROY,
         });
         // ==================== Stack Outputs ====================
-        new cdk.CfnOutput(this, 'TableName', {
-            value: this.table.tableName,
-            description: 'DynamoDB table name for governance events',
-            exportName: 'KiroGovernanceTrackerTable',
+        new cdk.CfnOutput(this, 'RdsEndpoint', {
+            value: this.dbInstance.dbInstanceEndpointAddress,
+            description: 'RDS instance endpoint',
+            exportName: 'KiroGovernanceRdsEndpoint',
         });
-        new cdk.CfnOutput(this, 'TableArn', {
-            value: this.table.tableArn,
-            description: 'DynamoDB table ARN',
+        new cdk.CfnOutput(this, 'RdsPort', {
+            value: this.dbInstance.dbInstanceEndpointPort,
+            description: 'RDS instance port',
+            exportName: 'KiroGovernanceRdsPort',
+        });
+        new cdk.CfnOutput(this, 'RdsDbName', {
+            value: 'kiro_governance',
+            description: 'RDS database name',
+        });
+        new cdk.CfnOutput(this, 'RdsUser', {
+            value: 'kiro_mcp',
+            description: 'RDS IAM database user',
         });
         new cdk.CfnOutput(this, 'McpServerRoleName', {
             value: this.mcpServerRole.roleName,

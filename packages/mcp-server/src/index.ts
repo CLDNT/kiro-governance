@@ -83,9 +83,9 @@ async function bootstrap(): Promise<void> {
           const requestServer = new McpServer({ name: 'kiro-governance', version: '1.0.0' });
           registerRecordProgress(requestServer, config);
           registerNotifySlack(requestServer, { ssmClient });
-          const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+          const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined } as any);
           await requestServer.connect(transport);
-          await transport.handleRequest(req, res, parsedBody);
+          await (transport as any).handleRequest(req, res, parsedBody);
         } catch (err) {
           console.error('MCP transport error:', err);
           res.writeHead(500, { 'Content-Type': 'application/json' });

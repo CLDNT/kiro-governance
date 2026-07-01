@@ -1,0 +1,31 @@
+{
+  "name": "@kiro-governance/projects",
+  "version": "1.0.0",
+  "description": "Projects domain: project lifecycle management, CASDM phases, onboarding checklist, Jira import",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./handlers/*": "./dist/handlers/*.js",
+    "./services/*": "./dist/services/*.js",
+    "./types": "./dist/types.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@kiro-governance/shared": "*",
+    "@aws-sdk/client-ssm": "^3.400.0",
+    "@aws-sdk/client-secrets-manager": "^3.400.0",
+    "aws-lambda": "^1.0.7",
+    "pg": "^8.11.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.126",
+    "@types/node": "^20.4.0",
+    "@types/pg": "^8.10.7",
+    "typescript": "^5.2.0"
+  }
+}

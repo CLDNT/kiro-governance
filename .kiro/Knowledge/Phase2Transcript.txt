@@ -1,0 +1,400 @@
+
+
+Chris Xenos
+Raj, how are doing, man?
+
+Muhammad Faraz
+Hey, Chris. Yep. I'm doing good. Alright. How.
+
+Chris Xenos
+Everything going okay? Yep. Perfect. Okay. Alright, man. So this is what I need from you. Let me let me first ask you. Have you have you played around with the applications in Quik? Yes. I have. Okay. So do you know how to build an application in QUIC? Surely, do. Okay. So do you know that that database you connected that you built in the governance? Yeah. Okay. I need is.
+
+Chris Xenos
+And you know Oscar too. Right?
+
+Muhammad Faraz
+Yeah. I do know Oscar.
+
+Chris Xenos
+Okay. So what I'm envisioning is an app in Quick that can access that data you created. It's gotta be in a certain account. Let me see which account this is. Let me see.
+
+Muhammad Faraz
+That's Amazon. It's a SBX Sandbox.
+
+Chris Xenos
+No. I need this to be in hold on.
+
+Chris Xenos
+Let me see here. Oscar pro blah blah blah blah blah blah.
+
+Chris Xenos
+Cloudelligent quick.
+
+Chris Xenos
+Oh god. I don't know where they changed my **** on me.
+
+Muhammad Faraz
+It's I think so.
+
+Chris Xenos
+They changed to all the names?
+
+Muhammad Faraz
+Yeah, and they changed the names of the Amazon accounts. What you're looking for, maybe I can help with that. Well, we had this quick.
+
+Chris Xenos
+Account where we were supposed to set everybody up, but now it's now it's now.
+
+Chris Xenos
+It's now it's, sales analytics, but this isn't sales analytics. I need a place where the delivery people can access this application.
+
+Muhammad Faraz
+Well, they the application sitting in Quik can be accessed through multiple ways. Like, they can be embedded into a URL, and that URL can be used to, you know, fetch the data. So that's not an issue. Like, they don't need to actually own that AWS account, like, which you have. So that's not necessarily the case.
+
+Chris Xenos
+Alright. Well, let's focus on building the app wherever you can, but it might have to cross account. So you gotta realize that.
+
+Muhammad Faraz
+Well, I would need like, you would need to, you know, request AWS account, like, for the Quiro governance part. It could be the, Crunch account in which we are giving the Kiro from. Right? Like, there is an account in which everyone have their Kiro accounts. It could be that or any other Amazon account that's not sandbox because sandbox, everyone will have access to the data, and that is a little bit chaotic. You know? So to move that out of Let me see where AJ's.
+
+Chris Xenos
+Putting his his let me see where.
+
+Chris Xenos
+Okay. Let me see.
+
+Chris Xenos
+Let me talk to Kasha.
+
+Chris Xenos
+Okay. I'll figure this out with. But so you have you seen the whole flow for the agentic methodology? For the.
+
+Muhammad Faraz
+Like, what we were building for, like, this app for like, if I am right, we are talking about, like, the a the the new way of development that Cloudelligent came up with.
+
+Chris Xenos
+Yeah. Where is it? Hold on.
+
+Chris Xenos
+I think this is it. I don't know if this is the latest, but I think this is it.
+
+Muhammad Faraz
+Like the CAS DM?
+
+Chris Xenos
+Yeah. Just so you know what I'm talking about here.
+
+Muhammad Faraz
+A PDF?
+
+Chris Xenos
+Yeah. Let me just show you where our routine. Sure. Sure. Why not? Yeah. I'll just show you real quick. It won't take much time. Is what I'm talking about. You've seen this. Right? Yep. I have. Okay. So I need an application that tracks projects. Right? It's a it's it's it's essentially a project tracking. Part of it is the stuff you're collecting in Quiro, right, that your database, and part of it doesn't fit in the database. So let me do you have a do you have access to this Miro?
+
+Muhammad Faraz
+I don't have access to the Miro, but I do have this diagram with me.
+
+Chris Xenos
+Okay. So do you see, like, this transcript analysis?
+
+Muhammad Faraz
+Let me just use the PIN on this screen. Yeah, and now I can see that. That's perfect. Complete SOW handoff is equal to transcript analysis. Okay.
+
+Chris Xenos
+Okay. This is a meeting. So what I wanna what what the app needs is a place in so this application is supposed to track all these milestones. Right? All of these points. Some are the points you've already created. Some can't be collected in Miro. I mean, in in Kiro. Okay. Right? Like, Kiro doesn't track this meeting. It wouldn't know that it occurred, and I wanna get the transcript so that we can do a sent analysis to make sure certain topics were discussed. Okay. So what I'm envisioning is an app where the project manager anybody on the project can go in and add it needs to track all of these these governance points that you have plus a couple more, and so it needs to accomplish two things. It needs to track the application where it, the projects, where they are, and what gates they've gone through. It huh, and it also needs to track some of these artifacts.
+
+Chris Xenos
+So on the project, like, okay, if if this is a if this is a gate that has to happen, they need to and they they're and it needs some evidence, and they need to be able to go add the evidence.
+
+Muhammad Faraz
+So the artifact is the second key where we are talking about okay. So the SOW handoff was completed. So now we also need the SOW.
+
+Muhammad Faraz
+Right?
+
+Chris Xenos
+Yeah. Well, you need the transcript, the the meeting, the handoff meeting transcript from Avoma. You need to upload it.
+
+Muhammad Faraz
+Okay. I'm just trying to make sense out of that. So, like like, no. Of course, like, I've of course, I understand the point that we are trying to get things on quick. Right? Like, whenever we do something like a query, that should give us what state of like, development, which phase we are on, and it gives us the related artifacts that what I understood, and these artifact are gonna come from like, in this case, transcript analysis, this comes from Avoma, and we need to plug in Avoma as well into the MCP server?
+
+Chris Xenos
+Yeah. I would I would put Avoma if we have that ability instead of adding the transcript, I'd like to just put the meeting link or something like that, and then like, for for this one, like, I'd like it to we could give it criteria to look for in that transcript or in that call and tell us whether those topics were covered.
+
+Muhammad Faraz
+Okay. So.
+
+Muhammad Faraz
+Now, let me assume one thing. We have Oscar. Oscar has this transcript analysis, and it has all the data related to the meeting, who are the participants, what meeting notes were captured, the transcript itself. Right? Oscar has all of these artifacts. Why don't we just go and fetch it from there?
+
+Chris Xenos
+This is project based, Oscar. This is in the middle of a project. So Oscar wouldn't be in it doesn't cover the actual execution of a project. It's just the presales.
+
+Muhammad Faraz
+So at what point of time this meeting is happening? Like, can you confirm with me? Like, is this a discovery call? Is this It's all after sales.
+
+Chris Xenos
+So this is after the sales.
+
+Muhammad Faraz
+This is after the sales?
+
+Chris Xenos
+Yeah. So after the sale, we go into to delivery. This is all about project delivery.
+
+Muhammad Faraz
+So we are talking about the meeting where we had of the first phase, like the phase zero, and client agrees. Yes. He got it, and this is what we need. So this piece of meeting transcript is gonna be translated into an artifact that is gonna be surety of that phase zero was done. This is what you mean?
+
+Chris Xenos
+Well, not just that it was done, that we talked about certain topics like additional capability, additional opportunities.
+
+Chris Xenos
+We covered the scope. We covered the the the the risks. You know, we we can't Kasim and I can't go to every call. Yeah. So think of think of what I'm asking you to build is the visualization.
+
+Chris Xenos
+For this governance. Right? It's the visualization, meaning we we can go and see where we can look at each of these projects, see which which gates have been reached, and what the result of those gates are. Huh.
+
+Muhammad Faraz
+Okay. I have an I have another, quick question for that. How do you want to link the meetings with the project itself? Like, is there a keyword in the moment that you're gonna use, or are we gonna embed that in here or wherever? Like, what is that 1. of standing where you are seeing these meetings? Like, let's suppose we are having meetings on iCivics. These iCivics meeting always start with, like, a unique word says I's. ICIV. Now I know every meeting that is gonna start with ICIV is gonna be linked back to the main thing. Right? To to this specific project. Now there is no relation other than this in between, or if we cannot find any meetings, this could go easily in very bad directions. So this point that that I'm asking for is what is this point that we have to look for? Like, meetings, like, getting, you know, added to projects. Like, where are we getting that?
+
+Chris Xenos
+Well, it could be just they give you the it could be that they go into this app and just put the link in there to the actual meeting. We don't have to guess which meeting. Just put the link there.
+
+Muhammad Faraz
+So it's a manual procedure?
+
+Chris Xenos
+It could be. We could start there, but keep it easy.
+
+Muhammad Faraz
+That makes sense. Okay. That makes sense. Like, if you have the meeting link, we can probably take up the transcript and check whether it was done correctly or not. That makes sense. So that's the first part of what you are trying to make. What's the.
+
+Chris Xenos
+Rest I'm giving you this as an example of what I wanna track. So there there's the things that you're tracking in Kiro and things outside of Kiro.
+
+Muhammad Faraz
+Again, if you if you want if you want, I can do this whole thing for you, and it could even may like, make more sense to you. Right? Like, how like, let me give you some examples. Instead of you building the quick dashboard, I could do that very easily and plus giving you the tools and required tech tech that can easily answer any of your questions related to the project. Embedding this own tier of governance piece, we can actually get a lot more than what we already have. Like, we can get to know the current project state even without asking any developer where where we are standing or which phase we are on or what did the client say, you know, in this specific phase. I can track each and everything without even, you know, needing anyone's help.
+
+Chris Xenos
+Yeah. Here's here's what I did. Here let me show you what I didn't I was working on in Kiro.
+
+Muhammad Faraz
+Sure. Show me.
+
+Chris Xenos
+I was this is just a chat I was having, and this is where I ended up. Just to give you an idea of what I'm trying to what I was trying to achieve with Kiro. Hold on. Let me come in here.
+
+Chris Xenos
+Have you seen our project delivery board?
+
+Muhammad Faraz
+Okay. This is, I just got the chat message. Can you give me one second?
+
+Chris Xenos
+Forget the last part, but.
+
+Muhammad Faraz
+Okay. It's giving you an idea. Like, there is a project tracker, and there is, like, a phase completion capture and role based views, and that reads from our database. Right, and then that database has project phases, gates, team members, roles, gate completions, and configurables. What are these?
+
+Chris Xenos
+Yeah. So let's just say I wanna add a step.
+
+Chris Xenos
+Right? Because let's say we change the methodology and I need to add a gate. How do I do that? Let's just say we wanna rename a phase from, like, discovery to something else. How do I do that?
+
+Muhammad Faraz
+Okay.
+
+Chris Xenos
+It's not as important right now. What's important is let me do let me give you this also. I think she gave me something, Chris's or and they're. Let me see the.
+
+Muhammad Faraz
+Okay. One thing one thing that I am worried about is getting the team members in the roles, and then there comes the second thing that.
+
+Muhammad Faraz
+It's a lot.
+
+Chris Xenos
+Let me see this. Let me see see. I'm trying to find the spreadsheet that she shared with me.
+
+Muhammad Faraz
+Sure. Is it that one, Nayab shared?
+
+Muhammad Faraz
+I have that open somewhere. Is it this?
+
+Chris Xenos
+I don't think she understood what I was looking for, but let me share this with you.
+
+Muhammad Faraz
+Sure. Please do that.
+
+Chris Xenos
+What I'm looking for is in each step, what are we capturing, and how do I show it in the dashboard? I mean, in the application. So let's just say this application is a way to first manage the workflow and upload any artifacts you don't have, then you'd have a Quicksight dashboard somewhere that could access the data and report out where each project is. So there's a dashboard layer that doesn't have to be built into this application, but we need to make sure we're capturing every.
+
+Chris Xenos
+So in other words, you're collecting stuff in your database for for for Kiro. Right?
+
+Muhammad Faraz
+Yep.
+
+Chris Xenos
+Where would I see that if I'm a project manager? Like, where would I see that this was captured?
+
+Muhammad Faraz
+Okay. That's where your quick dashboard's coming. Right? So.
+
+Chris Xenos
+Okay. But I don't want a dashboard yet. I wanna before we get to a dashboard, I wanted to app to okay. There will be the there will be the Quicksight dashboard. That's the top layer. But but there has to be an interactive place where there are checks that don't that we we were trying to make a distinction, micro versus macro, where micro was everything that that that, Kira logged, and then there was this macro that said, okay. These are dates that aren't in aren't in Kiro. Like, let's let's just take another one. The implementation.
+
+Chris Xenos
+Review board, that's not gonna be tracked in Kiro. So how do I know it was there? I'd wanna upload the transcript.
+
+Chris Xenos
+Okay.
+
+Muhammad Faraz
+The previous me give you an overview of what was made in the, like, the keynote governance piece. So we were tracking macros. Right? So whatever comes in, like, something like that was actually approved by someone or it was actually written by someone. Right? So that is the macro piece that is coming in. Like, SRS reviewed, and then there was, you know, like I I saw a lot of these, like, these macros written in into the Excel sheet, and I just had a discussion with, and he just told me, okay. You have to figure this on your own. Right? You just have to figure this which one goes to which phase. Right? Like, current, like, current 10 macros that I made.
+
+Muhammad Faraz
+So according to those according to those, let me also bring that out. That's a very important information here because that is the piece that the governance will be tracking. Give me one second. Let me bring that up really quickly. So it was. SRS validated, SRS approved, and design docs approved, implementation plan approved, *** you know, specs file approved, and then there was code approved, UAT report approved, and run books approved. Finally, project documentation approved. So each of these. I've sorry. I missed one. So discover discovery outputs validated. So these all are the microgates that the governance piece is looking for, and they are in the code. Right? They are in the code. They are sitting in the code base, and that's where we have knowledge that, yeah, they are there.
+
+Muhammad Faraz
+So other than this, nothing is being, you know, captured or written down into our database. All of the other things that you mentioned, like, want a transcript, and you want something else, maybe something that is on a micro level. Right? Like, something that, someone said in some meeting. So that is gonna be a part of that quick dashboard. Right? The agent, the quick.
+
+Chris Xenos
+But let's not call this a dashboard yet because there is a dashboard, but I don't this isn't it yet. This is to this is interactive, meaning. I can add evidence to it. I can, I can add links to so so for those things you mentioned, how are you how do we know what's the source? Is it Kuros, flipping a flag? Or.
+
+Muhammad Faraz
+It is Kuros flipping a flag.
+
+Chris Xenos
+Okay. But there's things here that aren't flags. Right? That there are things that like this kickoff meeting. Kiro doesn't know it happened.
+
+Muhammad Faraz
+So let me let me give you an example. So this kickoff meeting. Right? This meeting is some somewhat special. It's around here. Give me one second. Let me pull up that again. So.
+
+Muhammad Faraz
+Where is that sheet? Yeah. This one. Right? So you are talking about the phase zero, and in that, you're talking about a micro. Right?
+
+Chris Xenos
+That's not a micro. Like, a micro is something that's just at the very tactical layer. A macro would be that the meeting happened and that that well, I don't even know what the distinction between micro and macro is, but it it was started that think of micro as everything you do in Quiro. It's tracking in the progress file, and you're capturing in your database. Right? Okay. But anything outside of that plus the stuff you're tracking in the database, I would want. I would want to see it happening. Right? Like, I would wanna go and say I would wanna go to this app, and I'd wanna say, okay. Looking at this transcript or not even looking at the transcript, looking at this project, I would say, okay. The kickoff happened. These were the topics that were discussed.
+
+Chris Xenos
+And then what's the next one after that? What's the next one after the the kickoff?
+
+Muhammad Faraz
+The after that is the review with the internal team to align on requirements. That is, again, a meeting.
+
+Chris Xenos
+Is that the same one? Is that the same?
+
+Chris Xenos
+No?
+
+Muhammad Faraz
+So, like, it's again. It's again. It's again. It's coming as a flag. Right? Yes, or no? Yes, or no? That No.
+
+Chris Xenos
+But this isn't yes, or no. This is not yes, or no. Okay. That's my point. It's not yes, or no. This is this is something else.
+
+Chris Xenos
+Okay. So you. Some are yes, or no.
+
+Chris Xenos
+Let's just say let.
+
+Muhammad Faraz
+Yeah. Yeah. Please go on.
+
+Chris Xenos
+Let's just say you had an app that.
+
+Chris Xenos
+Had all our all our projects, and when I clicked on a project, I could see which gates it went through.
+
+Chris Xenos
+Where the artifacts are. Okay, and it would be very easy for me to say, okay. Without having to go into.
+
+Chris Xenos
+This is a level below what a dashboard would show you. It's it's more tactical. It'd be like if I'm the project manager and I wanna see where my project is or I I need to up I need to to upload something, what how would I do it?
+
+Muhammad Faraz
+Yeah. I do get your point. So you are talking about an app on the on the underlying level, which shows about every project that we have after the presales, and like, I get your point now. Okay.
+
+Chris Xenos
+And then the dashboard would be more just reporting only. So dashboard is just reporting only. These are the projects. These are where they are in the gates, But it's not super detailed. Right? It's not.
+
+Chris Xenos
+Let me show you something else that might help because this is what I wanna do in the longer term.
+
+Muhammad Faraz
+Sure. Because, again, I am gonna say okay. You're still on the meeting. The meeting just finished in front of me. Okay.
+
+Chris Xenos
+Let me let me just show you this one thing.
+
+Muhammad Faraz
+Sure. Go ahead.
+
+Chris Xenos
+Okay. See this for.
+
+Muhammad Faraz
+Yeah. III do see this.
+
+Chris Xenos
+Okay. These are all the projects in professional services right now. Okay, and this is what we're using to track our progress right now, and if you click on it, it has all these other things. So if I it has this the status reports embedded in here so that it come and add a status report every week. It's got all the key items I need to track. Huh. Project start date, project end date, all these things. So it think of the micro is to ensure that we're following the AI DLC, and the macro becomes the whole story of the project.
+
+Chris Xenos
+Okay. When did it start? What day did this meeting occur? What what you know, eventually, I'd like to get rid of these Jira pages and even use this, and then maybe this this app becomes Deliverpro because I don't know where they are on that. But but. I'm just telling you what the vision would be. It's a project tracking app.
+
+Muhammad Faraz
+Yep. I get your idea. I'm 100% now. Okay. So now let's come down to this. So give me a day or two. Let me plan it out, the things we need, and like, everything that we need to do this. If you can just give me access or not even the access, just one of this project that was that is, you know, in launch and enable. I just want to see each and everything related to it so I can get where it comes from. Right? So that in that way, in the we can actually come up with an idea.
+
+Chris Xenos
+This is one you might you might be familiar with. Let me see if I can send this to you.
+
+Muhammad Faraz
+Yeah. If you can just send me this one, that would be great. You can just, you know, print it or even export this file to file to You.
+
+Chris Xenos
+Should have access to this, shouldn't you?
+
+Muhammad Faraz
+I should not.
+
+Chris Xenos
+Well, you're working on a project.
+
+Muhammad Faraz
+Well, I am working on this project, but I don't think so. I have access to this.
+
+Chris Xenos
+Okay. Let me let me just where can I get a link? Can I.
+
+Chris Xenos
+Ross?
+
+Chris Xenos
+Okay. I'm gonna send this to you. See if you can get it.
+
+Chris Xenos
+Okay. I gotta jump on late. But, yes, see what you can and let's just start small. Just build some kind of small app that shows just the things you're tracking in in Kiro.
+
+Muhammad Faraz
+Sure. Sure. Plus a start Again, I would just ask, give me day or two. Let me take my head work for it. I will keep keep on delivering directly to you. Like, hey. This is what I think. This is what I made. Yeah. Yeah. Perfect, and then you can just come up again, and we can have a meeting again. I don't mind doing that.
+
+Chris Xenos
+That sounds good. Perfect.
+
+Muhammad Faraz
+Perfect. Alright, Chris.
+
+Chris Xenos
+Alright. Thank you. Thank you.
+
+Muhammad Faraz
+Bye.
+
+Chris Xenos
+Alright. Bye bye.

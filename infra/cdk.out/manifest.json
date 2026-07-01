@@ -11,21 +11,21 @@
     },
     "KiroGovernanceStack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://504649076991/us-east-1",
+      "environment": "aws://713554442614/us-east-1",
       "properties": {
         "templateFile": "KiroGovernanceStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::504649076991:role/cdk-hnb659fds-deploy-role-504649076991-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::504649076991:role/cdk-hnb659fds-cfn-exec-role-504649076991-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-504649076991-us-east-1/faddce42d77b94f7f27ac3cb25d8f237c1831909aff9f3f384e0462c2236fec1.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::713554442614:role/cdk-hnb659fds-deploy-role-713554442614-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::713554442614:role/cdk-hnb659fds-cfn-exec-role-713554442614-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-713554442614-us-east-1/6058d2ee42f0c46b36c3c49f2debbfe35e9a17e9fa9aefcef5ca8608bd74852c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "KiroGovernanceStack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::504649076991:role/cdk-hnb659fds-lookup-role-504649076991-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::713554442614:role/cdk-hnb659fds-lookup-role-713554442614-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -35,6 +35,46 @@
       ],
       "additionalMetadataFile": "KiroGovernanceStack.metadata.json",
       "displayName": "KiroGovernanceStack"
+    },
+    "DeliverProStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "DeliverProStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "DeliverProStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://713554442614/us-east-1",
+      "properties": {
+        "templateFile": "DeliverProStack.template.json",
+        "terminationProtection": false,
+        "tags": {
+          "Environment": "dev",
+          "Phase": "2",
+          "Project": "DeliverPro"
+        },
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::713554442614:role/cdk-hnb659fds-deploy-role-713554442614-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::713554442614:role/cdk-hnb659fds-cfn-exec-role-713554442614-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-713554442614-us-east-1/af5332c5bc34a9840970b15fd6bba3f9b7ee484257078d907e0f8c5527c08f08.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "DeliverProStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::713554442614:role/cdk-hnb659fds-lookup-role-713554442614-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "DeliverProStack.assets"
+      ],
+      "additionalMetadataFile": "DeliverProStack.metadata.json",
+      "displayName": "DeliverProStack"
     },
     "Tree": {
       "type": "cdk:tree",

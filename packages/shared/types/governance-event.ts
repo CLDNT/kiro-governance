@@ -1,13 +1,13 @@
 /**
- * Canonical DynamoDB record shape for kiro-governance-tracker table.
+ * PostgreSQL record shape for governance_events table.
  * Single source of truth — unified-data-model.md §2.6
  */
 export interface GovernanceEventRecord {
-  /** Partition key: PROJECT#<project_id> */
-  pk: string;
+  /** Auto-incrementing primary key (populated by PostgreSQL) */
+  id?: number;
 
-  /** Sort key: UPDATE#<ISO-timestamp>#<ULID> or DEDUP#<idempotency_key> */
-  sk: string;
+  /** GitHub repository name */
+  project_id: string;
 
   /** Human-readable event description (max 4096 chars) */
   update_text: string;
@@ -21,8 +21,11 @@ export interface GovernanceEventRecord {
   /** Canonical macro gate name. Present for macro events, absent for micro. */
   gate?: string;
 
-  /** Phase grouping (e.g., "Phase 1") */
+  /** CASDM phase number (e.g., "Phase 0", "Phase 1") */
   phase?: string;
+
+  /** Human-readable phase name (e.g., "Internal Preparation", "Discover & Align") */
+  phase_name?: string;
 
   /** Provenance — commit SHA or file line reference */
   source_ref: string;
@@ -34,16 +37,5 @@ export interface GovernanceEventRecord {
   created_at: string;
 
   /** Deduplication key */
-  idempotency_key: string;
-}
-
-/**
- * Dedup sentinel record (same table, special SK prefix).
- * Not a governance event — control record only.
- */
-export interface DeduplicatedSentinelRecord {
-  pk: string; // PROJECT#<project_id>
-  sk: string; // DEDUP#<idempotency_key>
-  created_at: string;
   idempotency_key: string;
 }

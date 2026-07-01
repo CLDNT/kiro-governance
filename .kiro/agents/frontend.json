@@ -4,8 +4,27 @@
   "prompt": "file://./frontend/prompt.md",
   "welcomeMessage": "Frontend developer ready. What are we building?",
   "keyboardShortcut": "ctrl+f",
-  "tools": ["read", "write", "shell", "grep", "glob", "code", "aws", "knowledge", "todo"],
-  "allowedTools": ["read", "write", "shell", "grep", "glob", "code", "knowledge", "todo"],
+  "tools": [
+    "read",
+    "write",
+    "shell",
+    "grep",
+    "glob",
+    "code",
+    "aws",
+    "knowledge",
+    "todo"
+  ],
+  "allowedTools": [
+    "read",
+    "write",
+    "shell",
+    "grep",
+    "glob",
+    "code",
+    "knowledge",
+    "todo"
+  ],
   "toolsSettings": {
     "write": {
       "allowedPaths": ["./frontend/**", "./specs/**", "./docs/**"]
@@ -75,6 +94,10 @@
     "file://docs/code-structure.md"
   ],
   "mcpServers": {
+    "shadcn": {
+      "command": "npx",
+      "args": ["shadcn@latest", "mcp"]
+    },
     "chrome-devtools": {
       "command": "npx",
       "args": ["-y", "chrome-devtools-mcp"]
@@ -85,5 +108,5 @@
     }
   },
   "includeMcpJson": false,
-  "model": "claude-haiku-4.5"
+  "model": "claude-opus-4.8"
 }

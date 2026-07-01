@@ -1,0 +1,350 @@
+Muhammad Faraz
+Like, last time Krishna.
+
+Muhammad Faraz
+K. Like, what we want to do. Krishna showed me a Jira. This Jira every project manager or service delivery leads come come in. Hey, Chris. Hey, guys. Yeah. How are you doing?
+
+Chris Xenos
+I'm good. Just a little bit tired. I've been in meetings all day and then just keep getting pinged for stuff outside of the you know, while I'm in meetings, and we can't do it. Absolutely. Just being in a meeting for, like, all day.
+
+Muhammad Faraz
+I can understand that. Just drains you. It drains you, honestly. Yeah. Alright. So I was just explaining the pre context to, tarik, and like, we were just discussing like, we were gonna discuss that what we had initially discussed, you and me, in the last call.
+
+Chris Xenos
+Okay. Do we have anything to show, Rav?
+
+Muhammad Faraz
+Not exactly. I do have questions. Right? But after these questions are answered, I believe so, we will be very, very good on the part of the app. Like, we will have a clear structure in mind, which I can execute in for the next one to two days. Okay.
+
+Chris Xenos
+Yeah. Would it would it help if we kinda drew a picture of what we're talking about?
+
+Muhammad Faraz
+Well, I do have a structure in mind, and like, Hiro did a very good job of, you know, like, marking everything down. So I am gonna share my screen and exactly show what's. I am thinking about, and in this part, I do have many questions going around my head. So once, like, this meeting is over, I'll just take the transcript of this call like I did earlier, and I'm gonna feed it to Kira as well. So those questions answered will be also the questions of Kira. Okay. That's what you got. So sure. Sure. Just give me a minute. Give me a minute. Let me share my screen. Let me know when you guys can see my screen. I can see it.
+
+Chris Xenos
+Okay. Perfect.
+
+Muhammad Faraz
+So what I was thinking about the last piece when we were talking, like, hey. We want to eliminate the need of Jira. Right? All projects being tracked on Jira, and we want to have a system where our governance is directly coming from, you know, the governance system, which we set up on on Kiro directly, and that gets built into our own system, which is a application and a backend database written in RDS that can be used to, you know, like, attach to quick for, you know, some quick ans question and answers. Right? So this was the whole agenda. Like, we want to make sure that we think.
+
+Chris Xenos
+I would just give you one I would just tweak it a little bit. I would say primarily, the the first priority is to track our compliance to the that new methodology. So that would be the first goal. That's the primary goal. Secondarily, if we can replace what we're doing with Jira with this at the same time with not a lot of effort, I would like to to do both.
+
+Muhammad Faraz
+Perfect. So, let me explain the that thought to you right now. So what happened is currently, we have the Go and SP setup. I also migrated it to RDS, so, you know, you can work with it. It's just a matter of time I deploy it on your, AWS account that I requested from you. Right? So once it's there, you can actually just go on, attach it to a repository, generate some documents, and see what input and output it gives. Right? So that is the first piece. That's the first piece where it's coming from, like the governance part. Now that piece is done. We actually had a small POC demo for it. I showed you exactly how it works.
+
+Muhammad Faraz
+It works with your Github. When you upload, like, do something like some change in the progress, like, the progress MD file project progress MD file, it will drag that change as a gate. Right? It will see if that was a gate passed or not passed. If it was a passed gate, then it will just write it down and do us like, write it down on our database, and it will do a message in the Slack channel. Hey. This was done. Okay? So that was the first goal that just got completed, and we actually had a demo for it. Okay? Now comes the second part of this whole story where we have to embed this into a dashboard. Now, like, on part with our last discussion, you said, I want this dashboard to be a application instead of quick at first. Right? You want to see what's coming in the database and what's going out.
+
+Chris Xenos
+Yes. So two things there. So, yeah, I would say it's a 3 layer, not two layers. So layer one is the one you already did. So that's, like, using the the the.
+
+Muhammad Faraz
+Mcp server.
+
+Chris Xenos
+Well, the Kiro.
+
+Chris Xenos
+Ai DLC. Like, that that to the database is layer one, then Yeah. Layer two is this interactive app where we can enrich the that or append that data with additional data, and we can set, like, things like we can adjust start mandates and things like that to give it more to give more context so that in the end, where 3 is Quicksight dashboards that we can use for operational management and and reporting out on KPIs and things.
+
+Muhammad Faraz
+Yeah. So. I am thinking about that in this exact same pattern, and the pattern that I just generated was exactly looking forward to these kind of things. Now there was a part which is the automation part. I'm not gonna discuss it right now. We are gonna leave it for later. Like, even in this meeting, but later on. But first, we are gonna, discuss the manual part, the manual effort involved in the whole process of understanding how gates will work. Right? So we have some gates that was that were provided to me by, Nayab, and those gates were something like, like, like, if a meeting has been done, like, a kick kickoff call has been done or internal review meeting was done or discovery handouts were given. So these could sort of meetings which were which are not a part of our AI DLC. Right? These are human interactions, what they do.
+
+Chris Xenos
+So Yeah, and if if they're if they're done, like, I would like to add evidence. Right? Like, it's not enough to say it was done. Like, we don't want yes, or no. We want a yes, or no yes, and then here's the artifact, like, some evidence.
+
+Muhammad Faraz
+Exactly. So that evidence is the key to this whole application. Now what happens is the user logs in, and he gets the project list. Like, these are the projects that the same projects that you are seeing on Jira. Right, and the these projects will be imported from Jira at first, but then you can use the same platform to track everything. You don't even need the Jira for it anymore.
+
+Chris Xenos
+Yeah. We would be able to create a project. We would use this as our place where we create a project and set the dates and all of and assign the well, we can talk about that later. But.
+
+Muhammad Faraz
+Exactly, and now where where comes the part where we are actually including the evidence and all of the things that attach to the gates, macro gates, if I must say. Right? These are the actions that user can perform. So, like, we were discussing what actions the PM can perform, what actions the solution architect can perform, and what actions are the one those admin can perform. Now I'm gonna leave the solution architect and the admin for the last because these are the ones which have the minimum actions in the in our whole system that was created by, like, who was sharing? I forgot. No. She yeah. Like, the system that No. She was sharing. She said, like, these things, these macro gates where we mark a meeting as it occurred or it didn't occur yet?
+
+Muhammad Faraz
+These were the things that will be marked by PM. Right? So we are gonna use the same platform to mark that as yes, and provide evidence. Now this is a manual piece. This is something that is coming as a manual piece. This could be automated via AVOMA if we have enough standardization into our meetings, meeting titles. This could be, you know, automated in the future. But right now, all the PMs who are actually just coming on to, you know, that specific Jira board and telling, hey. The kickoff call was initiated, and it has been completed now. Right? They are gonna do this on this system, and this will lock our gate with the meeting link that they provide. So this is the Yeah. So the recording link.
+
+Chris Xenos
+They could just provide the recording link here.
+
+Muhammad Faraz
+Exactly. So this is a much easier way than what Noshin was saying at that time when she was saying the project manager has to go on Git and do a commit and you know, like, do all of that technical stuff, which which for a project manager, I would definitely say it is a tough task to do because he is not that much technical. He can make mistakes.
+
+Chris Xenos
+Can makes sense to do it I mean, there's things they're gonna do in in in Kiro, like, using the Orchestrator. But just to mark a meeting done, no. They don't need I don't think they should have to do that there and check it in.
+
+Muhammad Faraz
+No. There is a catch, Chris. Like, there is a catch when they are using Kiro to do that, but not this. When you use Kiro, Kiro actually uses your Git account linked to mark something as done and commit the files and code to whatever branch you are on. Right? A whole set of new things come to in mind where Git is when Git is involved. It is something kind of a he has to commit the code to a specific branch, and each time he does that, it there is a chance that he might make it wrong because he might be on the wrong branch, and this happens since git is a really tricky thing. Right? So instead of doing that over Okay.
+
+Chris Xenos
+So that's.
+
+Muhammad Faraz
+Come on here and say, like, do that.
+
+Chris Xenos
+No? I think it's it's fine because at the end what do you think, Dareek? You were in these meetings with Kostam. I mean, I don't I don't really care if every single artifact is in Git or not because it's.
+
+Tariq Khan
+It's So if if we so what's the alternate for us? So if if we don't do if the project manager doesn't do the kit option, then what are you suggesting? What should we do?
+
+Muhammad Faraz
+We would do this app. Yeah. Through this app. Like, this app is very easy to access just like you access the Oscar to generate those artifacts. This is the place where you mark them, hey. This was done.
+
+Muhammad Faraz
+As simple as that.
+
+Tariq Khan
+Can we add an upload option there?
+
+Chris Xenos
+That's what he's saying. Upload.
+
+Tariq Khan
+Yeah. Upload some artifacts there. At least some I think we need to upload something. Right? So so if there is evidence, we can upload it, and when you create that master dashboard, we will be able to access all artifacts from that master dashboard. Are they from Quick?
+
+Chris Xenos
+Well yeah. So this application layer, you can select it too. You can drill down into the project and see you know, eventually, could see, are you late or not? I mean, this, this is just the first phase to track where we are with the the. AIPLC. So so we'll know, like, the kickoff deck. We can see the kickoff deck and and maybe the Avoma meeting link. So we have it there. We have we have the the did the did the handoff meeting internal handoff meeting occur? You know, you would see they would put the meeting link in there and and the date, you know, like, these things would be stored there that you wouldn't track necessarily in in our, using.
+
+Chris Xenos
+Kiro. Right? You would track we need a way to track those things that are outside of what they would do in Kiro, and you know, I know Kasim mentioned trying to have all the artifacts in one place to me, it's. I don't I don't care if those artifacts are in Git or not. Like, to me, there's not a lot of value to having them in Git. I could as long as I know where they are.
+
+Tariq Khan
+You see what I'm saying? What yeah. Yeah. But but I think there should be a way to upload those if if we do like, even if goes worst case scenario, if if they upload here, it's we can probably automate.
+
+Chris Xenos
+Okay. Yeah.
+
+Tariq Khan
+That's perfect. Push to But I wanna be able to.
+
+Chris Xenos
+Yeah. We we we, once we have this contract, we can keep adding to it. Like, eventually, I'd like to do the status reports in here. I'd like to do you know, see where have have a dashboard that shows us hours versus, you know, hours. How like, what's our burn rate? Things like that. Okay.
+
+Tariq Khan
+So so so you got a consolidated report. Instead of Jira, you're completely replacing. Jira with this dashboard.
+
+Chris Xenos
+Yeah. I'm not advertising that to Kasim yet, but I this is what I wanna do.
+
+Muhammad Faraz
+Yeah. Got it. Okay.
+
+Chris Xenos
+And, eventually, look, it'll probably end up in Deliverpro. But right now, I don't wanna wait for Deliverpro. So I'm using this as a way to start this process and iterate quickly.
+
+Muhammad Faraz
+Like, I can, you know like, it's very easy for me using Hero since, you know, I already have, you know, something around about, 7 to 6,000 credits. I can easily round up this app in a couple of days, one or two days at max. Right? So then we can just hit on doing some testing around this part. We can have very few people, which we already have on on our calls. Right? We can just have those people on and just see what we are missing, and we can keep adding features. Like, again, we are coding this. Right? This is being coded, and they are being API is being are being developed. So their sky is the limit. We can add everything. We can add.
+
+Chris Xenos
+That's what I'm hoping. That's what I'm hoping.
+
+Muhammad Faraz
+Like, we can add anything into this app. So on some later phase phases, we can have each and everything that comes under governance into this singular app. So that's why this app was strategically my way of delivering that we do not have to ask project managers to learn Git. Instead, we can use this app, Right, and they can just mark it over here, and we know our databases know that this gate was marked for this app.
+
+Tariq Khan
+Yep. Yeah. Agree. Yeah. Agree. But okay. Yeah. But but you remember, Chris, like, wanted our our technical project managers to use CLI as well.
+
+Chris Xenos
+Yeah. They will use Curo CLI, but just not for extraneous stuff. They'll use it to review artifacts that belong and and that they're already naturally part of it. They're not bringing in artifacts that from the outside, from meetings, from you know, they're not importing Powerpoints to to Kiro just to get it in the git.
+
+Muhammad Faraz
+It's okay. Alright. I can add up a pointer over here. Like, when it comes to the separation of concern. Like, whether the p after this app, the PMs will be using Kiro or not. So, like, what I think of this app, like, design I've made till now, it is more of a something that is allowing the project managers to avoid Git, not. Kiro. Like, they can do everything.
+
+Chris Xenos
+Exactly. They can.
+
+Muhammad Faraz
+They can use everything that they have, like, seeing the SRS, maybe updating some tickets in Jira, or seeing where there is the project at. They will do that with the Curio CLI. When it comes to, like, writing something on Github, that is something extremely difficult for nontechnical people due to like, we are working in branches. We are working with you know, each time you have to push something on the get, you have to take a pull, and now you have to take a pull from.
+
+Chris Xenos
+Gonna be concede of the experts.
+
+Muhammad Faraz
+Okay. Exactly. I.
+
+Chris Xenos
+Think it's enough to have them review the plans, you know, the the the. I think that'll be enough. I'll I'll do But but I think, like, one question I have for us that you need to think about is, okay. If there are already some of these artifacts that are already uploading into Sharepoint or Teams, like Yeah. Maybe we so so just keep that in mind. They may not like, if there's a Powerpoint, they might already be storing that in Teams. True. So so we could just get the link for that. We don't have to have them upload it here too.
+
+Muhammad Faraz
+True. True. Like, the evidence piece, I will keep it as a file or a link, like the text. Right? So that would be just put anything. Like Yeah, and you put dates next to them.
+
+Chris Xenos
+Like date presented or whatever, or if you can just strip that from the Evoma link or something.
+
+Muhammad Faraz
+Sure. I will try my best on that. Like, embeds, maybe provide some of the metadata with the link. Like, when you add a link, there is a embed there is something called embedded. Right? So there is some embedded metadata attached to the link. I'll try to find out if there is a time stamps of that so we can utilize, or otherwise, I can just do this at a calendar for there to actually just add the time as well.
+
+Chris Xenos
+That sounds good.
+
+Muhammad Faraz
+Yeah. So, like, we will have both options readily available over there. So that's the first part of it. Now comes to the next part where, you know, this was, by the way, the adder URL reference. This was the evidence piece which you just said. Right? So this is the evidence piece. Like, add a note. This is the evidence piece where you are actually writing notes on Jira. Now you're gonna write those notes over here. It's nothing different. It's just a new platform, which is much better. Right? Yeah. A little bit. So they made for specifically this thing. So moving on to the next thing, some next validations. Now this is something as part of my question. So when it comes to solution architect, now their piece is always on Curoc Lite.
+
+Muhammad Faraz
+Right? They know how to use Git. They are experts of it, and they know they can just, you know, upload update the progress tracker, and it can fetch from there. So we do not need actually need to have this point into this application. We can just get that from git instead of, you know, getting it from here. So should we add the same which we added for the project managers, for essays as well?
+
+Chris Xenos
+It I don't think they need any special privileges. We could give them the same as the project manager. So it's it's but but most of their work yeah. I think it's only if they want to adjust something on here, but they don't they're not a primary user.
+
+Muhammad Faraz
+Like Okay. So the primary user is the project manager or the service delivery leader. Yeah. Gotcha. Gotcha. Okay. I got your point. So at the end, there is leadership or admin that is exactly you or Tariq. Right? So there they can actually have a reporting dashboard. Right? They can see everything. I will have a embedded link of quick attached to this dashboard where they can just do a query to find out what's going on. Right? They do not exactly need to go into a project and to verify if something is there. They can just do a query and tell me about adjacent deals. Right? Yeah, and it will just bring up all the deals and their current statuses on the project. Right?
+
+Chris Xenos
+Yeah. So.
+
+Muhammad Faraz
+You don't have to actually go into the project, and it will give you the references as well if you want to take a deep dive into that specific project, where it's standing, what it has, what note notes it has, you know, everything about that. Plus, I will, you know, like, do something like a like, in future, if you want to add more gates, right, we decide to have something like more phases or more gates.
+
+Chris Xenos
+Yeah. Those should be configurable. Configuration.
+
+Muhammad Faraz
+Over there. Yeah. So that's, easy to catch up, then the there is the last thing, the engineers, something like me, who is You know what?
+
+Chris Xenos
+For us, something to think about is we have project types also. So the like, you might have AIML that has different gates than, app dev app mod and Okay. Migration. So there's one more layer of configuration. So you might have different gates depending on what kind of project it is.
+
+Muhammad Faraz
+Well, for that, I would need to sit with the Noshin or anyone who has some Yeah.
+
+Chris Xenos
+We don't have those yet, but just build that notion into here. So when we add a different set of gates for a different project type that that you can do that.
+
+Muhammad Faraz
+Sure. I will, like, keep it in mind to keep it scalable in such a in such a way where we can add an extra layer without a lot of effort.
+
+Chris Xenos
+Yeah. It's gotta be extensible that way. Like.
+
+Chris Xenos
+Good. Good. I like what I I like these questions.
+
+Muhammad Faraz
+Perfect. So let's move on to the next ones. Right?
+
+Muhammad Faraz
+So moving on, how the transcript analysis looks like. Right? Like, we did something we, completed a call, something like, let me come up over here. We did something like the SRS was reviewed with the client. Right? So or the kickoff call happened. On these things, there are evidence pieces. Right? Like the Womalinks that we are talking about. Now, like, I am trying to attach these things with your. Amazon Bedrock, right, to provide you insights of what actually happened in there.
+
+Chris Xenos
+Perfect. Right?
+
+Muhammad Faraz
+So, like, let's suppose there is a disagreement with the client in a kickoff call. It might be something that so in the presale call, it was not discussed. So there was a disagreement. So these notes are gonna come by the AI to this system, by those evidence pieces, all of them. Each of the evidence piece that requires a Avoma transcript is gonna have this agent attached to it.
+
+Chris Xenos
+Yeah, and you in in the, in in the admin section, you may wanna be able to for each one, you may wanna be able to adjust the prompt.
+
+Muhammad Faraz
+Yeah. 100%. I am gonna, make the prompt dynamic. Plus, I'm not gonna use the basic, Bedrock. I'm gonna use the agent core, which is more specialized toward these kind of dynamic behaviors. Okay. Plus, I'm gonna have something more listed, which is very useful for you. So what was the key points that were discussed in the call? Like, the scope was discussed, the risk were discussed, the team introduction happened. So, like, basic key points that tells you what what is actually inside this call. Right? So, like, any.
+
+Chris Xenos
+Yeah. But it it they'll change depending on which call we're talking about.
+
+Muhammad Faraz
+Exactly. Like, it will change from call to call.
+
+Chris Xenos
+Well, type of call. Like, there's certain things we're looking for in the internal team handoff. There's certain things we're looking for in the customer kickoff. There's certain things we're looking for in discovery readout, for example.
+
+Muhammad Faraz
+100%. I do agree, and I do understand what you're trying to say. In each of the pieces, in each of the microgates where calls and evidence is concerned, right, the the agent they are gonna refer to is having a different prompt to fetch different things out of each of the call, and these things are configurable upon admin controls.
+
+Muhammad Faraz
+Like, whatever the admin wants to see, he can just go on, edit the prompt, and the agent knows what to do.
+
+Muhammad Faraz
+Okay. Right? So on to the last piece, which is some, you know, like, decision making to be done. I already decided on the this part that we are not gonna have the Quicksight panel as the front thing. It's gonna be the third layer. I already decided on this. Moving on to the automation layer.
+
+Chris Xenos
+Don't we don't worry about Quicksight right now. Just make sure that the data is accessible so that we can pull it into Quicksight.
+
+Muhammad Faraz
+100%. 100%. It's gonna be accessible. It's gonna be perfectly structured. So no matter how we are trying to access it, it's 100% available.
+
+Muhammad Faraz
+So last thing I have in mind is the automation layer. Now at this point of time, I would need the help of, you know, everyone in this call. So understanding how we want to automate this whole process. I know this is not feasible in the first version of the application or automating everything. Like, instead of a basic manual human effort, which we are currently doing on Jira, I believe so there there might be some ways we can actually automate this procedure by introducing some of the standards to our calls. So instead of human adding the call so this call happened or not, it will automatically fetch from. Avoma that, hey. This call never happened, or this call happened, and this is what goes in there.
+
+Muhammad Faraz
+So there are ways to do some standardization as adding some keywords into the calls. So, like, let's suppose a kickoff call happens, so it would be, the name of the client, x Cloudelligent, and then kickoff call. Now this call happened 3 times for some reason. We can just add one, two, 3 for the versioning system. Right? So this is a automation layer that needs to be discussed with you guys. Like, how do we want to make sure we are proceeding with this? So I lay out the base for it, and then we can complete it in the future.
+
+Chris Xenos
+Yeah. That's good. So the primary one is point two. That is the primary one to automate first.
+
+Muhammad Faraz
+Okay. Can you elaborate that one? Like, just for this call reference?
+
+Chris Xenos
+Yeah. So we should you should be able to see all the gates in the through the application so you can see where where where the project is.
+
+Muhammad Faraz
+All through a moment without manual human adding the calls inside. Right?
+
+Chris Xenos
+No. I'm talking about the Kiro governance events and RDS sync. That's the one that's the primary. Alright.
+
+Muhammad Faraz
+I I got your idea. So that's the first thing we need to focus on. Once completed, the app is the second focus, and after that's completed, then we are gonna work with the refinements and Amazon dashboard queue. Quick size Yes. You in short.
+
+Chris Xenos
+Yeah. That's great.
+
+Muhammad Faraz
+Perfect. So I think so we are aligned.
+
+Chris Xenos
+Good. Alright. I gotta jump to another call, but I think let's let just turn something around quickly so we can react to it.
+
+Muhammad Faraz
+Perfect. I will. I will. 100%.
+
+Tariq Khan
+Yeah, and also, you have Corapaxi starting on Monday, so you have to do something. Yeah. So I know I know you you have experience with with with doing that. So the task that that was assigned to, chris to for us was he has done that couple of times in the last two years. So he's he's he hasn't got a good hand on that. So he might be able to do it quickly. Okay. Just so just keep on working on both along with. Sure. Right?
+
+Muhammad Faraz
+I just want to ask the working hours there per day. Like, I know I have been assigned 3 20 hours for 3 months, which rounds about to 3 hours a day on Cotopaxi for next 3 months. 03:20 for 3 developers.
+
+Tariq Khan
+3 03:20 for 3 developers.
+
+Chris Xenos
+No. It's 09:20 for all, I think, Tariq. It's it's 900 something hours for all 3.
+
+Muhammad Faraz
+Yeah. I was taking that as well. Like Yeah.
+
+Chris Xenos
+So we'll we'll find out more about that for us. I don't know how many hours they're expecting a day. I this was just an this came out of the blue for both Tariq and I. So we're we're we'll. I'm even trying to figure out how we get it started. Like, if you if they're just expecting you guys to like, I'm trying to organize some kind of call. But.
+
+Muhammad Faraz
+So.
+
+Chris Xenos
+I don't know how many hours per day. Like, you're gonna be working on a work stream that's managed by the customer, so it'll it'll kinda depend on them.
+
+Muhammad Faraz
+Don't worry about that. I would say that, like, I'm 100% comfortable with this environment. Plus, I think so I will be able to handle these two things plus some more in the same time bucket. Like Well.
+
+Chris Xenos
+You can say that to me, but don't say that to.
+
+Muhammad Faraz
+Of course.
+
+Tariq Khan
+I won't say that to, because some last time I said that, I was under a very big word.
+
+Chris Xenos
+Yeah. Exactly. Alright, guys. This is great. Appreciate it. I got a job. Thank you. Alright.
+
+Muhammad Faraz
+Thank you, Chris. Thank you, Bryce. Bye.
+
+Tariq Khan
+Bye bye. Thank you.
+
+Muhammad Faraz
+Bye bye.

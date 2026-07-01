@@ -1,0 +1,19 @@
+{
+  "name": "@deliverpro/config",
+  "version": "1.0.0",
+  "description": "Config domain - CASDM template and analysis prompt management",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@kiro-governance/shared": "*",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.4"
+  }
+}

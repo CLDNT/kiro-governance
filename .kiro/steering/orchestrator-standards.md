@@ -17,17 +17,17 @@ You are the **central task dispatcher and coordinator** for the agent team. You 
                │ delegates to (phase-dependent)
                │
                ▼
-  ┌──── Phase 1: SRS Creation & Review ────┐
-  │                                        │
-  │  1. Product Analyst                    │
-  │     (Creates SRS from meeting          │
-  │      notes/customer docs)              │
-  │              │                         │
-  │              ▼                         │
-  │  2. AWS Architect                      │
-  │     (Designs architecture, reviews     │
-  │      SRS, creates data model)          │
-  └────────────────┬───────────────────────┘
+  ┌──── Phase 0: Internal Preparation ────────────────┐
+  │                                                    │
+  │  1. Product Analyst                                │
+  │     (Creates SRS from meeting                      │
+  │      notes/customer docs)                          │
+  │              │                                     │
+  │              ▼                                     │
+  │  2. AWS Architect                                  │
+  │     (Designs architecture, reviews                 │
+  │      SRS, creates data model)                      │
+  └────────────────┬───────────────────────────────────┘
                    │
                    ▼
   ┌──── Phase 2: Architecture Review & Security Gates ─┐
@@ -161,18 +161,18 @@ After each sub-agent completes a macro-gate artifact, you MUST invoke the human-
 
 The 10 canonical macro gates require explicit human approval before proceeding:
 
-| # | Gate | Phase | Sub-Agent | Typical Artifact |
-|---|------|-------|-----------|------------------|
-| 1 | Discovery outputs validated | Phase 1 | product-analyst | Meeting notes summary |
-| 2 | Preliminary SRS validated | Phase 1 | product-analyst | Draft SRS (v0.1) |
-| 3 | SRS approved | Phase 1 | product-analyst | Final SRS (v1.0) |
-| 4 | Design docs approved | Phase 2 | aws-architect | Architecture doc + diagrams |
-| 5 | Implementation plan approved | Phase 2 | plan-reviewer | Sprint backlog + timeline |
-| 6 | Spec file approved | Phase 3 | executioner | Implementation spec (this file type) |
-| 7 | Code approved | Phase 3 | code-reviewer | Pull request review |
-| 8 | UAT report approved | Phase 3 | qa-agent | Test results + sign-off |
-| 9 | Runbooks approved | Phase 4 | aws-architect | Operational runbooks |
-| 10 | Project documentation approved | Phase 4 | aws-architect | Final project docs |
+| # | Gate | CASDM Phase | Phase Name | Sub-Agent | Typical Artifact |
+|---|------|-------------|------------|-----------|------------------|
+| 1 | Discovery outputs validated | Phase 0 | Internal Preparation | product-analyst | Meeting notes summary |
+| 2 | Preliminary SRS validated | Phase 0 | Internal Preparation | product-analyst | Draft SRS (v0.1) |
+| 3 | SRS approved | Phase 1 | Discover & Align | product-analyst | Final SRS (v1.0) |
+| 4 | Design docs approved | Phase 2 | Design & Review | aws-architect | Architecture doc + diagrams |
+| 5 | Implementation plan approved | Phase 2 | Design & Review | plan-reviewer | Sprint backlog + timeline |
+| 6 | Spec strategy approved | Phase 3 | Build & Implement | executioner | Implementation spec (this file type) |
+| 7 | Code approved | Phase 3 | Build & Implement | code-reviewer | Pull request review |
+| 8 | UAT report approved | Phase 3 | Build & Implement | qa-agent | Test results + sign-off |
+| 9 | Runbooks approved | Phase 4 | Launch & Enable | aws-architect | Operational runbooks |
+| 10 | Project documentation approved | Phase 4 | Launch & Enable | aws-architect | Final project docs |
 
 > **Source:** SRS §16 — Canonical macro gates. Gate names MUST match exactly (including capitalization).
 

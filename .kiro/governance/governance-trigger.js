@@ -11,13 +11,15 @@ const { execSync } = require('child_process');
 const https = require('https');
 
 // ── Canonical gate list (inlined — no shared package dependency) ──────────────
+// Changelog: 2026-06-23 — 'Spec file approved' renamed to 'Spec strategy approved' (Tariq Khan).
+//            GATE_PHASES corrected to CASDM alignment. GATE_PHASE_NAMES added.
 const MACRO_GATES = [
   'Discovery outputs validated',
   'Preliminary SRS validated',
   'SRS approved',
   'Design docs approved',
   'Implementation plan approved',
-  'Spec file approved',
+  'Spec strategy approved',
   'Code approved',
   'UAT report approved',
   'Runbooks approved',
@@ -28,6 +30,33 @@ const MACRO_GATE_ALIASES = {
   'solution architecture approved': 'Design docs approved',
   'sprint plan approved': 'Implementation plan approved',
   'documentation approved': 'Runbooks approved',
+  'spec file approved': 'Spec strategy approved',
+};
+
+const GATE_PHASES = {
+  'Discovery outputs validated':    'Phase 0',
+  'Preliminary SRS validated':      'Phase 0',
+  'SRS approved':                   'Phase 1',
+  'Design docs approved':           'Phase 2',
+  'Implementation plan approved':   'Phase 2',
+  'Spec strategy approved':         'Phase 3',
+  'Code approved':                  'Phase 3',
+  'UAT report approved':            'Phase 3',
+  'Runbooks approved':              'Phase 4',
+  'Project documentation approved': 'Phase 4',
+};
+
+const GATE_PHASE_NAMES = {
+  'Discovery outputs validated':    'Internal Preparation',
+  'Preliminary SRS validated':      'Internal Preparation',
+  'SRS approved':                   'Discover & Align',
+  'Design docs approved':           'Design & Review',
+  'Implementation plan approved':   'Design & Review',
+  'Spec strategy approved':         'Build & Implement',
+  'Code approved':                  'Build & Implement',
+  'UAT report approved':            'Build & Implement',
+  'Runbooks approved':              'Launch & Enable',
+  'Project documentation approved': 'Launch & Enable',
 };
 
 // ── Environment variables ─────────────────────────────────────────────────────
@@ -140,6 +169,8 @@ async function main() {
         update_text: line,
         type: 'macro',
         gate,
+        phase: GATE_PHASES[gate] || undefined,
+        phase_name: GATE_PHASE_NAMES[gate] || undefined,
         source_ref: SOURCE_REF,
         actor: ACTOR,
       });

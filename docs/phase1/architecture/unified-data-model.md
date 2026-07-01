@@ -4,6 +4,7 @@
 
 | Date | Version | Author | Change |
 |------|---------|--------|--------|
+| 2026-06-23 | v1.4 | AWS Architect | CR 2026-06-23: Replaced DynamoDB with RDS PostgreSQL. Removed pk/sk fields. Added phase_name column. Tariq Khan. |
 | 2026-06-11 | v1.3 | AWS Architect | CR 2026-06-11: Removed S3 Athena buckets. Data stores: DynamoDB + SSM only. |
 | 2026-06-11 | v1.2 | AWS Architect | Fixed DENY statement DynamoDB ARN: kiro-governance-events → kiro-governance-tracker (Security Gate 1.5 final pass) |
 | 2026-06-11 | v1.1 | AWS Architect | Security Gate 1.5 fixes: AWS-owned CMK rationale (MED-1), SSM KMS Decrypt scope (MED-2), IAM append-only DENY (LOW-4), S3 SSE-S3 rationale (LOW-5) |
@@ -17,99 +18,91 @@ The `kiro_governance` system uses two data stores:
 
 | Store | Service | Purpose | Owner Domain |
 |-------|---------|---------|--------------|
-| Governance Event Store | DynamoDB (`kiro-governance-tracker`) | Append-only audit log of macro/micro governance events per project | F-04 (Data & Persistence) |
-| Configuration Store | AWS SSM Parameter Store | Runtime config and secrets (webhook URLs, API key, table name) | F-01 (MCP Server Core) |
+| Governance Event Store | RDS PostgreSQL (`db.t3.micro`, database `kiro_governance`) | Append-only audit log of macro/micro governance events per project | F-04 (Data & Persistence) |
+| Configuration Store | AWS SSM Parameter Store | Runtime config and secrets (webhook URLs, API key, DB connection params) | F-01 (MCP Server Core) |
 
-No relational database. No cache layer. Single-table DynamoDB design.
+No DynamoDB. No cache layer. Single RDS PostgreSQL instance with IAM authentication.
 
 ---
 
-## 2. DynamoDB — `kiro-governance-tracker` Table
+## 2. RDS PostgreSQL — `governance_events` Table
 
-### 2.1 Table Configuration
+### 2.1 Instance Configuration
 
 | Property | Value |
 |----------|-------|
-| Table name | `kiro-governance-tracker` |
-| Billing mode | PAY_PER_REQUEST (on-demand) |
+| Engine | PostgreSQL 16 |
+| Instance class | `db.t3.micro` |
+| Storage | 20 GB gp2 |
+| Multi-AZ | No (single-AZ) |
+| Database name | `kiro_governance` |
+| DB user | `kiro_mcp` (IAM authenticated) |
 | Region | `us-east-1` |
-| Encryption | AWS-owned CMK (default) |
+| Encryption at rest | AWS-managed key (aws/rds) |
 | Deletion protection | Enabled |
-| Point-in-time recovery | Enabled |
-| TTL | None (append-only audit log) |
+| Backup retention | 7 days |
 
-> `Architect decision — not customer-specified:` AWS-owned CMK is acceptable for this POC (no PII/PHI, no compliance framework required). Upgrade to AWS Managed Key (aws/dynamodb) or customer-managed CMK if compliance requirements are added later.
+### 2.2 Schema DDL
 
-**IAM-Enforced Append-Only (Explicit DENY):**
+```sql
+CREATE TABLE governance_events (
+  id              BIGSERIAL PRIMARY KEY,
+  project_id      TEXT        NOT NULL,
+  update_text     TEXT        NOT NULL CHECK (char_length(update_text) <= 4096),
+  type            TEXT        NOT NULL CHECK (type IN ('macro', 'micro')),
+  flag_override   BOOLEAN,
+  gate            TEXT,
+  phase           TEXT,
+  phase_name      TEXT,
+  source_ref      TEXT        NOT NULL,
+  actor           TEXT        NOT NULL,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  idempotency_key TEXT        NOT NULL,
 
-```json
-{
-  "Effect": "Deny",
-  "Action": ["dynamodb:DeleteItem", "dynamodb:UpdateItem"],
-  "Resource": "arn:aws:dynamodb:<region>:<account>:table/kiro-governance-tracker"
-}
+  CONSTRAINT uq_idempotency UNIQUE (idempotency_key)
+);
+
+CREATE INDEX idx_project_created  ON governance_events (project_id, created_at DESC);
+CREATE INDEX idx_type_created     ON governance_events (type, created_at DESC);
+CREATE INDEX idx_gate_created     ON governance_events (gate, created_at DESC) WHERE gate IS NOT NULL;
 ```
 
-> `Architect decision — not customer-specified:` Explicit Deny on DeleteItem and UpdateItem enforces append-only at IAM level, making audit log immutability verifiable. DENY overrides any Allow, including from AWS-managed policies.
+### 2.3 Column Reference
 
-### 2.2 Key Schema
+| Column | Type | Required | Description | Populated By |
+|--------|------|----------|-------------|-------------|
+| `id` | BIGSERIAL | Yes (auto) | Auto-incrementing primary key | PostgreSQL |
+| `project_id` | TEXT | Yes | GitHub repository name | FR-02 (MCP write tool) |
+| `update_text` | TEXT | Yes | Human-readable governance event description (max 4096 chars) | FR-02, FR-04 (GitHub Actions) |
+| `type` | TEXT | Yes | Event classification: `macro` or `micro` | FR-03 (auto-classification) |
+| `flag_override` | BOOLEAN | No | `true` if `type` was manually set; NULL if auto-classified | FR-03 (manual override) |
+| `gate` | TEXT | No | Canonical macro gate name. Present for macro events, NULL for micro. | FR-02, FR-03 (auto-derived) |
+| `phase` | TEXT | No | Phase grouping (e.g., `"Phase 1"`) | FR-02 (caller-supplied) |
+| `phase_name` | TEXT | No | Human-readable phase name (e.g., `"Internal Preparation"`) | FR-02 (caller-supplied) |
+| `source_ref` | TEXT | Yes | Provenance — commit SHA or file line reference | FR-02 |
+| `actor` | TEXT | Yes | Who emitted/approved (agent name or human name) | FR-02 |
+| `created_at` | TIMESTAMPTZ | Yes | Record creation timestamp (server-generated) | PostgreSQL `DEFAULT now()` |
+| `idempotency_key` | TEXT | Yes | Dedup key: `<project_id>#<gate>#<YYYY-MM-DD>` for macro; `<project_id>#micro#<ULID>` for micro | FR-09 (computed) |
 
-| Key | Attribute | Type | Format | Example |
-|-----|-----------|------|--------|---------|
-| Partition Key (PK) | `pk` | String | `PROJECT#<project_id>` | `PROJECT#rainn` |
-| Sort Key (SK) | `sk` | String | `UPDATE#<ISO-8601>#<ULID>` or `DEDUP#<idempotency_key>` | `UPDATE#2026-06-10T19:55:00.000Z#01J5K3M2N4P5Q6R7S8T9` |
+### 2.4 Indexes
 
-### 2.3 Full Attribute Table
-
-| Attribute | DynamoDB Type | Required | Description | Example | Populated By |
-|-----------|--------------|----------|-------------|---------|-------------|
-| `pk` | S (String) | Yes | Partition key — `PROJECT#<github_repo_name>` | `PROJECT#rainn` | FR-02 (MCP write tool) |
-| `sk` | S (String) | Yes | Sort key — event: `UPDATE#<ISO>#<ULID>`, dedup: `DEDUP#<key>` | `UPDATE#2026-06-11T10:30:00.000Z#01J5K3M2N4P5Q6R7S8T9` | FR-02 |
-| `update_text` | S (String) | Yes | Human-readable governance event description (max 4096 chars) | `"SRS approved by human"` | FR-02, FR-04 (GitHub Actions) |
-| `type` | S (String) | Yes | Event classification: `macro` \| `micro` | `"macro"` | FR-03 (auto-classification) |
-| `flag_override` | BOOL | No | `true` if `type` was manually set; absent if auto-classified | `true` | FR-03 (manual override) |
-| `gate` | S (String) | No | Canonical macro gate name. Present for macro events, absent for micro. | `"SRS approved"` | FR-02, FR-03 (auto-derived) |
-| `phase` | S (String) | No | Phase grouping for dashboard | `"Phase 1"` | FR-02 (caller-supplied) |
-| `source_ref` | S (String) | Yes | Provenance — commit SHA or file line reference | `"abc123"` / `"project-progress.md#L42"` | FR-02 |
-| `actor` | S (String) | Yes | Who emitted/approved — agent name or human name | `"aws-architect"` / `"tariq.khan"` | FR-02 |
-| `created_at` | S (String) | Yes | ISO-8601 creation timestamp | `"2026-06-11T10:30:00.000Z"` | FR-02 (server-generated) |
-| `idempotency_key` | S (String) | Yes | Dedup key for FR-09 | `"rainn#SRS approved#2026-06-11"` | FR-09 (computed) |
-
-### 2.4 Global Secondary Indexes
-
-#### GSI-1: `gsi-type-created`
-
-| Property | Value |
-|----------|-------|
-| Partition Key | `type` (String) — `"macro"` or `"micro"` |
-| Sort Key | `created_at` (String) — ISO-8601 |
-| Projection | ALL |
-| Purpose | Cross-project queries by event type (FR-08 rollup) |
-| Used By | External consumers querying all macro events across projects |
-
-#### GSI-2: `gsi-gate-created`
-
-| Property | Value |
-|----------|-------|
-| Partition Key | `gate` (String) — canonical gate name |
-| Sort Key | `created_at` (String) — ISO-8601 |
-| Projection | ALL |
-| Purpose | Cross-project queries by gate (FR-08 filter by gate) |
-| Used By | External consumers querying events by specific gate |
-
-> Note: Micro events (where `gate` is absent) are excluded from `gsi-gate-created`. DEDUP sentinel records (where `gate` is absent) are also excluded. This is intentional.
+| Index | Columns | Condition | Purpose |
+|-------|---------|-----------|---------|
+| `idx_project_created` | `(project_id, created_at DESC)` | — | Per-project timeline queries |
+| `idx_type_created` | `(type, created_at DESC)` | — | Cross-project queries by event type |
+| `idx_gate_created` | `(gate, created_at DESC)` | `WHERE gate IS NOT NULL` | Cross-project queries by gate (excludes micro events) |
+| `uq_idempotency` | `(idempotency_key)` | — | Deduplication (UNIQUE constraint) |
 
 ### 2.5 Access Patterns
 
-| # | Pattern | Operation | Key Condition | Filter | Used By |
-|---|---------|-----------|---------------|--------|---------|
-| 1 | Write governance event | PutItem | `pk`=`PROJECT#<id>`, `sk`=`UPDATE#<ts>#<ulid>` | — | FR-02 (MCP write tool) |
-| 2 | All events for a project (timeline) | Query (base table) | `pk`=`PROJECT#<id>` | — | FR-08 (per-project timeline) |
-| 3 | All macro events across projects | Query (`gsi-type-created`) | `type`=`"macro"` | — | FR-08 (cross-project rollup) |
-| 4 | Events by gate across projects | Query (`gsi-gate-created`) | `gate`=`"<gate_name>"` | — | FR-08 (filter by gate) |
-| 5 | Deduplication sentinel write | Conditional PutItem | `pk`=`PROJECT#<id>`, `sk`=`DEDUP#<key>`, condition `attribute_not_exists(pk)` | — | FR-09 (idempotency) |
-| 6 | Project events filtered by type | Query (base table) | `pk`=`PROJECT#<id>` | `type`=`"macro"` or `"micro"` | FR-08 (per-project + type filter) |
-| 7 | Project events in time range | Query (base table) | `pk`=`PROJECT#<id>`, `sk` BETWEEN `UPDATE#<start>` AND `UPDATE#<end>` | — | FR-08 (date range) |
+| # | Pattern | SQL | Used By |
+|---|---------|-----|---------|
+| 1 | Write governance event (with dedup) | `INSERT ... ON CONFLICT (idempotency_key) DO NOTHING` | FR-02 (MCP write tool) |
+| 2 | All events for a project (timeline) | `SELECT ... WHERE project_id = $1 ORDER BY created_at DESC` | FR-08 |
+| 3 | All macro events across projects | `SELECT ... WHERE type = 'macro' ORDER BY created_at DESC` | FR-08 |
+| 4 | Events by gate across projects | `SELECT ... WHERE gate = $1 ORDER BY created_at DESC` | FR-08 |
+| 5 | Project events filtered by type | `SELECT ... WHERE project_id = $1 AND type = $2 ORDER BY created_at DESC` | FR-08 |
+| 6 | Project events in time range | `SELECT ... WHERE project_id = $1 AND created_at BETWEEN $2 AND $3 ORDER BY created_at DESC` | FR-08 |
 
 ### 2.6 Canonical TypeScript Type — `GovernanceEventRecord`
 
@@ -119,24 +112,26 @@ This is the **single source of truth**. F-01 and F-04 must import from this defi
 
 ```typescript
 /**
- * DynamoDB record shape for kiro-governance-tracker table.
- * Canonical definition — unified data model v1.0.
+ * PostgreSQL record shape for governance_events table.
+ * Canonical definition — unified data model v1.4.
  */
 export interface GovernanceEventRecord {
-  /** Partition key: PROJECT#<project_id> */
-  pk: string;
-  /** Sort key: UPDATE#<ISO-timestamp>#<ULID> or DEDUP#<idempotency_key> */
-  sk: string;
+  /** Auto-incrementing primary key (populated by Postgres) */
+  id?: number;
+  /** GitHub repository name */
+  project_id: string;
   /** Human-readable event description (max 4096 chars) */
   update_text: string;
   /** Event classification */
   type: 'macro' | 'micro';
-  /** True if type was manually overridden; undefined if auto-classified */
+  /** True if type was manually overridden; null/undefined if auto-classified */
   flag_override?: boolean;
   /** Canonical macro gate name. Present for macro events, absent for micro. */
   gate?: string;
   /** Phase grouping (e.g., "Phase 1") */
   phase?: string;
+  /** Human-readable phase name (e.g., "Internal Preparation") */
+  phase_name?: string;
   /** Provenance — commit SHA or file line reference */
   source_ref: string;
   /** Who emitted/approved (agent name or human name) */
@@ -154,7 +149,7 @@ export const MACRO_GATES = [
   'SRS approved',
   'Design docs approved',
   'Implementation plan approved',
-  'Spec file approved',
+  'Spec strategy approved',
   'Code approved',
   'UAT report approved',
   'Runbooks approved',
@@ -164,17 +159,6 @@ export const MACRO_GATES = [
 export type MacroGate = typeof MACRO_GATES[number];
 ```
 
-### 2.7 Dedup Sentinel Record Shape
-
-DEDUP records share the same table but are **not** governance events — they are control records.
-
-| Attribute | Value | Notes |
-|-----------|-------|-------|
-| `pk` | `PROJECT#<project_id>` | Same partition as events |
-| `sk` | `DEDUP#<idempotency_key>` | Prefixed to separate from UPDATE records |
-| `created_at` | ISO-8601 | When first trigger wrote the sentinel |
-| `idempotency_key` | e.g. `rainn#SRS approved#2026-06-11` | Redundant for query convenience |
-
 ---
 
 ## 3. SSM Parameter Store
@@ -183,7 +167,10 @@ DEDUP records share the same table but are **not** governance events — they ar
 |------|------|-------------|-------------|---------------|
 | `/kiro-governance/slack/webhooks/{project_id}` | SecureString | F-01 (MCP Server) | Slack incoming webhook URL per project | `https://hooks.slack.com/services/T.../B.../xxx` |
 | `/kiro-governance/config/mcp-api-key` | SecureString | F-01 (MCP Server) | Shared API key for GitHub Actions → MCP auth | `sk-gov-xxxxxxxxxxxx` |
-| `/kiro-governance/config/table-name` | String | F-04 (Data) | DynamoDB table name | `kiro-governance-tracker` |
+| `/kiro-governance/config/db-endpoint` | String | F-04 (Data) | RDS instance endpoint | `kiro-gov.xxxx.us-east-1.rds.amazonaws.com` |
+| `/kiro-governance/config/db-port` | String | F-04 (Data) | PostgreSQL port | `5432` |
+| `/kiro-governance/config/db-name` | String | F-04 (Data) | Database name | `kiro_governance` |
+| `/kiro-governance/config/db-user` | String | F-04 (Data) | IAM-authenticated DB user | `kiro_mcp` |
 | `/kiro-governance/config/region` | String | F-04 (Data) | AWS region for SDK clients | `us-east-1` |
 
 **Naming convention:** `/kiro-governance/{category}/{key}`
@@ -202,23 +189,21 @@ DEDUP records share the same table but are **not** governance events — they ar
 }
 ```
 
-> `Architect decision — not customer-specified:` kms:Decrypt scoped to aws/ssm alias (the AWS-managed key used by SSM Parameter Store SecureString parameters). Replace with customer-managed CMK ARN if using a custom key.
-
 ---
 
 ## 4. PII & Sensitive Data Inventory
 
 | Field | Contains PII? | Contains Secrets? | Sensitivity | Notes |
 |-------|--------------|-------------------|-------------|-------|
-| `pk` | No | No | Low | Project identifier (GitHub repo name) |
-| `sk` | No | No | Low | Timestamp + ULID or dedup key |
-| `update_text` | **Possible** | No | Low–Medium | Free-text from `project-progress.md`. May contain project names, feature names, internal terminology. No customer PII. |
+| `project_id` | No | No | Low | GitHub repo name |
+| `update_text` | **Possible** | No | Low–Medium | Free-text. May contain project names, feature names. No customer PII. |
 | `type` | No | No | Low | Enum: `macro`/`micro` |
 | `flag_override` | No | No | Low | Boolean |
 | `gate` | No | No | Low | Canonical gate name |
 | `phase` | No | No | Low | Phase label |
+| `phase_name` | No | No | Low | Phase name |
 | `source_ref` | No | No | Low | Commit SHA / file reference |
-| `actor` | **Possible** | No | Low–Medium | May contain human names/usernames (e.g., `tariq.khan`) or agent names (e.g., `aws-architect`). Internal team identifiers only — no external customer PII. |
+| `actor` | **Possible** | No | Low–Medium | May contain internal team member names/usernames. No external customer PII. |
 | `created_at` | No | No | Low | Timestamp |
 | `idempotency_key` | No | No | Low | Composite of project + gate + date |
 
@@ -226,14 +211,12 @@ DEDUP records share the same table but are **not** governance events — they ar
 
 | Category | Assessment |
 |----------|-----------|
-| PII | Minimal — `actor` may contain internal team member names/usernames. No customer/end-user PII. |
+| PII | Minimal — `actor` may contain internal team member names. No customer/end-user PII. |
 | PHI | None |
-| Secrets | None stored in DynamoDB. Secrets live in SSM SecureString only. |
+| Secrets | None stored in RDS. Secrets live in SSM SecureString only. DB auth via IAM token. |
 | Compliance framework | None required — internal developer tooling POC |
 | Data residency | `us-east-1` only. No cross-region replication. |
-| Encryption at rest | AWS-owned CMK (DynamoDB default). Acceptable for non-PII/non-PHI internal data. |
-
-> `Architect decision:` No compliance framework (HIPAA, PCI-DSS, GDPR, SOC2) applies to this system. It is internal tooling tracking agent-generated artifact governance. No external user data is stored.
+| Encryption at rest | AWS-managed key (aws/rds). Acceptable for non-PII/non-PHI internal data. |
 
 ---
 
@@ -241,7 +224,7 @@ DEDUP records share the same table but are **not** governance events — they ar
 
 | Store | Retention Policy | Mechanism | Justification |
 |-------|-----------------|-----------|---------------|
-| DynamoDB (`kiro-governance-tracker`) | **Indefinite** — no TTL, no expiry | Append-only writes; deletion protection enabled; PITR enabled | `Architect decision:` This table is an audit log. Governance events must be retained for historical reporting and traceability. At POC volume (<100 records/month), storage cost is negligible (~$0.00025/month per 1000 items). |
+| RDS PostgreSQL (`governance_events`) | **Indefinite** — no row expiry | Append-only writes; deletion protection enabled; 7-day backup retention | Governance events are an audit log. At POC volume (<1000 rows/month), storage is negligible. |
 | SSM Parameter Store | **Indefinite** | Manual management | Config/secrets persist until explicitly rotated or deleted by admin. |
 
 ---
@@ -250,51 +233,29 @@ DEDUP records share the same table but are **not** governance events — they ar
 
 ### Field Names
 
-| Field | SRS §7 | F-04 §2.3 | F-01 §10 | Status |
-|-------|--------|-----------|----------|--------|
-| `pk` | `PK` (uppercase) | `pk` (lowercase) | `pk` | ⚠️ SRS uses uppercase `PK` as a label; actual DynamoDB attribute is lowercase `pk`. No functional issue — SRS §7 is a reference table, not code. |
-| `sk` | `SK` (uppercase) | `sk` | `sk` | ⚠️ Same as above — cosmetic only. |
+| Field | SRS §7 | F-04 §3 | This doc §2.3 | Status |
+|-------|--------|---------|---------------|--------|
+| `project_id` | `project_id` | `project_id` | `project_id` | ✅ Consistent |
 | `update_text` | `update_text` | `update_text` | `update_text` | ✅ Consistent |
 | `type` | `type` | `type` | `type` | ✅ Consistent |
 | `flag_override` | `flag_override` | `flag_override` | `flag_override` | ✅ Consistent |
 | `gate` | `gate` | `gate` | `gate` | ✅ Consistent |
 | `phase` | `phase` | `phase` | `phase` | ✅ Consistent |
+| `phase_name` | — | `phase_name` | `phase_name` | ✅ New field from CR 2026-06-23 |
 | `source_ref` | `source_ref` | `source_ref` | `source_ref` | ✅ Consistent |
 | `actor` | `actor` | `actor` | `actor` | ✅ Consistent |
 | `created_at` | `created_at` | `created_at` | `created_at` | ✅ Consistent |
-| `idempotency_key` | — (FR-09 text) | `idempotency_key` | `idempotency_key` | ✅ Consistent (not in SRS §7 table but defined in FR-09) |
-
-### GSI Names
-
-| GSI | F-04 §2.4 | Status |
-|-----|-----------|--------|
-| `gsi-type-created` | `gsi-type-created` | ✅ Consistent |
-| `gsi-gate-created` | `gsi-gate-created` | ✅ Consistent |
-
-### Table Name
-
-| Document | Value | Status |
-|----------|-------|--------|
-| SRS §6 | `kiro-governance-tracker` (implied via "Project Tracker DB") | ✅ |
-| F-04 §2.1 | `kiro-governance-tracker` | ✅ |
-| F-01 §12 (H2) | `kiro-governance-tracker` | ✅ |
+| `idempotency_key` | FR-09 | `idempotency_key` | `idempotency_key` | ✅ Consistent |
 
 ### TypeScript Type
 
 | Document | Type Name | Match |
 |----------|-----------|-------|
-| F-04 §2.5 | `GovernanceEventRecord` | ✅ Canonical definition |
-| F-01 §10 | Re-exports from `../shared/types/governance-event` | ✅ References F-04 |
+| F-04 §5.2 | `GovernanceEventRecord` (used in code) | ✅ |
 | This doc §2.6 | `GovernanceEventRecord` | ✅ Authoritative |
 
-### Discrepancies Found
-
-| # | Issue | Severity | Resolution |
-|---|-------|----------|-----------|
-| 1 | SRS §7 uses uppercase `PK`/`SK` as labels; F-04/F-01 use lowercase `pk`/`sk` as DynamoDB attribute names | Info | No action needed. SRS §7 is a conceptual reference table. The actual attribute names are lowercase as defined in F-04 and used in code. |
-
-**Result: All field names, types, GSI names, and table names are consistent across F-01 and F-04. No functional discrepancies.**
+**Result: All field names, types, and constraints are consistent across F-01 and F-04. No discrepancies.**
 
 ---
 
-*End of Unified Data Model v1.3*
+*End of Unified Data Model v1.4*

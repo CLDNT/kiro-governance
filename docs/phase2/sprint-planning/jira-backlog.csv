@@ -1,0 +1,435 @@
+"Story ID","Epic","Sprint","Story Title","Story Type","Story Points","Priority","Status","Dependencies","Spec Strategy","Acceptance Criteria","Notes"
+"DP-01","Infrastructure","Sprint 1","CDK Stack Scaffold (Cognito, API Gateway, CloudFront, S3, Lambda roles)","Infrastructure","8","High","Backlog","","auth-architecture.md §1, files-architecture.md §2, reporting-architecture.md §1","AC:
+- StatefulStack deploys: Cognito User Pool 'deliverpro-user-pool' with email username per auth-architecture §1
+- S3 bucket 'deliverpro-evidence-{accountId}' created with Block Public Access enabled per files-architecture §2
+- S3 CORS configured for CloudFront + localhost:5173 per files-architecture §2.1
+- StatelessStack deploys: API Gateway REST API with Cognito Authorizer per auth-architecture §3
+- CloudFront distribution created with S3 origin and custom error response (403/404 → /index.html 200) per auth-architecture §5
+- Lambda execution role with RDS, S3 (PutObject, GetObject), Secrets Manager, SSM read access
+- CDK synth succeeds with zero errors
+- cdk deploy completes successfully in us-east-1","Foundation stack for all Phase 2 resources. Must deploy first."
+"DP-02","Infrastructure","Sprint 1","V003 Database Migration Script","Backend","4","High","Backlog","DP-01","unified-data-model.md §4","AC:
+- V003__phase2_additions.sql applies cleanly to existing V002 schema
+- macro_checkpoints gains columns: meeting_date DATE, result_detail TEXT, reached_at TIMESTAMPTZ per §4.1
+- macro_checkpoints CHECK constraint updated to include 'checklist' type per §4.1
+- projects gains column: hours_consumed NUMERIC(8,2) DEFAULT 0 per §4.1
+- gate_evidence gains column: link_metadata JSONB per §4.1
+- casdm_config gains column: project_type TEXT NOT NULL DEFAULT 'default' per §4.1
+- New unique constraint: (phase, item_name, project_type, config_type) per §4.1
+- Tables created: weekly_status_logs, escalations, discovery_sessions, onboarding_checklist_items, analysis_prompts per §4.2
+- All indexes from §4 created (6 new indexes)
+- 3 QuickSight-ready views created: v_project_summary, v_gate_completion, v_timeline per §4.3
+- Migration is idempotent (IF NOT EXISTS where applicable)","Run against ceanalytics RDS instance."
+"DP-03","Shared","Sprint 1","Shared Middleware (JWT Validation, RBAC, Error Handler, Request Logger)","Backend","5","High","Backlog","DP-01","auth-architecture.md §2, §3, §4","AC:
+- JWT validation middleware verifies Cognito ID token signature using JWKS per auth-architecture §2
+- Extracts claims: sub, email, name, cognito:groups from token per auth-architecture §2
+- AuthContext type exported with fields: userId, email, name, role, groups per auth-architecture §3
+- Role check middleware validates user's group against handler's allowed roles per auth-architecture §3.1
+- Returns HTTP 401 with {code: 'UNAUTHORIZED', message: 'Missing or invalid token'} for invalid/expired JWT
+- Returns HTTP 403 with {code: 'FORBIDDEN', message: 'Insufficient permissions'} for role mismatch
+- Error handler middleware catches AppError and returns structured {code, message, statusCode} per SRS §6 NFR-P2-003
+- Request logger logs method, path, userId, duration in structured JSON to CloudWatch
+- All middleware exports from packages/shared/middleware/","Shared across all domain handlers."
+"DP-04","Auth","Sprint 1","Cognito User Pool + 5 Groups + App Client","Infrastructure","3","High","Backlog","DP-01","auth-architecture.md §1.1, §1.2, §1.3","AC:
+- Cognito User Pool 'deliverpro-user-pool' created in us-east-1 per auth-architecture §1
+- Password policy: min 8 chars, uppercase + lowercase + number + symbol per §1
+- Self-registration disabled per §1
+- 5 groups created: admin, leadership, pm, sa, engineer per §1.2
+- App client 'deliverpro-spa-client' created with no client secret per §1.3
+- OAuth flow: Authorization Code with PKCE per §1.3
+- Callback URLs: https://{cloudfront-domain}/callback, http://localhost:5173/callback per §1.3
+- Token validity: Access 1hr, ID 1hr, Refresh 30 days per §1.3
+- Scopes: openid, email, profile per §1.3
+- Cognito domain prefix 'deliverpro-auth' configured per §1.4","Admin creates users manually. No self-signup."
+"DP-05","Projects","Sprint 2","Project CRUD Handlers (list, get, create, update)","Backend","5","High","Backlog","DP-02,DP-03","projects-architecture.md §2.1, §2.2, §2.3, §2.4","AC:
+- GET /api/projects returns ProjectListResponse with projects[], next_cursor, total_count per §2.1
+- Default filter excludes status='Closed' and 'TEMPLATE' when no status param per §2.1
+- Supports query params: status, phase, pm, sa, type, search (ILIKE on title/jira_key), limit (max 100), cursor per §2.1
+- current_phase computed at query time per projects-architecture §4 (highest phase with all mandatory checkpoints reached)
+- burn_rate_pct computed as (hours_consumed/sow_hours)*100, null if sow_hours is 0 or NULL per §2.1
+- GET /api/projects/{projectId} returns full ProjectDetail per §2.2
+- Returns 404 {code: 'PROJECT_NOT_FOUND'} for unknown projectId per §2.2
+- POST /api/projects creates project with Zod-validated body per §2.3
+- Required fields: title, project_type; optional: sow_hours, project_manager, solution_architect, etc per §2.3
+- Returns 201 with created project per §2.3
+- PATCH /api/projects/{projectId} updates mutable fields per §2.4
+- Auth: all handlers require pm, sa, engineer, leadership, or admin role per §2.1","Core project CRUD. Phase computation is query-time join."
+"DP-06","Projects","Sprint 2","Jira One-Time Import Lambda","Backend","4","High","Backlog","DP-02,DP-03,DP-05","projects-architecture.md §5.1","AC:
+- POST /api/projects/import-jira triggers one-time Jira CST import per §5.1
+- Auth: admin role only per §5.1
+- Calls Jira Cloud REST API to fetch all issues from CST board
+- Maps Jira fields to projects table: jira_key, title, description, status, project_manager, solution_architect, account_executive, engineers_assigned, planned_kickoff_date, expected_completion_date, sow_hours, project_type per §5.1
+- Jira API token read from Secrets Manager per SRS §8.2
+- Import is idempotent: SSM parameter '/deliverpro/config/jira-import-completed' set to 'true' after first run per §5.1
+- Subsequent attempts return HTTP 409 {code: 'IMPORT_ALREADY_COMPLETE', message: 'Jira import has already been executed'} per FR-P2-009
+- Per-issue failures are logged and skipped; response includes success_count and error_count per §5.1
+- Returns 200 with {imported: number, errors: number, status: 'completed'}","One-time import. App replaces Jira going forward."
+"DP-07","Projects","Sprint 2","CASDM Template Seeding on Project Create","Backend","4","High","Backlog","DP-02,DP-05","projects-architecture.md §5.2, §5.3","AC:
+- On POST /api/projects (project creation), system seeds micro_artifacts from casdm_config where config_type='micro_artifact' AND project_type matches per §5.2
+- Seeds macro_checkpoints from casdm_config where config_type='macro_checkpoint' AND project_type matches per §5.2
+- Seeds 9 onboarding_checklist_items per FR-P2-019 AC (Set up Slack/Teams, Set up Clockify, Assign resources, Complete SOW handoff, 5 customer intro emails) per §5.3
+- If project_type has no config rows, falls back to project_type='default' per §5.2
+- Seeding is transactional — all-or-nothing per §5.2
+- Template project (jira_key='__template__') is never returned in list queries per §2.1","Seeding runs inside the create-project transaction."
+"DP-08","Projects","Sprint 2","Onboarding Checklist CRUD","Backend","4","High","Backlog","DP-02,DP-03,DP-07","projects-architecture.md §3.3","AC:
+- GET /api/projects/{projectId}/checklist returns all onboarding_checklist_items for the project per §3.3
+- Response includes items[], progress: {completed: number, total: number} per §3.3
+- PATCH /api/projects/{projectId}/checklist/{itemId} toggles completed field per §3.3
+- When completed=true: sets completed_by to current user email, completed_at to now() per §3.3
+- When completed=false: clears completed_by and completed_at per §3.3
+- Auth: pm, sa, leadership, admin roles per §3.3
+- Returns 404 {code: 'CHECKLIST_ITEM_NOT_FOUND'} if itemId invalid per §3.3
+- When all 9 items completed, the checklist-type macro_checkpoint for onboarding gets reached_at set per gates-architecture §4","9 items seeded on project creation."
+"DP-09","Projects","Sprint 2","Resource Budget Update Handler","Backend","3","High","Backlog","DP-02,DP-03,DP-05","projects-architecture.md §3.2","AC:
+- PATCH /api/projects/{projectId}/hours accepts {hours_consumed: number} per §3.2
+- Validates hours_consumed >= 0 via Zod per §3.2
+- Updates projects.hours_consumed for the given projectId per §3.2
+- Auth: pm, leadership, admin roles per §3.2
+- Returns 200 with updated {hours_consumed, sow_hours, burn_rate_pct} per §3.2
+- burn_rate_pct = (hours_consumed/sow_hours)*100; null if sow_hours is 0 or NULL per §3.2
+- Returns 404 {code: 'PROJECT_NOT_FOUND'} if projectId invalid per §3.2","PM manually updates consumed hours."
+"DP-10","Gates","Sprint 3","Gate Status View Lambda","Backend","5","High","Backlog","DP-02,DP-03","gates-architecture.md §2.1, §5.3, §5.4","AC:
+- GET /api/projects/{projectId}/gates returns GateStatusResponse per §2.1
+- Response contains phases[]: each with phase, phase_name, micro_artifacts[], macro_checkpoints[], phase_complete boolean per §2.1
+- micro_artifacts include: artifact_name, status, completed_at, completed_by per §2.1
+- macro_checkpoints include: checkpoint_name, checkpoint_type, occurred, reviewed_by, meeting_date, reached_at, result_detail, evidence_count per §2.1
+- Phase 1 governance_events integrated: reads governance_events table where project_id matches per §5.4
+- Governance events interleaved chronologically with checkpoint data per §5.4
+- phase_complete = true when all mandatory macro_checkpoints for that phase have reached_at IS NOT NULL per §2.1
+- Auto-reconciliation: if governance_events contains a macro gate approval matching a checkpoint, that checkpoint shows reached_at from the event per §5.3
+- Returns 404 {code: 'PROJECT_NOT_FOUND'} if projectId invalid per §2.1
+- Auth: all authenticated roles per §2.1","Core governance view. Joins multiple tables."
+"DP-11","Gates","Sprint 3","Checkpoint Completion Lambda (4 types)","Backend","4","High","Backlog","DP-02,DP-03","gates-architecture.md §2.2, §4","AC:
+- PATCH /api/projects/{projectId}/checkpoints/{checkpointId} completes a checkpoint per §2.2
+- human_review type: accepts {reviewed_by: string}, sets reviewed_by, reviewed_at=now(), reached_at=now() per §4
+- meeting type: accepts {occurred: boolean, meeting_date?: string, meeting_link?: string, result_detail?: string}, sets fields + reached_at=now() per §4
+- transcript_analysis type: same as meeting (manual completion) per §4; analysis result set separately via FR-P2-005
+- checklist type: completion determined by all child items being checked (auto-computed), not manually set per §4
+- A checkpoint cannot be un-completed once reached_at is set (append-only) per FR-P2-008
+- Returns 409 {code: 'CHECKPOINT_ALREADY_COMPLETE'} if reached_at already set per §4
+- Returns 404 {code: 'CHECKPOINT_NOT_FOUND'} if checkpointId invalid per §2.2
+- Auth: pm, sa, leadership, admin per §2.2","4 checkpoint types with different completion logic."
+"DP-12","Gates","Sprint 3","Evidence Attachment Lambda","Backend","3","High","Backlog","DP-02,DP-03","gates-architecture.md §2.3, §6","AC:
+- POST /api/projects/{projectId}/checkpoints/{checkpointId}/evidence attaches evidence per §2.3
+- Accepts body: {evidence_type: 'meeting_link'|'file_upload'|'url', value: string, label?: string} per §2.3
+- Creates gate_evidence row with uploaded_by=current user, created_at=now() per §2.3
+- For evidence_type='meeting_link': validates URL matches https://app.avoma.com/* pattern per §6.1
+- For evidence_type='file_upload': value must be a valid S3 key (validated format, not existence) per §6.3
+- Multiple evidence items can be attached to one checkpoint per FR-P2-003
+- GET /api/projects/{projectId}/checkpoints/{checkpointId}/evidence lists all evidence per §2.3
+- Returns 404 if checkpoint not found per §2.3
+- Auth: pm, sa, leadership, admin per §2.3","Evidence links checkpoints to files/links."
+"DP-13","Files","Sprint 3","Files Domain — Presigned URL Lambdas (upload + download)","Backend","4","High","Backlog","DP-01,DP-03","files-architecture.md §4.1, §4.2, §7","AC:
+- POST /api/files/upload-url returns {uploadUrl, s3Key, expiresIn: 300} per §4.1
+- Accepts body: {projectId, phase, checkpointName, fileName, contentType} per §4.1
+- Validates contentType against allowed MIME types: application/pdf, application/vnd.openxmlformats-officedocument.*, image/png, image/jpeg, text/plain, text/markdown per §4.1
+- Validates fileName length <= 255 chars per §4.1
+- Returns 400 {code: 'INVALID_CONTENT_TYPE'} for unsupported MIME types per §4.1
+- S3 key format: evidence/{projectId}/{phase}/{checkpointName}/{ulid}_{fileName} per §4.1
+- POST /api/files/download-url returns {downloadUrl, expiresIn: 300} per §4.2
+- Accepts body: {s3Key} per §4.2
+- Validates user has access to the project (project-membership check) per §4.2, §7.2
+- Returns 403 {code: 'FORBIDDEN'} if user has no access to project per §4.2
+- Auth: all authenticated roles for upload; all authenticated roles for download per §4.1, §4.2","Stateless domain — no DB writes. S3 presigned URLs."
+"DP-14","Meetings","Sprint 3","Weekly Status Call Log Handlers (create + list)","Backend","4","High","Backlog","DP-02,DP-03","meetings-architecture.md §2.1, §2.2","AC:
+- POST /api/projects/{projectId}/status-logs creates a status log entry per §2.1
+- Accepts body: {log_date: string, meeting_link?: string, topics_covered: string, demo_items?: string, blockers?: string} per §2.1
+- Validates log_date is not in the future; returns 400 {code: 'VALIDATION_ERROR', field: 'log_date', message: 'Date cannot be in the future'} per §2.1
+- Validates topics_covered max 4000 chars, demo_items max 2000 chars, blockers max 2000 chars per §2.1
+- Sets logged_by to current user email per §2.1
+- Returns 201 with created log entry per §2.1
+- GET /api/projects/{projectId}/status-logs returns all logs sorted by log_date DESC per §2.2
+- Supports pagination: limit (default 20, max 50), cursor per §2.2
+- Auth: pm, leadership, admin for create; all roles for list per §2.1, §2.2","Weekly cadence — PM logs each client call."
+"DP-15","Frontend","Sprint 4","React + Vite + Tailwind Scaffold + Cognito Auth Flow","Frontend","4","High","Backlog","DP-04","auth-architecture.md §1.3, §1.4, §5","AC:
+- Vite + React + TypeScript project initialized in frontend/ directory
+- Tailwind CSS configured with design tokens
+- Cognito Hosted UI integration: login redirects to Cognito, callback exchanges code for tokens per auth-architecture §1.3
+- PKCE flow implemented per §1.3
+- Access token stored in memory (not localStorage) per auth-architecture §4
+- Refresh token flow: silent refresh before expiry per §4
+- Protected route wrapper redirects unauthenticated users to /login
+- AuthContext provides: user (email, name, role, groups), isAuthenticated, logout()
+- Logout clears tokens and redirects to /login
+- Responsive layout shell with sidebar navigation","Foundation for all frontend pages."
+"DP-16","Frontend","Sprint 4","Project List Page + Search/Filter","Frontend","4","High","Backlog","DP-05,DP-15","projects-architecture.md §2.1, FR-P2-001, FR-P2-015","AC:
+- Page renders at /projects route
+- Calls GET /api/projects with current filters per projects-architecture §2.1
+- Displays project cards with: title, jira_key, current_phase badge, project_type, project_manager, solution_architect, status per FR-P2-001
+- Burn rate badge on each card: green (0-70%), yellow (71-90%), red (91%+); hidden if sow_hours null per FR-P2-028
+- Search bar filters by title or jira_key (debounced 300ms) per FR-P2-015
+- Dropdown filters: status, phase, project_manager, solution_architect, project_type per FR-P2-015
+- Filters combine with AND logic per FR-P2-015
+- Filter state persists in localStorage per FR-P2-015
+- Empty state: 'No projects match your filters' message per FR-P2-015
+- Click project card navigates to /projects/{projectId} per FR-P2-001
+- Pagination via cursor-based loading (Load More button)","Main entry page after login."
+"DP-17","Frontend","Sprint 4","Project Detail Page (Gate Status View)","Frontend","4","High","Backlog","DP-10,DP-15","gates-architecture.md §2.1, FR-P2-002, FR-P2-014","AC:
+- Page renders at /projects/{projectId} route
+- Calls GET /api/projects/{projectId}/gates per gates-architecture §2.1
+- Shows all 5 CASDM phases (0-4) with visual separation per FR-P2-002
+- Phase progression indicator: completed phases green, current phase blue, future phases grey per FR-P2-014
+- Each phase expandable/collapsible showing micro_artifacts and macro_checkpoints per FR-P2-002
+- Micro artifacts show: name, status badge (pending/in_progress/complete), completed_at per FR-P2-002
+- Macro checkpoints show: name, type badge, occurred status, reviewed_by, meeting_date, reached_at, evidence count badge per FR-P2-002
+- Completed items visually distinct (green checkmark + muted text) per FR-P2-002
+- Pending items show action buttons (Mark Complete, Add Evidence) per FR-P2-002
+- Loading state shown while fetching; 404 shows 'Project not found'","Core governance view page."
+"DP-18","Frontend","Sprint 4","Evidence Attachment UI + File Upload","Frontend","3","High","Backlog","DP-12,DP-13,DP-15","gates-architecture.md §2.3, §6, files-architecture.md §4.1, FR-P2-003, FR-P2-012","AC:
+- 'Add Evidence' button on each macro checkpoint opens modal per FR-P2-003
+- Modal offers 3 options: Paste Meeting Link, Upload File, Enter URL per FR-P2-003
+- Meeting Link: validates URL matches https://app.avoma.com/* before submit per gates-architecture §6.1
+- File Upload: file picker restricted to PDF, DOCX, XLSX, PNG, JPG, TXT, MD per FR-P2-012
+- Client-side validation: reject files > 25 MB with 'File size exceeds 25 MB limit' per FR-P2-012
+- Upload flow: calls POST /api/files/upload-url → uploads to S3 via presigned PUT → calls POST /evidence with s3Key per files-architecture §4.1
+- Upload progress indicator shown per FR-P2-012
+- URL: accepts any valid URL, saves with evidence_type='url' per FR-P2-003
+- Evidence list below checkpoint shows: label, type icon, value (clickable), uploaded_by, created_at per FR-P2-003
+- Download button calls POST /api/files/download-url and opens presigned GET URL per files-architecture §4.2","3-way evidence attachment with S3 direct upload."
+"DP-19","Frontend","Sprint 4","Onboarding Checklist UI","Frontend","2","High","Backlog","DP-08,DP-15","projects-architecture.md §3.3, FR-P2-019","AC:
+- Checklist section visible under Phase 0 on project detail page per FR-P2-019
+- Displays 9 items as checkboxes with item_name label per FR-P2-019
+- Progress indicator shows 'X of 9 complete' per FR-P2-019
+- Clicking checkbox calls PATCH /api/projects/{projectId}/checklist/{itemId} per projects-architecture §3.3
+- Checked items show completed_by and completed_at below the label per FR-P2-019
+- Unchecking clears completed_by and completed_at per FR-P2-019
+- Optimistic UI update with rollback on error","Phase 0 onboarding tracking."
+"DP-20","Frontend","Sprint 4","Weekly Status Log UI + Resource Budget Display","Frontend","3","High","Backlog","DP-09,DP-14,DP-15","meetings-architecture.md §2.1, §2.2, projects-architecture.md §3.2, FR-P2-020, FR-P2-022","AC:
+- Status Logs section on project detail page per FR-P2-020
+- 'Log Status Call' button opens form with: log_date (date picker), meeting_link, topics_covered (textarea), demo_items (textarea), blockers (textarea) per FR-P2-020
+- Form validates log_date not in future per FR-P2-020
+- On submit, calls POST /api/projects/{projectId}/status-logs per meetings-architecture §2.1
+- Chronological list shows all logs: date, meeting link (clickable), topics, demo items, blockers, logged_by per FR-P2-020
+- Resource Budget section in project detail header per FR-P2-022
+- Shows: SOW Hours, Hours Consumed, Burn Rate % with color indicator (green/yellow/red) per FR-P2-022
+- 'Update Hours' button opens inline editor for hours_consumed per FR-P2-022
+- If sow_hours null/0, shows 'SOW hours not set' per FR-P2-022","Combined UI for status logs and budget."
+"DP-21","Meetings","Sprint 5","Escalation Board Handlers (create + resolve + list)","Backend","4","High","Backlog","DP-02,DP-03","meetings-architecture.md §2.3, §2.4, §2.5","AC:
+- POST /api/projects/{projectId}/escalations creates an escalation per §2.3
+- Accepts body: {raised_date: string, description: string, severity: 'low'|'medium'|'high'|'critical', raised_by: string} per §2.3
+- Validates description max 2000 chars, raised_by max 200 chars per §2.3
+- Sets status='open', created_at=now() per §2.3
+- Returns 201 with created escalation per §2.3
+- PATCH /api/projects/{projectId}/escalations/{escalationId}/resolve resolves an escalation per §2.4
+- Accepts body: {resolved_date: string, resolution_notes: string} per §2.4
+- Sets status='resolved', resolved_date, resolution_notes per §2.4
+- Returns 409 {code: 'ALREADY_RESOLVED'} if status already 'resolved' per §2.4
+- GET /api/projects/{projectId}/escalations returns all escalations per §2.5
+- Supports filter: severity, status per §2.5
+- Sorted by raised_date DESC; open escalations first per §2.5
+- Auth: pm, leadership, admin for create/resolve; all roles for list per §2.3","Escalation lifecycle management."
+"DP-22","Meetings","Sprint 5","Discovery Sessions Handlers (create + list)","Backend","3","High","Backlog","DP-02,DP-03","meetings-architecture.md §2.6, §2.7","AC:
+- POST /api/projects/{projectId}/discovery-sessions creates a discovery session per §2.6
+- Accepts body: {session_date: string, meeting_link?: string, participants: string, notes?: string} per §2.6
+- session_number auto-assigned as MAX(session_number)+1 for project per §2.6
+- Validates participants max 1000 chars, notes max 4000 chars per §2.6
+- Returns 201 with created session including assigned session_number per §2.6
+- GET /api/projects/{projectId}/discovery-sessions returns all sessions sorted by session_number ASC per §2.7
+- Each session shows: 'Discovery Session [N]', session_date, meeting_link, participants, notes per §2.7
+- Auth: pm, sa, leadership, admin for create; all roles for list per §2.6, §2.7","Phase 1 discovery tracking. Auto-numbered."
+"DP-23","Gates","Sprint 5","Checkpoint Notes Lambda (add + list)","Backend","3","High","Backlog","DP-02,DP-03","gates-architecture.md §2.5, §2.6","AC:
+- POST /api/projects/{projectId}/checkpoints/{checkpointId}/notes adds a note per §2.5
+- Accepts body: {note_text: string} per §2.5
+- Validates note_text max 4000 chars; returns 400 {code: 'VALIDATION_ERROR', field: 'note_text', message: 'Note exceeds 4000 character limit'} if exceeded per FR-P2-017
+- Sets author=current user email, created_at=now() per §2.5
+- Notes are append-only — no edit or delete endpoints per FR-P2-017
+- Returns 201 with created note per §2.5
+- GET /api/projects/{projectId}/checkpoints/{checkpointId}/notes returns all notes sorted by created_at ASC per §2.6
+- Each note shows: note_text, author, created_at per §2.6
+- Auth: pm, sa, leadership, admin for create; all roles for list per §2.5","Append-only notes on any checkpoint."
+"DP-24","Gates","Sprint 5","Executive Check-in & Planning Checkpoint Handlers","Backend","4","High","Backlog","DP-02,DP-03,DP-11","gates-architecture.md §4, §7, FR-P2-024, FR-P2-026, FR-P2-027","AC:
+- Kickoff Prep Meeting checkpoint seeded in Phase 1 with checkpoint_type='meeting' per FR-P2-026
+- Executive Check-in Call 1 seeded in Phase 3 with checkpoint_type='meeting' per FR-P2-024
+- Executive Check-in Call 2 seeded in Phase 4 with checkpoint_type='meeting' per FR-P2-024
+- Account Planning Session seeded in Phase 4 with checkpoint_type='meeting' per FR-P2-027
+- All completed via PATCH /api/projects/{projectId}/checkpoints/{checkpointId} with meeting-type payload per §2.2
+- result_detail captured for Account Planning ('Revenue opportunities noted' text) per FR-P2-027
+- Verify all 4 are included in default CASDM template seed data in casdm_config per §7
+- Insert seed rows for these checkpoints in V003 or config seed script","These checkpoints use existing completion Lambda (DP-11). This story seeds them."
+"DP-25","Projects","Sprint 5","Project Closure Workflow Lambda","Backend","6","High","Backlog","DP-02,DP-03,DP-05,DP-11","projects-architecture.md §6, FR-P2-023","AC:
+- POST /api/projects/{projectId}/close initiates closure per §6
+- Validates all 4 Phase 4 closure checkpoints are complete per FR-P2-023:
+  1. 'Request Signoff from Business Ops' — occurred=true
+  2. 'Share Signoff with Customer' — occurred=true
+  3. 'Project Closure Meeting/Email' — occurred=true
+  4. 'Create Project Closure Deck' — has file_upload evidence attached
+- If any incomplete, returns 400 {code: 'CLOSURE_INCOMPLETE', message: 'Not all closure items are complete', missing: string[]} per §6
+- If all complete: sets projects.status='Closed' per FR-P2-023
+- Returns 200 {status: 'Closed', closed_at: timestamp}
+- POST /api/projects/{projectId}/reopen reverses closure (Leadership/Admin only) per FR-P2-023
+- Sets status back to 'Active' per §6
+- Auth: pm, leadership, admin for close; leadership, admin for reopen per §6","Phase 4 closure with 4 prerequisites."
+"DP-26","Frontend","Sprint 6","Escalation Board UI","Frontend","3","High","Backlog","DP-21,DP-15","meetings-architecture.md §2.3, §2.4, §2.5, FR-P2-021","AC:
+- Escalation section on project detail page per FR-P2-021
+- 'Log Escalation' button opens form: raised_date (date picker), description (textarea, max 2000), severity (dropdown: low/medium/high/critical), raised_by (text) per FR-P2-021
+- On submit calls POST /api/projects/{projectId}/escalations per meetings-architecture §2.3
+- Escalation list shows cards sorted by raised_date DESC per FR-P2-021
+- Open escalations visually highlighted (red border/badge) per FR-P2-021
+- Severity filter dropdown per FR-P2-021
+- 'Resolve' button on open escalations opens form: resolved_date, resolution_notes per FR-P2-021
+- On resolve calls PATCH /escalations/{id}/resolve per meetings-architecture §2.4
+- Resolved escalations show resolution notes and date","Escalation raise/resolve workflow."
+"DP-27","Frontend","Sprint 6","Discovery Sessions UI","Frontend","3","High","Backlog","DP-22,DP-15","meetings-architecture.md §2.6, §2.7, FR-P2-025","AC:
+- Discovery Sessions section under Phase 1 on project detail page per FR-P2-025
+- 'Log Discovery Session' button opens form: session_date (date picker), meeting_link (optional), participants (textarea), notes (textarea) per FR-P2-025
+- On submit calls POST /api/projects/{projectId}/discovery-sessions per meetings-architecture §2.6
+- Session number auto-displayed after creation per FR-P2-025
+- List shows all sessions in order: 'Discovery Session [N]', date, meeting link (clickable), participants, notes per FR-P2-025
+- No edit or delete — append-only list","Phase 1 discovery session tracking."
+"DP-28","Frontend","Sprint 6","Checkpoint Notes UI + Project Closure UI","Frontend","4","High","Backlog","DP-23,DP-25,DP-15","gates-architecture.md §2.5, §2.6, projects-architecture.md §6, FR-P2-017, FR-P2-023","AC:
+- 'Add Note' button on each macro checkpoint opens inline text area per FR-P2-017
+- Character count displayed; max 4000 chars enforced client-side per FR-P2-017
+- On submit calls POST /checkpoints/{id}/notes per gates-architecture §2.5
+- Notes list shows author and timestamp, sorted chronologically per FR-P2-017
+- Notes cannot be edited or deleted per FR-P2-017
+- Project Closure section visible on Phase 4 of project detail per FR-P2-023
+- Shows 4 closure items as checklist with completion status per FR-P2-023
+- When all 4 complete, 'Close Project' button appears per FR-P2-023
+- Confirmation dialog: 'All closure items complete. Close this project?' per FR-P2-023
+- On confirm calls POST /api/projects/{projectId}/close per projects-architecture §6
+- Closed projects show 'Closed' badge; Leadership sees 'Reopen' button per FR-P2-023","Combined: checkpoint notes + closure flow."
+"DP-29","Reporting","Sprint 6","Reporting Domain Handlers (summary + timeline)","Backend","4","High","Backlog","DP-02,DP-03,DP-10","reporting-architecture.md §2.1, §2.2","AC:
+- GET /api/reporting/summary returns ReportingSummaryResponse per §2.1
+- Includes: total_active_projects, projects_by_phase[], stalled_projects[], gate_completion_rates[] per §2.1
+- Stalled = projects with no checkpoint activity in 14+ days per §2.1
+- Auth: leadership, admin only per §2.1
+- GET /api/reporting/projects/{projectId}/timeline returns full timeline per §2.2
+- Timeline merges: governance_events + macro_checkpoints + gate_evidence chronologically per §2.2
+- Each event: event_id, event_type, event_timestamp, phase, title, actor, detail, source per §2.2
+- Auth: all authenticated roles per §2.2
+- Returns 404 if projectId not found per §2.2","Read-only reporting. Joins all tables."
+"DP-30","Frontend","Sprint 6","Leadership View UI","Frontend","3","Medium","Backlog","DP-29,DP-15","reporting-architecture.md §2.1, FR-P2-010","AC:
+- Leadership dashboard renders at /dashboard route (visible to leadership/admin only) per FR-P2-010
+- Shows total active projects count per reporting-architecture §2.1
+- Projects by phase: bar chart or count cards per reporting-architecture §2.1
+- Stalled projects section: list of projects with no activity in 14+ days per §2.1
+- Gate completion rates: table showing completion % per checkpoint type per §2.1
+- Click any project name navigates to /projects/{projectId} per FR-P2-010
+- Route protected: non-leadership/admin users redirected to /projects per FR-P2-010","Cross-project view for leadership."
+"DP-31","Frontend","Sprint 6","Micro Artifact Status UI + Phase Progression Visual","Frontend","3","Medium","Backlog","DP-10,DP-15","gates-architecture.md §2.1, §2.4, FR-P2-007, FR-P2-014","AC:
+- Micro artifacts displayed within each phase section on project detail per FR-P2-007
+- Each artifact shows: name, status badge (pending=grey, in_progress=blue, complete=green), completed_at date per FR-P2-007
+- Status update: PM/SA can click artifact → change status via PATCH /api/projects/{projectId}/artifacts/{artifactId} per gates-architecture §2.4
+- Status transitions: pending → in_progress → complete only (no backwards) per FR-P2-007
+- Phase progression bar at top of project detail: 5 circles connected by line per FR-P2-014
+- Completed phases: solid green circle per FR-P2-014
+- Current phase: blue outlined circle per FR-P2-014
+- Future phases: grey outlined circle per FR-P2-014
+- Hovering phase circle shows phase_name tooltip per FR-P2-014","Micro artifact management + visual progression."
+"DP-32","Config","Sprint 7","CASDM Config CRUD Handlers","Backend","5","High","Backlog","DP-02,DP-03","config-architecture.md §3.1, §3.2, §3.3, §3.4, §3.5, FR-P2-006, FR-P2-016","AC:
+- GET /api/admin/config?project_type={type} returns full CASDM template tree per config-architecture §3.1
+- Response: phases[] with nested items[] per §3.1
+- POST /api/admin/config/phases adds a new phase per §3.2
+- Accepts: {phase_name, phase_order, project_type} per §3.2
+- POST /api/admin/config/items adds a new gate/artifact to a phase per §3.3
+- Accepts: {phase, item_name, item_order, config_type, item_type, is_mandatory, project_type} per §3.3
+- PATCH /api/admin/config/items/{id} updates item_name, item_order, is_mandatory per §3.4
+- PATCH /api/admin/config/items/{id}/deactivate sets is_active=false per §3.5
+- All mutations set changed_by=current user, updated_at=now() per FR-P2-006
+- Changes only affect newly-created projects per FR-P2-006
+- Auth: leadership, admin only for all endpoints per FR-P2-016
+- Returns 403 for non-leadership/admin per FR-P2-016","Admin CRUD for methodology template."
+"DP-33","Config","Sprint 7","Analysis Prompts CRUD Handlers","Backend","3","High","Backlog","DP-02,DP-03","config-architecture.md §4, FR-P2-029","AC:
+- GET /api/admin/prompts returns all rows from analysis_prompts per config-architecture §4
+- Each prompt shows: checkpoint_name, prompt_text, updated_by, updated_at per FR-P2-029
+- PUT /api/admin/prompts/{checkpointName} creates or updates a prompt per §4
+- Accepts body: {prompt_text: string} per §4
+- Sets updated_by=current user, updated_at=now() per FR-P2-029
+- If no prompt exists for checkpoint, inserts new row per FR-P2-029
+- Prompt changes take effect immediately on next analysis run (no restart) per FR-P2-029
+- GET endpoint accessible by all roles (read-only view); PUT restricted to leadership/admin per FR-P2-029
+- No character limit on prompt_text but response includes character count per FR-P2-029","Admin-editable Bedrock prompts per checkpoint."
+"DP-34","Config","Sprint 7","Project Type Template Management","Backend","4","High","Backlog","DP-02,DP-03,DP-32","config-architecture.md §5, FR-P2-030","AC:
+- GET /api/admin/config/project-types returns distinct project_type values from casdm_config per §5
+- POST /api/admin/config/copy-template copies template from one project_type to another per §5
+- Accepts: {source_project_type, target_project_type} per §5
+- Copies all phase, micro_artifact, and macro_checkpoint rows from source to target per §5
+- Returns 409 {code: 'TEMPLATE_EXISTS'} if target already has config rows per §5
+- Default project types seeded: 'AppDev', 'AppMod', 'AIML', 'Other', 'default' per FR-P2-030
+- Project creation form shows project types from GET /api/admin/config/project-types per FR-P2-030
+- Compound unique constraint (phase, item_name, project_type, config_type) prevents duplicates per unified-data-model §4.1
+- Auth: leadership, admin only per FR-P2-030","Per-project-type CASDM templates."
+"DP-35","Infrastructure","Sprint 7","AgentCore Agent Setup (Bedrock)","Infrastructure","4","High","Backlog","DP-01","analysis-architecture.md §2, §11","AC:
+- Bedrock AgentCore agent created in us-east-1 per analysis-architecture §2.2
+- Agent name: 'deliverpro-transcript-analyzer' per §2.2
+- Foundation model: Claude (Haiku for cost efficiency) per §2.2
+- Agent instruction describes transcript analysis role per §2.2
+- IAM role for agent with bedrock:InvokeModel permission per §11
+- Lambda execution role granted bedrock:InvokeAgent scoped to specific agent ARN per §11
+- Secrets Manager entry for Avoma API credentials per SRS §8.1
+- Agent status verified: PREPARED and ready for invocation
+- SSM parameter '/deliverpro/config/agent-id' stores the agent ID for Lambda lookup","Bedrock agent provisioning for Iteration 3."
+"DP-36","Infrastructure","Sprint 7","CloudWatch Alarms + Budget Alerts","Infrastructure","4","Medium","Backlog","DP-01","cost-estimate.md §Cost Protection Controls, SRS §6 NFR-P2-002","AC:
+- AWS Budget alarm set at $30/month per cost-estimate.md
+- Lambda concurrent execution alarm at 10 per cost-estimate.md
+- API Gateway 5xx error rate alarm (threshold: 5 errors in 5 minutes)
+- Lambda error rate alarm per function (threshold: 3 errors in 5 minutes)
+- Lambda duration p99 alarm (threshold: 10 seconds)
+- RDS connection count alarm (threshold: 80% of max connections)
+- S3 bucket size alarm (threshold: 10 GB — cost awareness)
+- SNS topic 'deliverpro-alarms' for alarm notifications
+- All alarms configured with appropriate period and evaluation periods
+- CloudWatch dashboard 'DeliverPro-Operations' with key metrics","Operational monitoring and cost protection."
+"DP-37","Analysis","Sprint 8","Avoma Transcript Fetch Lambda","Backend","4","High","Backlog","DP-02,DP-03,DP-35","analysis-architecture.md §3, §4, FR-P2-013","AC:
+- POST /api/analysis/{projectId}/{checkpointId}/fetch-transcript per analysis-architecture §3
+- Reads meeting_link from macro_checkpoints for the checkpoint per §3
+- Calls Avoma REST API with meeting ID extracted from URL per §3
+- Avoma credentials read from Secrets Manager per §4
+- On success: stores transcript text in S3 at transcripts/{projectId}/{checkpointName}/{timestamp}.txt per §3
+- Updates macro_checkpoints.transcript_url with S3 key per §3
+- Returns 200 {transcript_url: string, char_count: number} per §3
+- On Avoma API failure: returns 502 {code: 'AVOMA_UNAVAILABLE', message: 'Failed to fetch transcript from Avoma'} per FR-P2-013
+- Returns 400 if checkpoint has no meeting_link per §3
+- Auth: pm, sa, leadership, admin per §3","Avoma API integration. Deferred to Iteration 3."
+"DP-38","Analysis","Sprint 8","AgentCore Transcript Analysis Lambda","Backend","5","High","Backlog","DP-02,DP-03,DP-35,DP-37","analysis-architecture.md §5, §6, §7, FR-P2-005","AC:
+- POST /api/analysis/{projectId}/{checkpointId}/analyze per analysis-architecture §5
+- Reads transcript from S3 (transcript_url on checkpoint) per §5
+- Reads prompt from analysis_prompts table for the checkpoint_name per §5; falls back to generic prompt if none per FR-P2-005
+- Invokes Bedrock AgentCore agent with {transcript + prompt} per §6
+- Parses structured response: {topics_covered: string[], topics_missing: string[], passed: boolean, confidence: number} per FR-P2-005
+- Stores result in macro_checkpoints.analysis_result (JSONB) per §7
+- Sets macro_checkpoints.analysis_run_at = now() per §7
+- Creates gate_evidence row with evidence_type='ai_analysis' and JSON result per §7
+- Writes result_detail TEXT summary per §7
+- Returns 200 with analysis result per §5
+- On AgentCore failure: returns 502 {code: 'AGENT_UNAVAILABLE', message: 'Failed to invoke analysis agent'} per FR-P2-005
+- Returns 400 if no transcript available per §5
+- Auth: pm, sa, leadership, admin per §5","Core AI analysis flow. AgentCore invocation."
+"DP-39","Analysis","Sprint 8","Evidence Link Metadata Extraction","Backend","3","Medium","Backlog","DP-02,DP-03,DP-12","files-architecture.md §6.5, FR-P2-031","AC:
+- When evidence is created with evidence_type='meeting_link' or 'url', asynchronous metadata extraction triggered per FR-P2-031
+- For Avoma URLs (https://app.avoma.com/*): attempt to extract title, date, duration from Avoma API per FR-P2-031
+- For Teams URLs (https://teams.microsoft.com/*): attempt to extract title and date from URL params per FR-P2-031
+- For SharePoint URLs (https://*.sharepoint.com/*): attempt to extract document title per FR-P2-031
+- Extracted metadata stored as JSONB in gate_evidence.link_metadata per unified-data-model §4.1
+- Schema: {title: string, date: string, duration_minutes: number | null} per FR-P2-031
+- If extraction fails (network error, unsupported format): link_metadata remains NULL — no error shown per FR-P2-031
+- Extraction is non-blocking: evidence record created immediately, metadata populated async per FR-P2-031
+- UI displays extracted metadata (title, date, duration) below evidence link when available per FR-P2-031","Best-effort metadata. Non-blocking."
+"DP-40","Testing","Sprint 8","E2E Integration Test Suite","Backend","5","High","Backlog","DP-05,DP-10,DP-13,DP-14,DP-21","All architecture docs","AC:
+- Test suite covers full project lifecycle: create → seed → complete checkpoints → attach evidence → close
+- Tests run against deployed API Gateway endpoint
+- Test: POST /api/projects creates project and seeds CASDM template (verify micro_artifacts + macro_checkpoints created)
+- Test: GET /api/projects/{id}/gates returns all phases with seeded items
+- Test: PATCH checkpoint completion (all 4 types) sets reached_at correctly
+- Test: POST evidence attachment creates gate_evidence row
+- Test: POST /api/files/upload-url returns valid presigned URL (verify S3 PUT succeeds)
+- Test: POST /api/projects/{id}/status-logs and GET retrieves it
+- Test: POST /api/projects/{id}/escalations and resolve flow
+- Test: GET /api/reporting/summary returns valid cross-project data
+- Test: Auth — unauthenticated requests return 401; wrong role returns 403
+- All tests pass with 0 failures
+- Test results documented in test-report.md","Full lifecycle integration validation."
+"DP-41","Operations","Sprint 8","Operational Runbooks + Config Admin UI","Full-stack","3","Medium","Backlog","DP-32,DP-33","config-architecture.md §3, §4, analysis-architecture.md §8","AC:
+- Runbook: How to add a new user to Cognito (step-by-step) per auth-architecture §1
+- Runbook: How to run V003 migration against RDS per unified-data-model §4
+- Runbook: How to trigger Jira import per projects-architecture §5.1
+- Runbook: How to create/update analysis prompts per config-architecture §4
+- Runbook: How to respond to CloudWatch alarms per DP-36
+- Runbook: How to add a new gate to CASDM template per config-architecture §3
+- Runbook: How to deploy frontend updates to CloudFront per auth-architecture §5
+- Admin Config UI page at /admin/config per FR-P2-016
+- Shows CASDM template tree with add/edit/reorder/deactivate buttons per FR-P2-006
+- Project type selector dropdown per FR-P2-030
+- Analysis prompts editor page at /admin/prompts per FR-P2-029
+- Auth: leadership, admin only per FR-P2-016
+- All runbooks stored in docs/phase2/runbooks/","Operational documentation + admin UI."

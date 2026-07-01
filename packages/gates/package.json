@@ -1,0 +1,25 @@
+{
+  "name": "@deliverpro/gates",
+  "version": "1.0.0",
+  "description": "Gates domain - gate status, checkpoint tracking, evidence management",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.600.0",
+    "@aws-sdk/util-dynamodb": "^3.600.0",
+    "zod": "^3.23.0"
+  },
+  "peerDependencies": {
+    "@kiro-governance/shared": "*"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.120",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

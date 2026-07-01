@@ -45,12 +45,12 @@ The human-approval gate is inserted into the **orchestrator agent** workflow at 
 
 | # | Gate | Phase | Validating Sub-Agent |
 |---|------|-------|---------------------|
-| 1 | Discovery outputs validated | 1 — Discover & Align | `product-analyst` |
-| 2 | Preliminary SRS validated | 1 — Discover & Align | `product-analyst` |
+| 1 | Discovery outputs validated | 0 — Internal Preparation | `product-analyst` |
+| 2 | Preliminary SRS validated | 0 — Internal Preparation | `product-analyst` |
 | 3 | SRS approved | 1 — Discover & Align | `product-analyst` |
 | 4 | Design docs approved | 2 — Design & Review | `aws-architect` |
 | 5 | Implementation plan approved | 2 — Design & Review | `plan-reviewer` |
-| 6 | Spec file approved | 3 — Build & Implement | `executioner` |
+| 6 | Spec strategy approved | 3 — Build & Implement | `executioner` |
 | 7 | Code approved | 3 — Build & Implement | `code-reviewer` |
 | 8 | UAT report approved | 3 — Build & Implement | `qa-agent` |
 | 9 | Runbooks approved | 4 — Launch & Enable | `aws-architect` |
@@ -357,7 +357,7 @@ These are the 10 gates that require human approval:
 3. SRS approved
 4. Design docs approved
 5. Implementation plan approved
-6. Spec file approved
+6. Spec strategy approved
 7. Code approved
 8. UAT report approved
 9. Runbooks approved
@@ -581,6 +581,7 @@ export interface McpServerConfig {
 /**
  * Canonical macro gates — must match F-01 packages/shared/constants/macro-gates.ts exactly.
  * Duplicated here for reference only; the MCP server owns the source of truth.
+ * Changelog: 2026-06-23 — 'Spec file approved' → 'Spec strategy approved'. CASDM phase alignment.
  */
 export const MACRO_GATES = [
   'Discovery outputs validated',
@@ -588,7 +589,7 @@ export const MACRO_GATES = [
   'SRS approved',
   'Design docs approved',
   'Implementation plan approved',
-  'Spec file approved',
+  'Spec strategy approved',
   'Code approved',
   'UAT report approved',
   'Runbooks approved',
@@ -597,18 +598,32 @@ export const MACRO_GATES = [
 
 export type MacroGate = typeof MACRO_GATES[number];
 
-/** Phase mapping for each gate */
+/** CASDM phase number for each gate. Source: Tariq Khan 2026-06-23. */
 export const GATE_PHASES: Record<MacroGate, string> = {
-  'Discovery outputs validated': 'Phase 1',
-  'Preliminary SRS validated': 'Phase 1',
-  'SRS approved': 'Phase 1',
-  'Design docs approved': 'Phase 2',
-  'Implementation plan approved': 'Phase 2',
-  'Spec file approved': 'Phase 3',
-  'Code approved': 'Phase 3',
-  'UAT report approved': 'Phase 3',
-  'Runbooks approved': 'Phase 4',
+  'Discovery outputs validated':    'Phase 0',
+  'Preliminary SRS validated':      'Phase 0',
+  'SRS approved':                   'Phase 1',
+  'Design docs approved':           'Phase 2',
+  'Implementation plan approved':   'Phase 2',
+  'Spec strategy approved':         'Phase 3',
+  'Code approved':                  'Phase 3',
+  'UAT report approved':            'Phase 3',
+  'Runbooks approved':              'Phase 4',
   'Project documentation approved': 'Phase 4',
+};
+
+/** CASDM phase name for each gate. Source: Tariq Khan 2026-06-23. */
+export const GATE_PHASE_NAMES: Record<MacroGate, string> = {
+  'Discovery outputs validated':    'Internal Preparation',
+  'Preliminary SRS validated':      'Internal Preparation',
+  'SRS approved':                   'Discover & Align',
+  'Design docs approved':           'Design & Review',
+  'Implementation plan approved':   'Design & Review',
+  'Spec strategy approved':         'Build & Implement',
+  'Code approved':                  'Build & Implement',
+  'UAT report approved':            'Build & Implement',
+  'Runbooks approved':              'Launch & Enable',
+  'Project documentation approved': 'Launch & Enable',
 };
 ```
 
