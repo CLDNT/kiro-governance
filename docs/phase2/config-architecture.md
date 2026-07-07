@@ -4,6 +4,7 @@
 
 | Date | Version | Author | Change |
 |------|---------|--------|--------|
+| 2026-07-02 | v1.2 | AWS Architect | GitHub↔Slack linkage CR: **no change to the config domain.** `casdm_config` and `analysis_prompts` are unaffected. Slack channel ids are non-secret fields on `projects` (managed in the `projects` domain, not config); the workspace Slack bot token is an SSM SecureString secret (not config-managed). Level-2 `micro_artifact_mapping` admin management is **DEFERRED** (not built) — when reactivated it becomes a config-domain surface gated on GitHub OIDC (CR-OIDC) + `event_code` (CR-14). See `unified-data-model.md` §4.4 and `projects-architecture.md` §12. |
 | 2026-06-30 | v1.1 | AWS Architect | Resolved PD-12: AppDev confirmed at launch; AppMod/AIML seeded without templates (admin adds). Resolved OQ-P2-006: V003 seeds default prompts; admin can overwrite; system default used if no custom prompt. Updated §3 and §5. |
 | 2026-06-30 | v1.0 | AWS Architect | Initial config domain architecture from SRS v1.3 (FR-P2-006, FR-P2-016, FR-P2-029, FR-P2-030), auth-architecture v1.0, projects-architecture v1.0 §5, V002 migration |
 

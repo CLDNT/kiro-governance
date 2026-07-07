@@ -9,5 +9,5 @@
     "file://docs/code-structure.md"
   ],
   "prompt": "file://plan-reviewer/prompt.md",
-  "model": "claude-opus-4.6"
+  "model": "claude-opus-4.8"
 }

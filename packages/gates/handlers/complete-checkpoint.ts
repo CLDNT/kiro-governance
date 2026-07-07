@@ -10,6 +10,7 @@ import { withLogging, log } from '@kiro-governance/shared/middleware/logger';
 import { queryOne, queryMany } from '@kiro-governance/shared/db/pool';
 import { UpdateCheckpointInputSchema } from '../validation';
 import { MacroCheckpointDetail } from '../types';
+import { notifyMacroGateApproved } from '../services/macro-notify.service';
 
 interface CheckpointRow {
   id: number;
@@ -55,6 +56,13 @@ export const handler: APIGatewayProxyHandler = withRoles(
 
       // --- State Machine: Type-specific completion logic ---
 
+      // Track whether THIS request newly completes the macro gate (reached_at null -> set),
+      // and who approved it — used to fire the app-owned MACRO Slack notification (CR-10).
+      let macroCompleted = false;
+      const claims = event.requestContext?.authorizer?.claims as Record<string, string> | undefined;
+      const cognitoActor = claims?.email || claims?.name || claims?.sub || 'system';
+      let completionActor = cognitoActor;
+
       if (checkpoint.checkpoint_type === 'checklist') {
         throw new ValidationError('Checklist checkpoints are auto-completed when all child items are done.');
       }
@@ -77,14 +85,16 @@ export const handler: APIGatewayProxyHandler = withRoles(
              RETURNING *`,
             [input.reviewed_by, checkpointId],
           );
-          log('CHECKPOINT_COMPLETED', { checkpointId, type: 'human_review', reviewedBy: input.reviewed_by });
+          macroCompleted = true;
+          completionActor = input.reviewed_by;
+          log('info', 'CHECKPOINT_COMPLETED', { checkpointId, type: 'human_review', reviewedBy: input.reviewed_by });
         } else if (input.result_detail && checkpoint.reached_at !== null) {
           // Enrichment: allowed after completion
           await queryOne(
             `UPDATE macro_checkpoints SET result_detail = $1 WHERE id = $2 RETURNING *`,
             [input.result_detail, checkpointId],
           );
-          log('CHECKPOINT_ENRICHED', { checkpointId, type: 'human_review' });
+          log('info', 'CHECKPOINT_ENRICHED', { checkpointId, type: 'human_review' });
         }
       }
 
@@ -105,7 +115,8 @@ export const handler: APIGatewayProxyHandler = withRoles(
              RETURNING *`,
             [input.meeting_date || null, input.meeting_link || null, input.result_detail || null, checkpointId],
           );
-          log('CHECKPOINT_COMPLETED', { checkpointId, type: 'meeting', meetingDate: input.meeting_date });
+          macroCompleted = true;
+          log('info', 'CHECKPOINT_COMPLETED', { checkpointId, type: 'meeting', meetingDate: input.meeting_date });
         } else if (input.meeting_date || input.meeting_link || input.result_detail) {
           // Enrichment: allowed anytime
           await queryOne(
@@ -117,7 +128,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
              RETURNING *`,
             [input.meeting_date || null, input.meeting_link || null, input.result_detail || null, checkpointId],
           );
-          log('CHECKPOINT_ENRICHED', { checkpointId, type: 'meeting' });
+          log('info', 'CHECKPOINT_ENRICHED', { checkpointId, type: 'meeting' });
         }
       }
 
@@ -176,6 +187,8 @@ export const handler: APIGatewayProxyHandler = withRoles(
         id: updated.id,
         checkpoint_name: updated.checkpoint_name,
         checkpoint_type: updated.checkpoint_type as any,
+        phase: updated.phase,
+        phase_name: updated.phase_name,
         occurred: updated.occurred,
         meeting_date: updated.meeting_date,
         meeting_link: updated.meeting_link,
@@ -187,6 +200,23 @@ export const handler: APIGatewayProxyHandler = withRoles(
         evidence_count: counts?.evidence_count || 0,
         notes_count: counts?.notes_count || 0,
       };
+
+      // App-owned MACRO notification (CR-10): only when THIS request newly completed the gate,
+      // and only for a linked project (github_repo set — checked inside the service, PLAN-L3).
+      // Best-effort / non-blocking: notifyMacroGateApproved never throws, so a Slack/MCP failure
+      // cannot fail the approval. MICRO notifications are owned by the CI script, not the app
+      // (no-double-notify boundary, v3 §0/§6).
+      if (macroCompleted && updated.reached_at !== null) {
+        try {
+          await notifyMacroGateApproved(projectId, updated.checkpoint_name, completionActor);
+        } catch (notifyErr) {
+          // Belt-and-suspenders: the service already swallows its own errors; this guard
+          // guarantees a notify failure can NEVER fail an approval that is already committed.
+          log('warn', 'MACRO_NOTIFY_UNCAUGHT', {
+            error: notifyErr instanceof Error ? notifyErr.message : String(notifyErr),
+          });
+        }
+      }
 
       return ok(response);
     } catch (err) {

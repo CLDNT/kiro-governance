@@ -290,56 +290,56 @@ WHERE p.status != 'TEMPLATE'
 GROUP BY mc.checkpoint_name, mc.checkpoint_type, mc.phase, mc.phase_name, p.project_type
 ORDER BY mc.phase, mc.checkpoint_name;
 
-CREATE OR REPLACE VIEW v_timeline AS
+DROP VIEW IF EXISTS v_timeline;
+CREATE VIEW v_timeline AS
 SELECT
-  'macro_checkpoint' as event_type,
-  mc.id as event_id,
+  p.jira_key AS project_id,
+  p.title AS project_title,
+  'governance_event'::text AS event_type,
+  ge.id::text AS event_id,
+  ge.created_at AS event_timestamp,
+  ge.phase,
+  ge.phase_name,
+  ge.update_text AS title,
+  ge.actor,
+  ge.gate AS detail,
+  ge.type AS sub_type
+FROM governance_events ge
+JOIN projects p ON p.jira_key = ge.project_id
+
+UNION ALL
+
+SELECT
   mc.project_id,
-  p.title as project_title,
+  p.title,
+  'checkpoint'::text,
+  mc.id::text,
+  mc.reached_at,
   mc.phase,
   mc.phase_name,
-  mc.checkpoint_name as title,
-  mc.checkpoint_type as detail,
-  mc.reviewed_by as actor,
-  mc.reached_at as event_timestamp
+  mc.checkpoint_name,
+  mc.reviewed_by,
+  mc.result_detail,
+  mc.checkpoint_type
 FROM macro_checkpoints mc
-JOIN projects p ON mc.project_id = p.jira_key
-WHERE mc.reached_at IS NOT NULL AND p.status != 'TEMPLATE'
+JOIN projects p ON p.jira_key = mc.project_id
+WHERE mc.reached_at IS NOT NULL
 
 UNION ALL
 
 SELECT
-  'micro_artifact' as event_type,
-  ma.id as event_id,
-  ma.project_id,
-  p.title as project_title,
-  ma.phase,
-  ma.phase_name,
-  ma.artifact_name as title,
-  ma.status as detail,
-  ma.completed_by as actor,
-  ma.completed_at as event_timestamp
-FROM micro_artifacts ma
-JOIN projects p ON ma.project_id = p.jira_key
-WHERE ma.completed_at IS NOT NULL AND p.status != 'TEMPLATE'
-
-UNION ALL
-
-SELECT
-  'status_log' as event_type,
-  wsl.id as event_id,
-  wsl.project_id,
-  p.title as project_title,
-  'Ongoing' as phase,
-  'Status Tracking' as phase_name,
-  'Weekly Status Log' as title,
-  wsl.topics_covered as detail,
-  wsl.logged_by as actor,
-  wsl.log_date::TIMESTAMPTZ as event_timestamp
-FROM weekly_status_logs wsl
-JOIN projects p ON wsl.project_id = p.jira_key
-WHERE p.status != 'TEMPLATE'
-
-ORDER BY event_timestamp DESC;
+  ge2.project_id,
+  p.title,
+  'evidence'::text,
+  ge2.id::text,
+  ge2.created_at,
+  NULL,
+  NULL,
+  ge2.label,
+  ge2.uploaded_by,
+  ge2.value,
+  ge2.evidence_type
+FROM gate_evidence ge2
+JOIN projects p ON p.jira_key = ge2.project_id;
 
 -- End V003 migration

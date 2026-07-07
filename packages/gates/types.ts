@@ -30,6 +30,24 @@ export interface MicroArtifactDetail {
   status: 'pending' | 'in_progress' | 'complete';
   completed_at: string | null;
   completed_by: string | null;
+  /** CR-12: true when a human set the status via PATCH /artifacts — the reconciler will not
+   *  auto-complete or clobber this row until it is reset_to_auto. */
+  manual_override: boolean;
+}
+
+/**
+ * Response for POST /api/projects/{projectId}/sync-artifacts (CR-12 / FR-P2-042).
+ * Non-secret counts of the Level-2 micro-artifact reconcile run:
+ *  - matched:   mapping-resolved micro events that have a target micro_artifacts row;
+ *  - completed: of matched, those newly set complete by this run (idempotent — 0 on re-sync);
+ *  - skipped:   resolved candidates that did not complete (already complete | manual_override |
+ *               no target row).
+ */
+export interface SyncArtifactsResponse {
+  project_id: string;
+  matched: number;
+  completed: number;
+  skipped: number;
 }
 
 export interface PhaseGateView {
@@ -94,6 +112,9 @@ export interface UpdateCheckpointInput {
 
 export interface UpdateArtifactInput {
   status: 'pending' | 'in_progress' | 'complete';
+  /** CR-12: admin/leadership-only. When true, clears manual_override so the row becomes
+   *  auto-eligible again (a subsequent reconcile may re-complete it). Audited as 'reverse'. */
+  reset_to_auto?: boolean;
 }
 
 export interface AttachEvidenceInput {

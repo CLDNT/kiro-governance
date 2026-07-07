@@ -7,7 +7,7 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { withRoles } from '@kiro-governance/shared/middleware/rbac';
 import { ok, handleError, NotFoundError, ValidationError } from '@kiro-governance/shared/middleware/error-handler';
-import { withLogging, log } from '@kiro-governance/shared/middleware/logger';
+import { log } from '@kiro-governance/shared/middleware/logger';
 import { queryOne } from '@kiro-governance/shared/db/pool';
 
 interface ProjectRow {
@@ -20,7 +20,7 @@ interface ReopenResponse {
 
 export const handler: APIGatewayProxyHandler = withRoles(
   ['leadership', 'admin'],
-  withLogging(async (event) => {
+  async (event) => {
     try {
       const projectId = event.pathParameters?.projectId;
 
@@ -55,7 +55,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
         throw new Error('Failed to reopen project');
       }
 
-      log('PROJECT_REOPENED', {
+      log('info', 'PROJECT_REOPENED', {
         projectId,
         newStatus: result.status,
       });
@@ -66,5 +66,5 @@ export const handler: APIGatewayProxyHandler = withRoles(
     } catch (err) {
       return handleError(err);
     }
-  }),
+  },
 );

@@ -14,7 +14,7 @@ import { Construct } from 'constructs';
  * 
  * Domains:
  * - projects: 9 handlers (list, create, get, update, etc.)
- * - gates: 7 handlers (checkpoint management, evidence, notes)
+ * - gates: 8 handlers (checkpoint management, evidence, notes, timeline)
  * - files: 3 handlers (upload, download URLs, metadata extraction)
  * - meetings: 7 handlers (discovery sessions, escalations, status logs)
  * - config: 5 handlers (project config, phases, items, templates, prompts)
@@ -28,6 +28,10 @@ export interface DeliverProLambdasStackProps {
   restApi: apigateway.RestApi;
   cognitoAuthorizer: apigateway.CognitoUserPoolsAuthorizer;
   lambdaBaseRole: iam.IRole;
+  /** Dedicated role for projects-linkage Lambdas (create/update/sync-gates) — GitHub read-token only. */
+  projectsLinkageRole: iam.IRole;
+  /** Dedicated role for the Slack channel-provisioning Lambda — provisioning-token only. */
+  provisioningRole: iam.IRole;
   dbEndpoint: string;
   dbName: string;
   dbUser: string;
@@ -36,6 +40,10 @@ export interface DeliverProLambdasStackProps {
   vpc?: ec2.IVpc;
   vpcSubnets?: ec2.SubnetSelection;
   lambdaSecurityGroup?: ec2.ISecurityGroup;
+  /** CR-16: approved GitHub org owner (fallback + allowlist seed). Optional. */
+  githubDefaultOwner?: string;
+  /** CR-16: comma-separated approved GitHub owners (H1 allowlist). Optional. */
+  githubAllowedOwners?: string;
 }
 
 export class DeliverProLambdasStack extends Construct {
@@ -67,6 +75,10 @@ export class DeliverProLambdasStack extends Construct {
         AWS_ACCOUNT_ID: accountId,
         EVIDENCE_BUCKET: props.evidenceBucketName,
         NODE_ENV: environment,
+        // CR-16 gate-sync config (non-secret). The GitHub READ token itself is read from SSM
+        // (path fixed in github.service); only the owner allowlist/default is injected here.
+        ...(props.githubDefaultOwner ? { GITHUB_DEFAULT_OWNER: props.githubDefaultOwner } : {}),
+        ...(props.githubAllowedOwners ? { GITHUB_ALLOWED_OWNERS: props.githubAllowedOwners } : {}),
       },
       bundling: {
         // Bundle pg into the Lambda — no layer available
@@ -82,10 +94,12 @@ export class DeliverProLambdasStack extends Construct {
       id: string,
       handlerPath: string,
       timeout?: number,
+      role?: iam.IRole,
     ): lambda_nodejs.NodejsFunction => {
       const func = new lambda_nodejs.NodejsFunction(this, id, {
         ...lambdaConfig,
         entry: handlerPath,
+        role: role ?? props.lambdaBaseRole,
         timeout: timeout ? cdk.Duration.seconds(timeout) : lambdaConfig.timeout,
         ...(props.vpc && {
           vpc: props.vpc,
@@ -118,6 +132,8 @@ export class DeliverProLambdasStack extends Construct {
     const projectsCreateFn = createLambda(
       'ProjectsCreate',
       path.join(__dirname, '../../packages/projects/handlers/create-project.ts'),
+      undefined,
+      props.projectsLinkageRole, // CR-16 best-effort link-time GitHub sync
     );
     const projectsGetFn = createLambda(
       'ProjectsGet',
@@ -126,6 +142,8 @@ export class DeliverProLambdasStack extends Construct {
     const projectsUpdateFn = createLambda(
       'ProjectsUpdate',
       path.join(__dirname, '../../packages/projects/handlers/update-project.ts'),
+      undefined,
+      props.projectsLinkageRole, // CR-16 best-effort link-time GitHub sync
     );
     const projectsImportJiraFn = createLambda(
       'ProjectsImportJira',
@@ -187,7 +205,37 @@ export class DeliverProLambdasStack extends Construct {
     const reopenResource = projectIdResource.addResource('reopen');
     addRoute(reopenResource, 'POST', projectsReopenFn);
 
-    // ==================== 2. GATES DOMAIN (7 handlers) ====================
+    // Routes: /api/projects/{projectId}/sync-gates (CR-16 — admin/leadership only, enforced in handler)
+    const projectsSyncGatesFn = createLambda(
+      'ProjectsSyncGates',
+      path.join(__dirname, '../../packages/projects/handlers/sync-gates.ts'),
+      undefined,
+      props.projectsLinkageRole, // reads the GitHub read-token (single-ARN grant on this role)
+    );
+    const syncGatesResource = projectIdResource.addResource('sync-gates');
+    addRoute(syncGatesResource, 'POST', projectsSyncGatesFn);
+
+    // CR-05: Slack channel provisioning (admin/leadership only, enforced in handler).
+    // Runs on the DEDICATED provisioning role — reads the Slack provisioning-token (channels:manage)
+    // single-ARN ONLY, never the runtime bot-token or the GitHub read-token (SEC-M1 two-token split;
+    // role↔secret-ARN matrix). Route: POST /api/projects/{projectId}/slack/provision.
+    const projectsProvisionSlackFn = createLambda(
+      'ProvisionSlackChannels',
+      path.join(__dirname, '../../packages/projects/handlers/provision-slack-channels.ts'),
+      undefined,
+      props.provisioningRole,
+    );
+    const slackResource = projectIdResource.addResource('slack');
+    const slackProvisionResource = slackResource.addResource('provision');
+    addRoute(slackProvisionResource, 'POST', projectsProvisionSlackFn);
+
+    // NOTE: The GitHub read-token and Slack provisioning-token SSM grants are attached to their
+    // DEDICATED roles (projectsLinkageRole / provisioningRole) in stateless-stack.ts via the
+    // SsmSecretGrant construct — NOT to the shared lambdaBaseRole. This enforces the CR-05/CR-16
+    // matrix: each credential is readable by exactly one role, and the ~33 generic Lambdas on the
+    // base role can read none of the three linkage secrets.
+
+    // ==================== 2. GATES DOMAIN (8 handlers) ====================
     const gatesGetFn = createLambda(
       'GatesGet',
       path.join(__dirname, '../../packages/gates/handlers/get-gates.ts'),
@@ -216,10 +264,18 @@ export class DeliverProLambdasStack extends Construct {
       'GatesArtifactUpdate',
       path.join(__dirname, '../../packages/gates/handlers/update-artifact.ts'),
     );
+    const gatesTimelineFn = createLambda(
+      'GatesTimeline',
+      path.join(__dirname, '../../packages/gates/handlers/project-timeline.ts'),
+    );
 
     // Routes: /api/projects/{projectId}/gates
     const gatesResource = projectIdResource.addResource('gates');
     addRoute(gatesResource, 'GET', gatesGetFn);
+
+    // Routes: /api/projects/{projectId}/timeline
+    const gatesTimelineResource = projectIdResource.addResource('timeline');
+    addRoute(gatesTimelineResource, 'GET', gatesTimelineFn);
 
     // Routes: /api/projects/{projectId}/checkpoints/{checkpointId}
     const checkpointsResource = projectIdResource.addResource('checkpoints');
@@ -240,6 +296,16 @@ export class DeliverProLambdasStack extends Construct {
     const artifactsResource = projectIdResource.addResource('artifacts');
     const artifactIdResource = artifactsResource.addResource('{artifactId}');
     addRoute(artifactIdResource, 'PATCH', gatesArtifactUpdateFn);
+
+    // Routes: /api/projects/{projectId}/sync-artifacts (CR-12 — admin/leadership only, enforced in
+    // handler). Level-2 micro-artifact reconcile: reads DB governance events only (no GitHub fetch),
+    // so it runs on the shared base role (kiro_phase2 DB user) — no linkage/provisioning secret.
+    const gatesSyncArtifactsFn = createLambda(
+      'GatesSyncArtifacts',
+      path.join(__dirname, '../../packages/gates/handlers/sync-artifacts.ts'),
+    );
+    const syncArtifactsResource = projectIdResource.addResource('sync-artifacts');
+    addRoute(syncArtifactsResource, 'POST', gatesSyncArtifactsFn);
 
     // ==================== 3. FILES DOMAIN (3 handlers) ====================
     const filesUploadUrlFn = createLambda(

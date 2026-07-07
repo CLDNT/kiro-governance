@@ -16,6 +16,7 @@ import {
   Link2,
   Upload,
   ChevronRight,
+  RefreshCw,
 } from 'lucide-react';
 
 import { useProject } from '@/hooks/useProjects';
@@ -24,11 +25,14 @@ import { useApiClient } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import {
   MacroCheckpoint,
-  MicroArtifact,
   PhaseGateView,
   Project,
+  SyncArtifactsResponse,
 } from '@/types';
-import { Badge, type BadgeVariant } from '@/components/ui/badge';
+import { useAuth } from '@/contexts/AuthContext';
+import { canManageArtifactAuto } from '@/lib/artifacts';
+import MicroArtifactItem from '@/components/gates/MicroArtifactItem';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -36,7 +40,6 @@ import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import {
   Accordion,
   AccordionContent,
@@ -60,6 +63,7 @@ import {
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { ProjectLinkageCard } from '@/components/projects/ProjectLinkageCard';
 
 const PHASE_ORDER = ['Phase 0', 'Phase 1', 'Phase 2', 'Phase 3', 'Phase 4'] as const;
 
@@ -68,12 +72,6 @@ const CHECKPOINT_ICON: Record<MacroCheckpoint['checkpoint_type'], typeof CheckCi
   meeting: CalendarDays,
   transcript_analysis: Sparkles,
   checklist: ListChecks,
-};
-
-const ARTIFACT_VARIANT: Record<MicroArtifact['status'], BadgeVariant> = {
-  complete: 'success',
-  in_progress: 'info',
-  pending: 'neutral',
 };
 
 function formatDate(value: string | null): string {
@@ -531,11 +529,35 @@ function ProjectDetailPage(): JSX.Element {
   const { projectId } = useParams<{ projectId: string }>();
   const id = projectId ?? '';
 
+  const { user } = useAuth();
+  const client = useApiClient();
+  const queryClient = useQueryClient();
+
   const [completeTarget, setCompleteTarget] = useState<MacroCheckpoint | null>(null);
   const [evidenceTarget, setEvidenceTarget] = useState<MacroCheckpoint | null>(null);
 
   const projectQuery = useProject(id);
   const gatesQuery = useGates(id);
+
+  const canSyncArtifacts = canManageArtifactAuto(user?.role);
+
+  const syncArtifacts = useMutation({
+    mutationFn: async (): Promise<SyncArtifactsResponse> => {
+      const response = await client.post<SyncArtifactsResponse>(
+        `/api/projects/${id}/sync-artifacts`
+      );
+      return response.data;
+    },
+    onSuccess: (summary) => {
+      void queryClient.invalidateQueries({ queryKey: ['gates', id] });
+      toast.success(
+        `Kiro sync complete — ${summary.completed} completed, ${summary.matched} matched, ${summary.skipped} skipped.`
+      );
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : 'Failed to sync artifacts from Kiro');
+    },
+  });
 
   const project = projectQuery.data as Project | undefined;
   const gates = gatesQuery.data;
@@ -634,6 +656,9 @@ function ProjectDetailPage(): JSX.Element {
         </CardContent>
       </Card>
 
+      {/* GitHub & Slack linkage (CR-15) */}
+      <ProjectLinkageCard project={project} />
+
       {/* Phase accordion */}
       <Accordion
         type="single"
@@ -662,17 +687,35 @@ function ProjectDetailPage(): JSX.Element {
               {/* Micro artifacts */}
               {phaseView.micro_artifacts.length > 0 && (
                 <div>
-                  <h4 className="mb-2 text-sm font-semibold text-foreground">Artifacts</h4>
-                  <ScrollArea className="w-full whitespace-nowrap">
-                    <div className="flex w-max gap-2 pb-3">
-                      {phaseView.micro_artifacts.map((a) => (
-                        <Badge key={a.id} variant={ARTIFACT_VARIANT[a.status]}>
-                          {a.artifact_name}
-                        </Badge>
-                      ))}
-                    </div>
-                    <ScrollBar orientation="horizontal" />
-                  </ScrollArea>
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <h4 className="text-sm font-semibold text-foreground">Artifacts</h4>
+                    {canSyncArtifacts && project.github_repo && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => syncArtifacts.mutate()}
+                        disabled={syncArtifacts.isPending}
+                        title="Reconcile Kiro micro-events into artifact completion"
+                      >
+                        {syncArtifacts.isPending ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                        ) : (
+                          <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
+                        )}
+                        Sync from Kiro
+                      </Button>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    {phaseView.micro_artifacts.map((a) => (
+                      <MicroArtifactItem
+                        key={a.id}
+                        artifact={a}
+                        projectId={id}
+                        role={user?.role}
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
 

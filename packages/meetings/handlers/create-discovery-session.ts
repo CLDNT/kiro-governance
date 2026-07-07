@@ -86,7 +86,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
         throw new AppError('UNIQUE_CONSTRAINT_VIOLATION', 'Failed to generate unique session number after retries', 500);
       }
 
-      log('DISCOVERY_SESSION_CREATED', {
+      log('info', 'DISCOVERY_SESSION_CREATED', {
         projectId,
         sessionNumber: session.session_number,
         sessionDate: input.session_date,

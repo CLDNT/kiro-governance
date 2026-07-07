@@ -4,6 +4,10 @@
 
 | Date | Version | Author | Change |
 |------|---------|--------|--------|
+| 2026-07-07 | v1.7a | Product Analyst | **Reconciled stale NFR-P2-003 security text with the v1.7 FR-P2-042 activation (M2 code-round finding).** The §NFR-P2-003 POC risk-accept still (a) listed "Level 2 auto-completion … deferred from this build" and (b) stated "this risk-accept must be revisited before enabling Level 2; Level 2 is gated on GitHub OIDC trusted identity." Both contradicted the v1.7 activation (customer trust-model acceptance 2026-07-07). Updated to: Level 2 is **ACTIVE** under the same POC risk-accept, GitHub OIDC is **NOT required**, and the accepted trust model is the authenticated MCP path (same as `record_progress`). OIDC + distinct app service identity (SEC-M3) reframed as optional future hardening, not preconditions. No FR/AC content changed. Source: `specs/phase2/CR-12-14-level2-spec.md`; FR-P2-042 trust model. |
+| 2026-07-07 | v1.7 | AWS Architect | **FR-P2-042 ACTIVATED — Level 2 micro→artifact auto-completion (CR-12/CR-14), WITHOUT GitHub OIDC.** Customer accepted the trust model 2026-07-07: auto-completion trusts the same authenticated MCP path as `record_progress` (no-orphan-resolved, append-only), so GitHub OIDC (CR-OIDC) is no longer a precondition. FR-P2-042 changed from **Could Have / Deferred → Must** with build-ready, machine-testable ACs. Adds: the 16-code `event_code` vocabulary (`casdm.<p0..p4>.<slug>`); a nullable `governance_events.event_code` column + optional `record_progress` `event_code` (CR-14); seeded `micro_artifact_mapping` (activating the inert V004 table); a `micro_artifacts.manual_override` flag + append-only `micro_artifact_audit` table; app-side reconciliation under `kiro_phase2` (`completed_by='kiro:<actor>'`, idempotent, reversible, own-repo-scoped) with the MCP runtime role `kiro_mcp_app` kept append-only; and a `POST /api/projects/{projectId}/sync-artifacts` (admin/leadership) endpoint + gate-view + link-time triggers. Migration V008. Source: `specs/phase2/CR-12-14-level2-spec.md`; customer trust-model acceptance 2026-07-07. |
+| 2026-07-03 | v1.6 | AWS Architect | **SRS delta notes — CR-16 / CR-17 (replace cancelled CR-06 backfill).** Added FR-P2-043 (link-time / on-demand macro gate detection: fetch the linked repo's `docs/project-progress.md` via the GitHub REST API using an SSM read token, parse resolved macro gates via shared `matchGateFromText`, and idempotently set `macro_checkpoints.reached_at` with `reviewed_by='system:repo-sync'`; admin/leadership-only sync endpoint + link-time trigger; own-repo-only; no token leak). Added FR-P2-044 (fresh-start cleanup: gated, non-auto-run destructive migration V007 removing imported `CST-%` non-template projects). **Design change recorded:** the tracker MAY auto-resolve macro gates via this explicit fetch-and-parse sync path only; the passive `governance_events → v_timeline` join remains display-only and never auto-completes a gate (FR-P2-041 unchanged for the passive path). Source: Customer go-ahead 2026-07-02 + `docs/phase2/change-requests/2026-07-02-github-slack-linkage-impact.md`; specs `specs/phase2/CR-16-link-time-gate-detection-spec.md`, `specs/phase2/CR-17-fresh-start-cleanup-spec.md`. |
+| 2026-07-02 | v1.5 | Product Analyst | Added FR-P2-033 through FR-P2-042 for the approved GitHub↔Slack linkage + dual-channel notification + micro Level-1 integration change request. Source: Customer go-ahead 2026-07-02 + `docs/phase2/change-requests/2026-07-02-github-slack-linkage-impact.md` (v3 — Final Design of Record). FR-P2-033..041 are Must (Level 1 timeline surfacing, no-orphan hard reject, append-only via ownership reassignment, dual-channel routing, optional-linkage feature switch, macro app-ownership + CLI-macro backward-compat). FR-P2-042 (Level 2 micro→artifact auto-completion) marked **Could Have / DEFERRED — not in this build** per customer decision 2026-07-02 (Level 2 micro→artifact auto-completion, `event_code`, and GitHub OIDC dropped/deferred; CR-12/13/14 out of scope). |
 | 2026-06-30 | v1.3a | AWS Architect | Resolved OQ-P2-002 (Avoma REST API confirmed), OQ-P2-006 (default prompts seeded in V003, admin can overwrite), OQ-P2-010 (default CloudFront domain), PD-12 (AppDev confirmed at launch), PD-13 (project_type immutable), PD-14 (AgentCore with Claude Sonnet 4.5 cross-region). Updated §8.1 status, §8.5 model. Source: Faraz/Tariq confirmation 2026-06-30. |
 | 2026-06-30 | v1.4 | Product Analyst | Added FR-P2-032 (first-login new password flow). Source: production bug — Cognito admin-created users require password reset on first login; discovered during deployment 2026-06-30. |
 | 2026-06-29 | v1.3 | Product Analyst | Added FR-P2-029 through FR-P2-031.
@@ -745,6 +749,301 @@ When a user logs in for the first time with an admin-assigned temporary password
 - A "Back to login" link resets to the standard login form
 - The `completeNewPassword()` function in `auth.ts` uses the `CognitoUser` instance held from the initial `authenticateUser` call — no second authentication round trip
 
+---
+
+> **FR-P2-033 through FR-P2-042 — GitHub ↔ Slack Linkage & Micro Integration (added v1.5, 2026-07-02; FR-P2-042 activated v1.7, 2026-07-07).**
+> These requirements formalize the approved change request for linking a project to its GitHub repository and dual Slack destinations, reconciling Phase 1 governance events to Phase 2 projects, enforcing no-orphan governance storage, and routing dual-channel notifications through the shared MCP `notify_slack` tool. Source of design: `docs/phase2/change-requests/2026-07-02-github-slack-linkage-impact.md` (v3 — Final Design of Record) + `specs/phase2/CR-12-14-level2-spec.md` (Level 2). Micro integration now covers **both levels**: Level 1 (timeline surfacing, FR-P2-036) and **Level 2 (micro→artifact auto-completion, FR-P2-042 — ACTIVATED 2026-07-07, Must)**. Per the customer trust-model acceptance of 2026-07-07, Level 2 runs app-side and trusts the same authenticated MCP path as `record_progress`; GitHub OIDC is **not** a prerequisite.
+
+---
+
+### FR-P2-033: Project Unique Key — Uniqueness & Immutability
+
+**Priority:** Must Have
+**Source:** Customer 2026-07-02 (change request Decision B): "every project must have a unique identifier (a key)." Existing DB behaviour verified in `migrations/V002__projects_and_casdm_tracking.sql` (`jira_key TEXT NOT NULL UNIQUE`). Immutability is an **Architect decision — not customer-specified** (all child FKs reference `jira_key` with `ON DELETE CASCADE` and no `ON UPDATE CASCADE`, so mutating the key would orphan every child row).
+
+**Description:**
+Every project shall have a globally unique business key (`jira_key`) assigned at creation (imported from Jira, or generated as `DP-NNN`) that is immutable for the life of the project. The key is the referential anchor for all child records.
+
+**Acceptance Criteria:**
+
+- Given two projects, when both exist, then their `jira_key` values are distinct (enforced by the `UNIQUE` constraint on `projects.jira_key`).
+
+- Given a create request whose `jira_key` already exists, when submitted, then the API returns HTTP 409 `{ "code": "DUPLICATE_JIRA_KEY" }`.
+
+- Given a `PATCH /api/projects/{projectId}` request with any attempt to change `jira_key`, when submitted, then the API returns HTTP 422 `{ "code": "IMMUTABLE_FIELD", "field": "jira_key", "message": "jira_key cannot be changed after creation" }` and the stored value is unchanged.
+
+- Given a directly-created project, when created, then `jira_key` matches the pattern `^DP-\d{3,}$` and is the next sequential value.
+
+- Given any child record (`micro_artifacts`, `macro_checkpoints`, `gate_evidence`, `checkpoint_notes`, `weekly_status_logs`, `escalations`, `discovery_sessions`, `onboarding_checklist_items`, `project_link_audit`), then its `project_id` FK references exactly one `projects.jira_key`.
+
+---
+
+### FR-P2-034: Project ↔ GitHub Repository Link
+
+**Priority:** Must Have
+**Source:** Customer 2026-07-02 (change request Decision A) + Phase 2 transcript, Muhammad Faraz: "attach it to a repository, generate some documents" and "It works with your Github… write it down on our database" (`.kiro/Knowledge/Phase2MeetingTranscript.txt`). Storing the link on the project entity and the admin/leadership authorization are **Architect + security decisions — not customer-specified**.
+
+**Description:**
+A project shall be linkable to its GitHub repository. The repository name is the identifier Phase 1 governance events are keyed by (`github.event.repository.name`), so the link is the bridge that reconciles Phase 1 governance events to Phase 2 projects. The link is nullable (feature switch — see FR-P2-040), correctable by authorized roles, and fully audited per field.
+
+**Acceptance Criteria:**
+
+- Given a project, then it exposes `github_repo` (repository name, e.g. `deliverpro`) and `github_url` (full HTTPS repo URL); both nullable.
+
+- Given a `POST /api/projects` request that omits `github_repo`, when submitted, then the project is created with `github_repo = NULL` (feature switch OFF; linkable later).
+
+- Given two projects both with a non-NULL `github_repo`, when both exist, then their values are distinct; a duplicate returns HTTP 409 `{ "code": "DUPLICATE_GITHUB_REPO" }` (enforced by a partial unique index — 1:1 repo↔project).
+
+- Given a `github_repo` value, when set, then it matches `^[A-Za-z0-9._-]{1,100}$`; an invalid value returns HTTP 400 `{ "code": "VALIDATION_ERROR", "field": "github_repo" }`.
+
+- Given a `github_url` value, when set, then it MUST match `^https://github\.com/[A-Za-z0-9._/-]{1,200}$` (scheme `https` only; host allow-listed to `github.com`); any other scheme, host, or embedded control characters returns HTTP 400 `{ "code": "VALIDATION_ERROR", "field": "github_url" }`. When rendered as a clickable link, the anchor uses `rel="noopener noreferrer"`.
+
+- Given an `admin` or `leadership` user (verified on the Cognito `sub`/group claim, NOT the free-text `project_manager` field) submits `PATCH /api/projects/{projectId}` with a new `github_repo`, when submitted, then the link is updated; given any other role attempts the same change, then the API returns HTTP 403 `{ "code": "FORBIDDEN", "message": "Only admin or leadership may change project linkage" }`.
+
+- Given any create or change of `github_repo` / `github_url`, when persisted, then one `project_link_audit` row is written per changed field (`field` = the exact column name, `old_value`, `new_value`, actor Cognito `sub`, timestamp) and `projects.updated_by` / `projects.updated_at` are set.
+
+- Given a project with `github_repo` set, when its detail is viewed, then the `github_url` is rendered as a clickable link.
+
+---
+
+### FR-P2-035: Project ↔ Dual Slack Destinations (App-Managed)
+
+**Priority:** Must Have
+**Source:** Customer 2026-07-02 (change request Decisions C, D, E) — dual channels per project (micro + macro); one workspace-level Slack bot token; the token is a secret.
+
+**Description:**
+A project shall store two non-secret Slack channel identifiers — one for MICRO notifications and one for MACRO notifications. The workspace Slack bot token is a secret and is stored only in SSM SecureString (or Secrets Manager); it is never a database column, API response, or log line. PostgreSQL holds only the non-secret channel ids.
+
+**Acceptance Criteria:**
+
+- Given a project, then it exposes `slack_micro_channel_id` and `slack_macro_channel_id` (both nullable, non-secret Slack channel ids e.g. `C0123ABCD`); no bot token or webhook URL is ever present in any API response, database column, or log.
+
+- Given the workspace Slack bot token, then it is stored only in SSM SecureString (or Secrets Manager) as a single workspace-level parameter; it is never a database column.
+
+- Given a change to either channel id, when submitted, then it is authorized to `admin` / `leadership` (Cognito-sub check, per FR-P2-034) and writes one `project_link_audit` row per changed field (`field` = `slack_micro_channel_id` or `slack_macro_channel_id`, with that field's own old→new value, actor, timestamp).
+
+- Given the rejected webhook-URL-in-PG alternative, if chosen by the customer, then any URL column MUST be `pgcrypto`/KMS-encrypted and pass a dedicated security review (the default design forbids storing any Slack URL in PostgreSQL).
+
+---
+
+### FR-P2-036: Governance Reconciliation — MICRO Surfacing (Level 1); MACRO Display-Only
+
+**Priority:** Must Have
+**Source:** Customer 2026-07-02 (change request Decisions H, I — Level 1) + FR-P2-011. Reconciliation via `github_repo` is an **Architect decision — not customer-specified** (fixes the identifier-space mismatch between Phase 1 repo names and Phase 2 `jira_key`).
+
+**Description:**
+Governance events produced by GitHub/Kiro (Phase 1, keyed by repository name) shall reconcile to the correct Phase 2 project via the project's `github_repo` link so that micro events surface on the project timeline (Level 1) and macro events are displayed but never auto-complete app-owned gates. This build includes both Level 1 (timeline surfacing, this FR) and Level 2 (micro→artifact auto-completion — see FR-P2-042, activated 2026-07-07). Macro completion remains app-owned regardless (FR-P2-041).
+
+**Acceptance Criteria:**
+
+- Given a `governance_events` row with `project_id = R` and a project with `github_repo = R`, when the timeline is requested, then that event appears on that project's timeline with `source: 'kiro_mcp'`, ordered chronologically.
+
+- Given a `governance_events` row with `type = 'macro'`, when processed, then it is displayed on the timeline but does NOT set `macro_checkpoints.reached_at` (macro completion is app-owned — FR-P2-041).
+
+- Given a `governance_events` row whose `project_id` matches no project's `github_repo`, when processed, then it does not appear on any project timeline and no error is raised (it was hard-rejected at write time per FR-P2-038).
+
+- Given a project with `github_repo = NULL`, when its timeline is requested, then only DeliverPro-native events (checkpoints, evidence) appear — identical to current behaviour — and no error is raised.
+
+---
+
+### FR-P2-037: MCP Governance Logs Visible Per Project
+
+**Priority:** Must Have
+**Source:** Customer — FR-P2-011 source quote: "you're collecting stuff in your database for Kiro. Where would I see that if I'm a project manager?" (`docs/phase2/srs.md` FR-P2-011). This FR makes FR-P2-011 deliver by fixing the join key from `jira_key` to `github_repo`.
+
+**Description:**
+For every project with a valid GitHub link, the MCP governance events shall be visible in the project timeline, the leadership reporting timeline, and the QuickSight-ready `v_timeline` view, joined via `github_repo`.
+
+**Acceptance Criteria:**
+
+- Given a project with `github_repo = R` and one or more `governance_events` rows with `project_id = R`, when `GET /api/projects/{projectId}/timeline`, `GET /api/reporting/timeline/{projectId}`, and the `v_timeline` view are queried, then all three return those events (joined via `github_repo`), ordered chronologically, with `source: 'kiro_mcp'`.
+
+- Given a project with `github_repo = NULL`, when its timeline is requested, then only DeliverPro-native events appear and no error is raised.
+
+- Given a project whose `github_repo` was just backfilled, when the timeline is next requested, then historical governance events for that repo appear immediately (read-side join; no reprocessing/sync required).
+
+---
+
+### FR-P2-038: No-Orphan Governance Event Storage
+
+**Priority:** Must Have
+**Source:** Customer 2026-07-02 (change request Decision G): "stored only if it maps to an existing project; if none, do not store." Append-only DB enforcement is an **Architect + security decision** (SEC-H1 — ownership reassignment).
+
+**Description:**
+The MCP `record_progress` tool shall persist a governance event only if the event's repository name resolves to an existing project (`projects.github_repo = event repo`). If no project matches, the event is hard-rejected and not written. The MCP database role is append-only on `governance_events` and read-only (column-scoped) on `projects`, enforced by reassigning table ownership to a non-runtime `kiro_migrator` role.
+
+**Acceptance Criteria:**
+
+- Given `record_progress` with `project_id = R`, when no project has `github_repo = R`, then the event is NOT written and the tool returns `{ "written": false, "reason": "no_matching_project" }`.
+
+- Given the same rejection, when it occurs, then a dimensionless `GovernanceEventRejected` CloudWatch counter is incremented (NO repo dimension) and the repo name is written to the structured log only; no orphan row is stored.
+
+- Given `record_progress` with a project that matches on `github_repo`, when written, then behaviour (classification, dedup via `ON CONFLICT (idempotency_key)`, RDS write) is unchanged.
+
+- Given resolution, then it uses `SELECT jira_key FROM projects WHERE github_repo = $1 LIMIT 1` for both macro and micro events.
+
+- Given the MCP database user `kiro_mcp`, then its privileges are exactly `INSERT, SELECT ON governance_events` (plus the sequence) and column-scoped `SELECT (jira_key, github_repo, slack_micro_channel_id, slack_macro_channel_id) ON projects`; it holds no `UPDATE` or `DELETE` on any table. Append-only is enforced by reassigning table ownership of all governance tables to a non-runtime `kiro_migrator` role (a plain `REVOKE` is insufficient because the runtime role currently owns the tables).
+
+---
+
+### FR-P2-039: App-Managed Slack Provisioning & Dual-Channel Routing
+
+**Priority:** Must Have
+**Source:** Customer 2026-07-02 (change request Decisions D, E, F) — one workspace app + bot token + `chat.postMessage`; dual per-project channels routed through the same MCP `notify_slack` by `event_type`.
+
+**Description:**
+DeliverPro shall authenticate a single workspace-level Slack app once, provision/resolve per-project micro and macro channels, and store their ids on the project. All Slack posts flow through the shared MCP `notify_slack` tool, which routes by `event_type` — micro events to the micro channel, macro events to the macro channel — using the workspace bot token. The app does not build its own Slack client.
+
+**Acceptance Criteria:**
+
+- Given a single workspace Slack app + bot token, then DeliverPro authenticates once (admin OAuth consent); there is no per-project OAuth.
+
+- Given a project being linked, when linkage is saved, then DeliverPro resolves or creates the micro and/or macro channels (`conversations.list` / `conversations.create`) and stores their ids in `slack_micro_channel_id` / `slack_macro_channel_id`.
+
+- Given `notify_slack` with `event_type = 'micro'`, when invoked, then it posts to `slack_micro_channel_id`; given `event_type = 'macro'`, then it posts to `slack_macro_channel_id` — both via `chat.postMessage` using the SSM bot token, resolving the project by `github_repo`.
+
+- Given the resolved channel id is NULL or the project does not resolve, when `notify_slack` is invoked, then it returns `{ "notified": false, "reason": "channel_not_configured" }` — no error surfaced and no secret, SSM path, or repo name leaked in the response.
+
+- Given a posted message, then it is project-labelled using `jira_key` (and title when available), e.g. `[DP-001] …`, not the repo name; Slack broadcast tokens (`<!here>`, `<!channel>`, `<!everyone>`) and `<@…>`/`<#…>` link syntax in the message body are stripped/escaped before posting.
+
+- Given the bot token, then it is read with least-privilege `ssm:GetParameter` + `kms:Decrypt` scoped to the single token parameter ARN only; `ssm:PutParameter` is admin/out-of-band.
+
+- Given the two-token split, then the runtime token used by `notify_slack` carries `chat:write` only (it cannot create or rename channels), and the provisioning scopes (`channels:read` + `channels:manage`) live on a separate credential held only by the app's link/onboarding path; neither credential carries any `admin.*` scope.
+
+---
+
+### FR-P2-040: Optional Linkage Feature Switch
+
+**Priority:** Must Have
+**Source:** Customer 2026-07-02 (change request Decision A) — linkage is optional per project and is the feature switch.
+
+**Description:**
+The presence of `projects.github_repo` is the on/off switch for external governance recording and Slack routing. An unlinked project behaves exactly as the current architecture (no regression). Linking a repository is the single action that turns on micro recording and micro-channel Slack routing for that project.
+
+**Acceptance Criteria:**
+
+- Given `github_repo = NULL`, when governance events are processed, then no Kiro governance events are recorded against the project and its timeline shows only DeliverPro-native events (identical to today); no external Slack routing occurs.
+
+- Given `github_repo` is set, when a linked repo emits events, then micro recording and micro-channel Slack routing turn ON for that repo.
+
+- Given a CI/Kiro-path `record_progress` call for a linked repo, when the event is persisted, then the stored `governance_events` row has `type = 'micro'` (the classifier honours the explicit `type`), regardless of any gate-name substring present in `update_text`. A stored `type = 'macro'` from the CI path is a defect.
+
+- Given `github_repo` is later cleared or re-pointed, when the change is saved, then previously-stored events keyed to the old repo stop surfacing on the timeline (the join is on the current `github_repo`), the change is written to `project_link_audit`, and the UI warns the operator of the historical-event visibility impact. Re-pointing back to the original repo restores visibility.
+
+---
+
+### FR-P2-041: MACRO Gate Ownership & CLI-Macro Backward-Compatibility
+
+**Priority:** Must Have
+**Source:** Customer 2026-07-02 (change request Decisions F, H) — macro gates are app-owned/human-approved; CI/Kiro path owns micro; both coexist with no double-notification. CLI-macro backward-compatibility path is retained per the 2026-07-02 go-ahead.
+
+**Description:**
+Macro checkpoint completion is set only by in-app triggers; Kiro macro governance events are display-only. Macro notifications originate only from the DeliverPro app (on in-app gate approval) and micro notifications only from the CI/Kiro path — no event produces both. A backward-compatible CLI-macro path is retained for pure-Kiro-CLI repositories that have no in-app approver.
+
+**Acceptance Criteria:**
+
+- Given any macro checkpoint, then `reached_at` is set only by an in-app trigger (`human_review` / `meeting` / `transcript_analysis` / `checklist` per `gates-architecture.md` §4); Kiro macro governance events never set it.
+
+- Given an in-app macro-gate approval on a linked project, when the gate is approved, then the DeliverPro app calls the shared MCP `notify_slack` with `event_type = 'macro'` (macro channel); the app does not build its own Slack client. If the project is unlinked (`github_repo IS NULL`), the app skips the `notify_slack` call entirely (it does not call with a null `project_id`); macro completion is still recorded in `macro_checkpoints`.
+
+- Given the ownership split, then micro notifications originate only from the CI/Kiro path and macro notifications only from the app — no single event produces both a micro and a macro notification (no double-notification).
+
+- Given a linked repository that has no in-app macro approver (CLI-only), when the CI script processes a macro gate, then it MAY emit a macro governance event (`type = 'macro'`, `flag_override: true`) that is display-only (surfaces on the timeline, does NOT set `macro_checkpoints.reached_at`) and triggers the macro-channel notification — preserving the "progress-MD → gate → Slack" behaviour without violating app-owned completion.
+
+- Given the current codebase, then no `governance_events → macro_checkpoints` auto-completion path exists or is (re)introduced (verified: current `gates-architecture.md` has no such write path).
+
+---
+
+### FR-P2-042: Micro-Event → Micro-Artifact Auto-Completion (Level 2)
+
+**Priority:** Must Have — **ACTIVATED 2026-07-07** (was Deferred/Could Have). GitHub OIDC precondition **removed** by customer trust-model acceptance 2026-07-07.
+**Source:** Customer 2026-07-02 (change request Decision I, Level 2) + customer trust-model acceptance 2026-07-07 (GitHub OIDC no longer required for Level 2). The `event_code` vocabulary, app-side placement, and `kiro:<actor>` provenance are Architect + security decisions — not customer-specified. Design of record: `specs/phase2/CR-12-14-level2-spec.md`.
+
+**Trust model (accepted 2026-07-07 — replaces the OIDC precondition):**
+Level-2 auto-completion trusts the **same authenticated MCP path as `record_progress`**. The micro `governance_events` it consumes were already written through the API-key-gated MCP `record_progress` tool, which enforces no-orphan resolve-or-reject (FR-P2-038) and append-only persistence. Level 2 reads those already-persisted, already-authorised events and reconciles them **app-side** — it introduces no new trust surface, so GitHub OIDC is **not** a prerequisite. Compensating controls: allow-list by construction (only an `event_code` seeded in `micro_artifact_mapping` with `is_active=true` can complete an artifact), deterministic config lookup (never fuzzy text), idempotent, reversible + audited, own-repo-scoped, and app-owned (the `UPDATE` runs under `kiro_phase2`; the MCP runtime role `kiro_mcp_app` stays append-only with no grant on the Level-2 tables). Residual risk (POC-accepted, same as Level 1 SEC-H2/H3 in §NFR-P2-003): under the shared MCP API key, a key holder could emit a micro event with a mapped `event_code` for another **linked** project's repo and falsely complete its artifact — bounded to insert-with-wrong-attribution (append-only, never edit/delete) and fully reversible + audited here. Revisit if a non-first-party CI ever holds the key.
+
+**Description:**
+When a linked project (`github_repo` set) has a micro `governance_event` whose `event_code` resolves through the deterministic `micro_artifact_mapping` `(event_code, project_type, phase) → artifact_name` lookup, DeliverPro idempotently marks the matching `micro_artifacts` row complete. Reconciliation runs on gate-view load, on link (create/update), and via an admin/leadership sync endpoint. `record_progress` gains an optional `event_code` (nullable `governance_events.event_code` column, CR-14). The `event_code` vocabulary is the 16 CASDM template micro artifacts (`casdm.<p0..p4>.<artifact_slug>`); micro events with no/unknown `event_code` are timeline-only (Level 1 unaffected).
+
+**Acceptance Criteria:**
+
+- Given a linked project and a `governance_events` row with `type='micro'`, `project_id = <github_repo>`, and an `event_code` present in `micro_artifact_mapping` (`is_active=true`) for the project's `project_type` (or `'default'`), when reconciliation runs, then the mapped `micro_artifacts` row is set `status='complete'`, `completed_at = event.created_at`, `completed_by = 'kiro:' || event.actor`.
+
+- Given the mapping key, then it is `event_code` only (`micro_artifact_mapping.UNIQUE(event_code, project_type, phase)`); text or `source_ref` matching is never used.
+
+- Given a micro event whose `event_code` is absent or not in the mapping, then no artifact is changed and the event still surfaces on the timeline (Level 1 unaffected by Level 2 misses).
+
+- Given reconciliation runs twice with no new events, then it is idempotent — the second run returns `completed: 0`, no `micro_artifacts` row is changed, and no duplicate audit row is written.
+
+- Given a `micro_artifacts` row with `manual_override = true`, then reconciliation never changes it (a human decision is never clobbered).
+
+- Given any auto-completion, then an append-only `micro_artifact_audit` row is written (`action='auto_complete'`, `event_code`, `event_actor`, `actor='system:artifact-sync'`); an admin/leadership user can reverse it via `PATCH /api/projects/{projectId}/artifacts/{artifactId}` and the reversal is audited (`action='reverse'`).
+
+- Given `POST /api/projects/{projectId}/sync-artifacts`, then an `admin`/`leadership` caller receives `200 { project_id, matched, completed, skipped }`; any other role receives `403 FORBIDDEN` (Cognito-derived role, never the free-text `project_manager`); an unknown project returns `404`; an unlinked project (`github_repo IS NULL`) returns `200` with all-zero counts.
+
+- Given the MCP runtime DB role (`kiro_mcp_app`), then it holds no privilege on `micro_artifact_mapping`, `micro_artifacts`, or `micro_artifact_audit` (append-only posture preserved); the auto-completion `UPDATE` runs only under the Phase-2 app role `kiro_phase2`. Macro completion (FR-P2-041) and the passive `v_timeline` join remain unchanged.
+
+- Given a completed micro artifact, then the UI shows a `kiro` source badge when `completed_by` starts with `kiro:` and a manual indicator otherwise; the manual status toggle remains available as an override.
+
+---
+
+> **FR-P2-043 / FR-P2-044 — Link-Time Gate Detection & Fresh-Start Cleanup (added v1.6, 2026-07-03).**
+> These delta FRs replace the cancelled CR-06 backfill. FR-P2-043 adds an explicit, admin-triggered path that reads a linked repository's `docs/project-progress.md` and resolves matching macro gates in DeliverPro. FR-P2-044 adds a gated, non-auto-run cleanup migration for stale imported projects. Source of design: `docs/phase2/change-requests/2026-07-02-github-slack-linkage-impact.md`; specs `specs/phase2/CR-16-link-time-gate-detection-spec.md`, `specs/phase2/CR-17-fresh-start-cleanup-spec.md`.
+
+### FR-P2-043: Link-Time / On-Demand Macro Gate Detection from Repo Tracker
+
+**Priority:** Must Have
+**Source:** Customer 2026-07-02 (change request; replaces cancelled CR-06 backfill) — "It works with your Github… the project-progress MD file… drag that change as a gate… write it down on our database." The explicit fetch-and-parse sync mechanism, admin/leadership authz, and `system:repo-sync` provenance are **Architect + security decisions — not customer-specified**.
+
+**Description:**
+When a project's GitHub repository is linked (or on demand via an admin/leadership sync action), DeliverPro fetches the repository's `docs/project-progress.md` via the GitHub REST API using a read-only token held in SSM SecureString, parses the resolved macro gates from the tracker (reusing the shared `matchGateFromText` canonical-gate matcher), and idempotently marks the corresponding `macro_checkpoints` complete.
+
+**Deliberate design change (documented):** the project tracker MAY auto-resolve macro checkpoints **only** through this explicit fetch-and-parse sync path (link-time trigger or the admin sync endpoint). The passive `governance_events → v_timeline` join remains display-only and still never auto-completes a checkpoint — FR-P2-041 is unchanged for the passive path. CR-16 is a scoped, provenance-tagged, admin-only exception.
+
+**Acceptance Criteria:**
+
+- Given a project with `github_repo` set, when `github_repo` is set/changed (create or update) OR an admin/leadership user calls `POST /api/projects/{projectId}/sync-gates`, then DeliverPro fetches `docs/project-progress.md` from that repo via `GET https://api.github.com/repos/{owner}/{repo}/contents/docs/project-progress.md` using the read token at SSM path `/kiro-governance/github/read-token`.
+
+- Given the GitHub API returns 404 for the file (missing / private-without-access), when handled, then the sync is a no-op (no error surfaced) and returns `{ matched: 0, resolved: 0, skipped: 0 }`.
+
+- Given a private repository the token can access, when fetched, then the file content is retrieved successfully (private repos supported).
+
+- Given GitHub rate-limiting (403/429 with rate-limit headers), when it occurs, then the sync endpoint returns HTTP 503 `{ "code": "REPO_SYNC_UNAVAILABLE" }` and the link-time trigger logs and continues (non-blocking); no token or URL is leaked in the response or logs.
+
+- Given the fetched markdown, when parsed, then a line is treated as a resolved gate only if it is a completed task-list item (`- [x] …`) or contains "approved by" (case-insensitive), and its canonical gate is resolved via the shared `matchGateFromText`; unchecked or merely-mentioned gate lines are ignored.
+
+- Given a resolved canonical gate that maps (via the `GATE_TO_CHECKPOINT` config lookup) to an existing `macro_checkpoints` row for the project whose `reached_at IS NULL`, when applied, then that row is set `reached_at = now()`, `reviewed_by = 'system:repo-sync'`; a resolved gate that is unmapped, or whose checkpoint row is missing, or already resolved, is counted as `skipped` and mutates nothing.
+
+- Given the sync runs twice with no tracker change, when re-run, then it is idempotent — the second run returns `resolved: 0` and no `macro_checkpoints` row is changed.
+
+- Given the sync completes, when it returns, then the response is `{ project_id, matched, resolved, skipped }`.
+
+- Given a caller who is not `admin` or `leadership`, when they call `POST /api/projects/{projectId}/sync-gates`, then the API returns HTTP 403 `{ "code": "FORBIDDEN" }` (authorization uses the Cognito-derived role, never the free-text `project_manager`).
+
+- Given any sync, when it targets a repository, then it uses only the requested project's own `github_repo`/`github_url` (read from the project row, never from request input); the read token is never logged, returned, or embedded in an error message.
+
+### FR-P2-044: Fresh-Start Cleanup of Imported Projects (Gated, Non-Auto-Run)
+
+**Priority:** Should Have
+**Source:** Customer 2026-07-02 (change request; replaces cancelled CR-06 backfill) — remove stale one-time Jira `CST-*` imports for a clean start. Delivery as a gated, non-auto-run destructive migration is an **Architect + security decision — not customer-specified** (data deletion is irreversible).
+
+**Description:**
+A cleanup migration (`V007__fresh_start_cleanup.sql`) permanently removes imported non-template projects (`jira_key LIKE 'CST-%' AND jira_key <> '__template__'`) and their cascaded child rows, while preserving the CASDM `__template__` seed, all `DP-*` projects, and the append-only `governance_events` table. Because it is destructive and irreversible, it is delivered gated and is never auto-run.
+
+**Acceptance Criteria:**
+
+- Given the migration, when authored, then its DELETE predicate is exactly `jira_key LIKE 'CST-%' AND jira_key <> '__template__'` (the `__template__` CASDM seed and all `DP-*` projects are never deleted).
+
+- Given the migration, when applied intentionally, then imported `CST-*` projects and their `ON DELETE CASCADE` children (`micro_artifacts`, `macro_checkpoints`, `gate_evidence`, `checkpoint_notes`, `weekly_status_logs`, `escalations`, `discovery_sessions`, `onboarding_checklist_items`, `project_link_audit`) are removed; `governance_events` (no FK; append-only) is not deleted.
+
+- Given the migration, when the confirmation guard (`kiro.confirm_fresh_start = 'yes'`) is not set, then it performs no deletion (safe no-op) — it cannot delete on a normal runner/`psql` pass.
+
+- Given the migration file, when present in the repo, then it is excluded from the automatic migration runner set and documented as operator-run only, and carries a loud destructive-warning header and an irreversible/no-down-migration rollback note.
+
+- Given the change request, when this cleanup is delivered, then it replaces the cancelled CR-06 backfill (no backfill of `projects.github_repo` is performed).
+
+---
+
 ## 6. Non-Functional Requirements
 
 ### NFR-P2-001: Performance
@@ -776,6 +1075,20 @@ When a user logs in for the first time with an admin-assigned temporary password
 - RDS access restricted to Lambda execution role only (no public access)
 - Role-based access control enforced at the API layer (Cognito groups map to app roles)
 - CloudFront distribution uses HTTPS only (redirect HTTP → HTTPS)
+
+**Governance-linkage security (added 2026-07-02 — GitHub↔Slack linkage CR; security-review SEC-H1/H2/H3):**
+
+- **Append-only governance store (SEC-H1 / iam-review Finding 2):** the MCP runtime DB role — the **dedicated non-master `kiro_mcp_app`** (`LOGIN NOSUPERUSER NOINHERIT`) — holds exactly `INSERT, SELECT ON governance_events` (+ sequence) and column-scoped `SELECT` on `projects`; no `UPDATE`/`DELETE`/write on any table. Enforced by reassigning table ownership to a non-runtime `NOINHERIT` `kiro_migrator` role (a plain `REVOKE` is insufficient because the tables were previously owned by the connecting role); the runtime role is not a member of `kiro_migrator`. The RDS master `kiro_mcp` is admin/migrations ONLY — runtime grants are NOT placed on it (a superuser bypasses them). The Phase-2 app authenticates as a distinct role (`kiro_phase2`) retaining DML on DeliverPro tables. See `unified-data-model.md` §4.4.4, `V005__append_only_hardening.sql`.
+  - **⚠️ Blocking pre-implementation caveat:** the RDS master user `kiro_mcp` is a `rds_superuser`, and an earlier design reused that same name for the runtime role — so its grants were bypassed (the collision). Append-only is a real DB guarantee ONLY once the MCP runtime authenticates as the non-master, non-superuser `kiro_mcp_app`; otherwise it is a best-effort claim covered by the POC risk-accept below. Requires ops sign-off (GATE 2) before implementation.
+
+- **Cross-project isolation under the shared MCP API key (SEC-H2/H3) — POC RISK-ACCEPT (human decision recorded 2026-07-02):** the MCP tools trust the caller-asserted `project_id` (repo name). Under a single shared API key, a key holder can assert **another linked project's** repo and post to that project's Slack channel or mis-attribute governance events. No-orphan storage blocks only *unlinked* repos; a valid other-project repo still resolves. Per the 2026-07-02 go-ahead, **Level 1 ships under POC risk-accept**. **Level 2 auto-completion (FR-P2-042) was subsequently ACTIVATED 2026-07-07 under this same POC risk-accept — GitHub OIDC is NOT required** (customer trust-model acceptance 2026-07-07; see FR-P2-042 "Trust model"). GitHub OIDC per-repo identity would structurally close this residual risk, but it is **not a precondition for either level** — it remains an optional future hardening (D-v3-8). Compensating controls in force:
+  - No-orphan hard-reject + append-only bound tampering to *insert-with-wrong-attribution* only (never edit/delete).
+  - Slack posts limited to channels the app itself provisioned; runtime bot token is `chat:write`-only (two-token split — SEC-M1); channel-provisioning scopes on a separate credential.
+  - Slack message body sanitized (broadcast/link tokens stripped — SEC-L1); messages project-labelled by `jira_key`.
+  - Dimensionless `GovernanceEventRejected` counter (no repo dimension — denial-of-wallet guard) + repo in structured log only.
+  - Bot token stored only in SSM SecureString (never in PG, API responses, or logs); IAM `ssm:GetParameter`+`kms:Decrypt` scoped to the single token ARN.
+  - **Level 2 (FR-P2-042) is ACTIVE as of 2026-07-07 under this same POC risk-accept — it is NOT gated on GitHub OIDC.** The accepted trust model is the authenticated MCP path (same as `record_progress`): Level 2 only reconciles micro `governance_events` that were already written through the API-key-gated `record_progress` tool (no-orphan resolve-or-reject — FR-P2-038 — and append-only), so it introduces no new trust surface. Auto-completion is additionally bounded to the same residual risk as Level 1 — allow-listed by `micro_artifact_mapping` (`is_active=true`), deterministic (never fuzzy text), idempotent, reversible, fully audited (`micro_artifact_audit`), and own-repo-scoped. Revisit only if a non-first-party CI ever holds the shared key.
+  - App→MCP macro calls currently reuse the shared key; a distinct app service identity remains the recommended future hardening (SEC-M3) — optional, not a precondition for Level 1 or Level 2.
 
 ### NFR-P2-004: Data Integrity
 
@@ -1192,4 +1505,4 @@ This vision is aspirational and not in scope for the current build, but architec
 
 ---
 
-*End of Phase 2 SRS v1.3*
+*End of Phase 2 SRS v1.5*

@@ -7,7 +7,7 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { withRoles } from '@kiro-governance/shared/middleware/rbac';
 import { ok, handleError, NotFoundError, ValidationError, AppError } from '@kiro-governance/shared/middleware/error-handler';
-import { withLogging, log } from '@kiro-governance/shared/middleware/logger';
+import { log } from '@kiro-governance/shared/middleware/logger';
 import { queryOne, queryMany } from '@kiro-governance/shared/db/pool';
 
 interface CheckpointRow {
@@ -32,7 +32,7 @@ const CLOSURE_CHECKPOINTS = [
 
 export const handler: APIGatewayProxyHandler = withRoles(
   ['pm', 'leadership', 'admin'],
-  withLogging(async (event) => {
+  async (event) => {
     try {
       const projectId = event.pathParameters?.projectId;
 
@@ -103,7 +103,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
         throw new Error('Failed to close project');
       }
 
-      log('PROJECT_CLOSED', {
+      log('info', 'PROJECT_CLOSED', {
         projectId,
         closedAt: result.closed_at,
       });
@@ -115,5 +115,5 @@ export const handler: APIGatewayProxyHandler = withRoles(
     } catch (err) {
       return handleError(err);
     }
-  }),
+  },
 );

@@ -80,6 +80,12 @@ async function getProject(projectId: string, _auth: AuthContext): Promise<Projec
       p.sow_hours,
       p.hours_consumed,
       p.sow_link,
+      p.github_repo,
+      p.github_url,
+      p.slack_micro_channel_id,
+      p.slack_macro_channel_id,
+      p.updated_by,
+      p.updated_at,
       cp.current_phase,
       p.created_at
     FROM projects p
@@ -121,6 +127,12 @@ async function getProject(projectId: string, _auth: AuthContext): Promise<Projec
     sow_link: row.sow_link,
     current_phase: row.current_phase,
     created_at: row.created_at,
+    github_repo: row.github_repo,
+    github_url: row.github_url,
+    slack_micro_channel_id: row.slack_micro_channel_id,
+    slack_macro_channel_id: row.slack_macro_channel_id,
+    updated_by: row.updated_by,
+    updated_at: row.updated_at,
   };
 }
 

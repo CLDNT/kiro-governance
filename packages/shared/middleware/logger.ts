@@ -50,7 +50,7 @@ export function withLogging(
     event: APIGatewayProxyEvent,
     context: Context,
     callback?: Callback<APIGatewayProxyResult>,
-  ): Promise<APIGatewayProxyResult | void> => {
+  ): Promise<APIGatewayProxyResult> => {
     const startTime = Date.now();
     const userId = extractUserId(event);
     const method = event.httpMethod || 'UNKNOWN';

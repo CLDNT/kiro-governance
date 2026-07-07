@@ -1,4 +1,5 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
+import type { ZodError } from 'zod';
 
 /**
  * CORS headers added to every Lambda response.
@@ -68,6 +69,19 @@ export class ForbiddenError extends AppError {
     super('FORBIDDEN', message, 403);
     this.name = 'ForbiddenError';
   }
+}
+
+/**
+ * Convert a ZodError into a field-scoped ValidationError so the client learns
+ * exactly which field failed (required by the CR-02 §7 error contract).
+ */
+export function zodToValidationError(err: ZodError): ValidationError {
+  const details: Record<string, string[]> = {};
+  for (const issue of err.issues) {
+    const key = issue.path.join('.') || '_root';
+    (details[key] ??= []).push(issue.message);
+  }
+  return new ValidationError('Invalid request body', details);
 }
 
 /**

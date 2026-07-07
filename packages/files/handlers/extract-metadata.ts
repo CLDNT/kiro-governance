@@ -9,7 +9,7 @@ import { SQSHandler } from 'aws-lambda';
 import { queryOne } from '@kiro-governance/shared/db/pool';
 import { log } from '@kiro-governance/shared/middleware/logger';
 import { GetSecretValueCommand, SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
-import type { LinkMetadata } from '@deliverpro/analysis/types';
+import type { LinkMetadata } from '../types';
 
 const secretsClient = new SecretsManagerClient({});
 
@@ -60,7 +60,7 @@ async function fetchAvomaMetadata(meetingLink: string, apiKey: string): Promise<
       participants: data.participants,
     };
   } catch (err) {
-    log('AVOMA_METADATA_ERROR', { error: String(err) });
+    log('error', 'AVOMA_METADATA_ERROR', { error: String(err) });
     return null;
   }
 }
@@ -124,7 +124,7 @@ async function extractMetadata(evidence: EvidenceRecord): Promise<LinkMetadata |
 
     return null;
   } catch (err) {
-    log('METADATA_EXTRACTION_ERROR', { error: String(err) });
+    log('error', 'METADATA_EXTRACTION_ERROR', { error: String(err) });
     return null;
   }
 }
@@ -148,7 +148,7 @@ export const handler: SQSHandler = async (event) => {
       );
 
       if (!evidence) {
-        log('EVIDENCE_NOT_FOUND', { evidenceId });
+        log('warn', 'EVIDENCE_NOT_FOUND', { evidenceId });
         failures.push({ messageId: record.messageId, error: 'Evidence not found' });
         continue;
       }
@@ -163,14 +163,14 @@ export const handler: SQSHandler = async (event) => {
           [JSON.stringify(metadata), evidenceId]
         );
 
-        log('METADATA_EXTRACTED', {
+        log('info', 'METADATA_EXTRACTED', {
           evidenceId,
           hasTitle: !!metadata.meeting_title,
           hasDate: !!metadata.meeting_date,
         });
       }
     } catch (err) {
-      log('METADATA_EXTRACTION_HANDLER_ERROR', { error: String(err) });
+      log('error', 'METADATA_EXTRACTION_HANDLER_ERROR', { error: String(err) });
       failures.push({ messageId: record.messageId, error: String(err) });
     }
   }
@@ -178,7 +178,7 @@ export const handler: SQSHandler = async (event) => {
   // Return batch failures (SQS will retry these)
   return {
     batchItemFailures: failures.map((f) => ({
-      itemId: f.messageId,
+      itemIdentifier: f.messageId,
     })),
   };
 };

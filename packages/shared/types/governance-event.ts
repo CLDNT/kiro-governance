@@ -27,6 +27,14 @@ export interface GovernanceEventRecord {
   /** Human-readable phase name (e.g., "Internal Preparation", "Discover & Align") */
   phase_name?: string;
 
+  /**
+   * Level-2 stable event code (CR-14). Optional, rename-safe, language-agnostic
+   * (casdm.<phase>.<artifact>). Present only on micro events that a Kiro agent tags for
+   * micro-artifact auto-completion. Persisted as-is; unknown/absent codes never resolve
+   * in Level-2 (timeline-only). Not part of the idempotency key.
+   */
+  event_code?: string;
+
   /** Provenance — commit SHA or file line reference */
   source_ref: string;
 

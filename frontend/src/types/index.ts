@@ -1,6 +1,7 @@
 export interface Project {
   id: number;
   jira_key: string;
+  jira_link: string | null;
   title: string;
   description: string | null;
   project_type: string | null;
@@ -13,6 +14,56 @@ export interface Project {
   burn_rate_pct: number | null;
   planned_kickoff_date: string | null;
   expected_completion_date: string | null;
+  // --- CR-02 / CR-15: GitHub ↔ dual-Slack linkage (V004). All nullable — feature switch. ---
+  github_repo: string | null;
+  github_url: string | null;
+  slack_micro_channel_id: string | null;
+  slack_macro_channel_id: string | null;
+  // Read-only audit metadata for the last linkage mutation. Never a secret.
+  updated_by: string | null;
+  updated_at: string | null;
+}
+
+/**
+ * The four optional GitHub/Slack linkage fields shared by create + edit forms.
+ * All values are non-secret. A Slack bot token / webhook URL is NEVER represented here.
+ */
+export interface ProjectLinkageInput {
+  github_repo?: string | null;
+  github_url?: string | null;
+  slack_micro_channel_id?: string | null;
+  slack_macro_channel_id?: string | null;
+}
+
+export interface CreateProjectInput extends ProjectLinkageInput {
+  title: string;
+  project_type: string;
+  description?: string;
+  project_manager?: string;
+  solution_architect?: string;
+  sow_hours?: number;
+  planned_kickoff_date?: string;
+}
+
+export interface UpdateProjectInput extends ProjectLinkageInput {
+  title?: string;
+  description?: string;
+  status?: string;
+  project_manager?: string;
+  solution_architect?: string;
+  sow_hours?: number | null;
+}
+
+/** Response for POST /api/projects/{projectId}/slack/provision (CR-05, FR-P2-039). Non-secret ids only. */
+export interface ProvisionSlackChannelsResponse {
+  project_id: string;
+  slack_micro_channel_id: string;
+  slack_macro_channel_id: string;
+  provisioned: {
+    micro: { channel_id: string; created: boolean };
+    macro: { channel_id: string; created: boolean };
+  };
+  persisted: boolean;
 }
 
 export interface ProjectSummary {
@@ -75,7 +126,34 @@ export interface MicroArtifact {
   phase_name: string;
   status: 'pending' | 'in_progress' | 'complete';
   completed_at: string | null;
+  // 'kiro:<actor>' when auto-completed by the Level-2 reconciler (UI shows a 'kiro' badge);
+  // a user email when completed manually. See lib/artifacts.ts.
   completed_by: string | null;
+  // CR-12 / FR-P2-042: true when a human set the status via PATCH /artifacts — the reconciler
+  // will not auto-complete or clobber this row until reset_to_auto clears it.
+  manual_override: boolean;
+}
+
+/**
+ * Body for PATCH /api/projects/{projectId}/artifacts/{artifactId} (CR-12).
+ * Any human status change sets manual_override=true server-side. reset_to_auto (admin/leadership
+ * only) clears manual_override so the row becomes Kiro auto-eligible again.
+ */
+export interface UpdateArtifactInput {
+  status: 'pending' | 'in_progress' | 'complete';
+  reset_to_auto?: boolean;
+}
+
+/**
+ * Response for POST /api/projects/{projectId}/sync-artifacts (CR-12 / FR-P2-042).
+ * Non-secret counts of the Level-2 micro-artifact reconcile run. Idempotent — completed is 0 on
+ * re-sync; all-zero for an unlinked project.
+ */
+export interface SyncArtifactsResponse {
+  project_id: string;
+  matched: number;
+  completed: number;
+  skipped: number;
 }
 
 export interface PhaseGateView {

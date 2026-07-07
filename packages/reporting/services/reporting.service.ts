@@ -12,7 +12,7 @@ import {
   GateCompletionRate,
   TimelineResponse,
   TimelineEvent,
-} from './types';
+} from '../types';
 
 /**
  * Get leadership reporting summary — project counts by phase, stalled projects, gate completion.
@@ -256,18 +256,30 @@ WHERE p.jira_key = $1
   }
 
   // 2. Get timeline events
+  //    Source 1 (governance_events) is joined via projects.github_repo (CR-03 repoint) — Phase 1
+  //    keys governance_events.project_id by the GitHub repo name, not the jira_key. $1 remains the
+  //    jira_key (route param); the join resolves the repo-keyed governance rows. Unlinked projects
+  //    (github_repo IS NULL) surface zero governance rows (feature switch OFF) — only DeliverPro
+  //    native events show. The interim collision-safe branch keeps imported-but-not-yet-linked
+  //    projects visible during the CR-06 backfill window (drop after backfill validates; see
+  //    docs/phase2/gates-architecture.md §5.4 and unified-data-model.md §4.4.6). Macro governance
+  //    events surface but NEVER set macro_checkpoints.reached_at — macro completion is app-owned.
   const events = await queryMany<TimelineEvent>(
     `
 SELECT
   'governance' as event_type,
-  id::text as event_id,
-  created_at as event_timestamp,
-  phase,
-  update_text as title,
-  actor,
-  gate as detail
-FROM governance_events
-WHERE project_id = $1
+  ge.id::text as event_id,
+  ge.created_at as event_timestamp,
+  ge.phase,
+  ge.update_text as title,
+  ge.actor,
+  ge.gate as detail
+FROM governance_events ge
+JOIN projects p
+  ON p.github_repo = ge.project_id
+  -- INTERIM collision-safe branch (drop after CR-06 backfill validates; unified-data-model §4.4.6):
+  OR (p.github_repo IS NULL AND p.jira_key = ge.project_id)
+WHERE p.jira_key = $1
 UNION ALL
 SELECT
   'checkpoint' as event_type,

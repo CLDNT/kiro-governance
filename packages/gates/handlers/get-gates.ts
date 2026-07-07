@@ -9,19 +9,7 @@ import { ok, handleError, NotFoundError, AppError } from '@kiro-governance/share
 import { withLogging, log } from '@kiro-governance/shared/middleware/logger';
 import { queryMany } from '@kiro-governance/shared/db/pool';
 import { GateStatusResponse, PhaseGateView } from '../types';
-
-const GATE_TO_CHECKPOINT: Record<string, string> = {
-  'discovery outputs validated': '5 outputs reviewed by SA',
-  'preliminary srs validated': 'Working SRS reviewed by SA',
-  'srs approved': 'Working SRS reviewed by SA',
-  'design docs approved': 'Technically validate 6 design docs with spec strategy by SA',
-  'implementation plan approved': 'Implementation Plan Review (Transcript Analysis)',
-  'spec strategy approved': 'Review 3 generated outputs by Tech Lead',
-  'code approved': 'Validate performance, security, compliance by Tech Lead',
-  'uat report approved': 'UAT Review with Client (SA Support)',
-  'runbooks approved': 'Validate customer documentation by Tech Lead',
-  'project documentation approved': 'Validate customer documentation by Tech Lead',
-};
+import { reconcileMicroArtifacts } from '../services/micro-artifact-reconcile.service';
 
 interface MacroCheckpointRow {
   id: number;
@@ -50,6 +38,7 @@ interface MicroArtifactRow {
   status: string;
   completed_at: string | null;
   completed_by: string | null;
+  manual_override: boolean;
 }
 
 interface CasdmConfigRow {
@@ -58,13 +47,6 @@ interface CasdmConfigRow {
   item_name: string;
   is_mandatory: boolean;
   is_active: boolean;
-}
-
-interface GovernanceEventRow {
-  gate: string;
-  actor: string;
-  created_at: string;
-  project_id: string;
 }
 
 export const handler: APIGatewayProxyHandler = withRoles(
@@ -85,9 +67,27 @@ export const handler: APIGatewayProxyHandler = withRoles(
         throw new NotFoundError('Project', projectId);
       }
 
+      // CR-12 T3: opportunistic, best-effort Level-2 reconcile on gate-view load, so a PM opening
+      // the project sees fresh Kiro completions. Own-repo only (skipped when github_repo IS NULL).
+      // NEVER throws — a reconcile failure must not break the gate view.
+      try {
+        const linked = await queryMany<{ github_repo: string | null }>(
+          'SELECT github_repo FROM projects WHERE jira_key = $1',
+          [projectId],
+        );
+        if (linked[0]?.github_repo) {
+          await reconcileMicroArtifacts(projectId, 'system:gate-view');
+        }
+      } catch (err) {
+        log('warn', 'ARTIFACT_SYNC_ON_VIEW_FAILED', {
+          projectId,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
+
       // Load micro artifacts
       const artifacts = await queryMany<MicroArtifactRow>(
-        `SELECT id, phase, phase_name, artifact_name, status, completed_at, completed_by
+        `SELECT id, phase, phase_name, artifact_name, status, completed_at, completed_by, manual_override
          FROM micro_artifacts
          WHERE project_id = $1
          ORDER BY phase, id`,
@@ -109,28 +109,12 @@ export const handler: APIGatewayProxyHandler = withRoles(
         [projectId],
       );
 
-      // Reconcile with governance_events (Phase 1 integration)
-      const governanceEvents = await queryMany<GovernanceEventRow>(
-        `SELECT ge.gate, ge.actor, ge.created_at, ge.project_id
-         FROM governance_events ge
-         WHERE ge.project_id = $1 AND ge.type = 'macro'
-         ORDER BY ge.created_at ASC`,
-        [projectId],
-      );
-
-      // Auto-complete checkpoints from governance_events (earliest event wins)
-      for (const event of governanceEvents) {
-        const checkpointName = GATE_TO_CHECKPOINT[event.gate.toLowerCase().trim()];
-        if (!checkpointName) continue;
-
-        const checkpoint = checkpoints.find(
-          (cp) => cp.checkpoint_name === checkpointName && cp.reached_at === null,
-        );
-        if (checkpoint) {
-          checkpoint.reached_at = event.created_at;
-          checkpoint.reviewed_by = event.actor;
-        }
-      }
+      // NOTE (CR-03 / §5.3): macro completion is APP-OWNED. macro_checkpoints.reached_at is set
+      // ONLY by the in-app §4 state machine (human_review / meeting / transcript_analysis /
+      // checklist). Phase 1 `governance_events` are display-only — they surface on the project
+      // timeline (see packages/gates/handlers/project-timeline.ts) but MUST NOT complete a
+      // checkpoint here. The previous governance_events -> macro_checkpoints auto-completion loop
+      // was removed per FR-P2-041 (D-v3-4): no governance_events -> macro_checkpoints path exists.
 
       // Load CASDM config for phase completion logic
       const config = await queryMany<CasdmConfigRow>(
@@ -161,6 +145,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
           status: artifact.status as any,
           completed_at: artifact.completed_at,
           completed_by: artifact.completed_by,
+          manual_override: artifact.manual_override,
         });
       });
 
@@ -178,6 +163,8 @@ export const handler: APIGatewayProxyHandler = withRoles(
           id: checkpoint.id,
           checkpoint_name: checkpoint.checkpoint_name,
           checkpoint_type: checkpoint.checkpoint_type as any,
+          phase: checkpoint.phase,
+          phase_name: checkpoint.phase_name,
           occurred: checkpoint.occurred,
           meeting_date: checkpoint.meeting_date,
           meeting_link: checkpoint.meeting_link,
@@ -212,7 +199,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
         ),
       };
 
-      log('GATE_VIEW_LOADED', { projectId, phaseCount: response.phases.length });
+      log('info', 'GATE_VIEW_LOADED', { projectId, phaseCount: response.phases.length });
 
       return ok(response);
     } catch (err) {

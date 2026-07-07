@@ -49,7 +49,7 @@ export async function fetchTranscriptFromAvoma(
       });
 
       if (!response.ok) {
-        log('AVOMA_API_ERROR', {
+        log('error', 'AVOMA_API_ERROR', {
           attempt: attempt + 1,
           status: response.status,
           meetingId,
@@ -68,7 +68,7 @@ export async function fetchTranscriptFromAvoma(
       }
 
       const data = await response.json() as AvomaTranscriptResponse;
-      log('AVOMA_TRANSCRIPT_FETCHED', { meetingId, charCount: data.transcript_text.length });
+      log('info', 'AVOMA_TRANSCRIPT_FETCHED', { meetingId, charCount: data.transcript_text.length });
       return data;
     } catch (err) {
       if (err instanceof AppError) {
@@ -77,7 +77,7 @@ export async function fetchTranscriptFromAvoma(
 
       if (err instanceof TypeError && err.message.includes('timeout')) {
         if (attempt === 0) {
-          log('AVOMA_TIMEOUT', { attempt: attempt + 1, meetingId });
+          log('warn', 'AVOMA_TIMEOUT', { attempt: attempt + 1, meetingId });
           await new Promise((resolve) => setTimeout(resolve, 5000));
           continue;
         }
@@ -91,7 +91,7 @@ export async function fetchTranscriptFromAvoma(
 
       lastError = err as Error;
       if (attempt === 0) {
-        log('AVOMA_ERROR', { attempt: attempt + 1, error: String(err) });
+        log('error', 'AVOMA_ERROR', { attempt: attempt + 1, error: String(err) });
         await new Promise((resolve) => setTimeout(resolve, 5000));
         continue;
       }

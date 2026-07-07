@@ -43,5 +43,5 @@
     "file://.kiro/steering/aws-architect-standards.md"
   ],
   "prompt": "file://aws-security-reviewer/prompt.md",
-  "model": "claude-sonnet-4.6"
+  "model": "claude-opus-4.8"
 }

@@ -3,7 +3,7 @@
  * Handles CASDM template and analysis prompt operations
  * Source: docs/phase2/config-architecture.md §6
  */
-import { pool } from '@kiro-governance/shared/db/pool';
+import { query as runQuery } from '@kiro-governance/shared/db/pool';
 import { AppError, ValidationError, NotFoundError } from '@kiro-governance/shared/middleware/error-handler';
 import {
   CasdmConfigItem,
@@ -15,7 +15,7 @@ import {
   TemplateListResponse,
   TemplateTypeSummary,
   PromptListResponse,
-} from './types';
+} from '../types';
 
 /**
  * Get configuration template for a specific project type
@@ -23,7 +23,7 @@ import {
  */
 export async function getTemplate(projectType: string): Promise<CasdmConfigItem[]> {
   // Try specific project type first
-  const { rows } = await pool.query(
+  const { rows } = await runQuery(
     `SELECT * FROM casdm_config
      WHERE project_type = $1 AND is_active = true
      ORDER BY phase_order, item_order`,
@@ -35,7 +35,7 @@ export async function getTemplate(projectType: string): Promise<CasdmConfigItem[
   }
 
   // Fall back to 'default' template
-  const { rows: defaultRows } = await pool.query(
+  const { rows: defaultRows } = await runQuery(
     `SELECT * FROM casdm_config
      WHERE project_type = 'default' AND is_active = true
      ORDER BY phase_order, item_order`
@@ -52,7 +52,7 @@ export async function getTemplate(projectType: string): Promise<CasdmConfigItem[
  * List all project types with their template statistics
  */
 export async function listTemplates(): Promise<TemplateTypeSummary[]> {
-  const { rows } = await pool.query(`
+  const { rows } = await runQuery(`
     SELECT
       project_type,
       COUNT(DISTINCT CASE WHEN config_type = 'phase' THEN phase END) AS phase_count,
@@ -84,7 +84,7 @@ export async function createConfigItem(
   // Auto-assign item_order if not provided
   let itemOrder = input.item_order;
   if (!itemOrder && (input.config_type === 'micro_artifact' || input.config_type === 'macro_checkpoint')) {
-    const { rows } = await pool.query(
+    const { rows } = await runQuery(
       `SELECT COALESCE(MAX(item_order), 0) + 1 AS next_order
        FROM casdm_config
        WHERE project_type = $1 AND phase = $2 AND config_type = $3`,
@@ -97,7 +97,7 @@ export async function createConfigItem(
   const isMandatory = input.is_mandatory ?? true;
 
   try {
-    const { rows } = await pool.query(
+    const { rows } = await runQuery(
       `INSERT INTO casdm_config
        (config_type, phase, phase_name, phase_order, item_name, item_order, item_type, is_mandatory, project_type, changed_by, is_active, updated_at)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, now())
@@ -187,7 +187,7 @@ export async function updateConfigItem(
       RETURNING *
     `;
 
-    const { rows } = await pool.query(query, values);
+    const { rows } = await runQuery(query, values);
 
     if (rows.length === 0) {
       throw new NotFoundError('ConfigItem', `${id}`);
@@ -206,7 +206,7 @@ export async function updateConfigItem(
  * List all analysis prompts
  */
 export async function listPrompts(): Promise<AnalysisPrompt[]> {
-  const { rows } = await pool.query(
+  const { rows } = await runQuery(
     `SELECT id, checkpoint_name, prompt_text, updated_by, updated_at, created_at
      FROM analysis_prompts
      ORDER BY checkpoint_name`
@@ -224,7 +224,7 @@ export async function updatePrompt(
   input: UpdatePromptInput,
   actor: string
 ): Promise<AnalysisPrompt> {
-  const { rows } = await pool.query(
+  const { rows } = await runQuery(
     `INSERT INTO analysis_prompts (checkpoint_name, prompt_text, updated_by, updated_at, created_at)
      VALUES ($1, $2, $3, now(), now())
      ON CONFLICT (checkpoint_name) DO UPDATE SET
@@ -242,7 +242,7 @@ export async function updatePrompt(
  * Get list of all distinct project types
  */
 export async function listProjectTypes(): Promise<string[]> {
-  const { rows } = await pool.query(
+  const { rows } = await runQuery(
     `SELECT DISTINCT project_type FROM casdm_config ORDER BY project_type`
   );
 
@@ -257,7 +257,7 @@ export async function copyTemplate(input: CopyTemplateInput, actor: string): Pro
   const { source_project_type, target_project_type } = input;
 
   // Check if target already has rows
-  const { rows: targetCheck } = await pool.query(
+  const { rows: targetCheck } = await runQuery(
     `SELECT COUNT(*) as count FROM casdm_config WHERE project_type = $1`,
     [target_project_type]
   );
@@ -267,7 +267,7 @@ export async function copyTemplate(input: CopyTemplateInput, actor: string): Pro
   }
 
   // Copy all rows from source to target
-  const { rows } = await pool.query(
+  const { rows } = await runQuery(
     `INSERT INTO casdm_config
      (config_type, phase, phase_name, phase_order, item_name, item_order, item_type, is_mandatory, is_active, project_type, changed_by, created_at, updated_at)
      SELECT config_type, phase, phase_name, phase_order, item_name, item_order, item_type, is_mandatory, is_active, $2, $3, now(), now()

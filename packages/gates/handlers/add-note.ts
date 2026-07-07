@@ -39,7 +39,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
 
       // Get current user email from auth context
       const auth: AuthContext = context.auth || {};
-      const authorEmail = auth.email || auth.sub || 'unknown';
+      const authorEmail = auth.email || auth.userId || 'unknown';
 
       // Insert note
       const result = await queryOne<GateNote>(
@@ -53,7 +53,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
         throw new Error('Failed to create note');
       }
 
-      log('CHECKPOINT_NOTE_ADDED', {
+      log('info', 'CHECKPOINT_NOTE_ADDED', {
         projectId,
         checkpointId,
         checkpointName: checkpoint.checkpoint_name,

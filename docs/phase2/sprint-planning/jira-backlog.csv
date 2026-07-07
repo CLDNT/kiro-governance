@@ -433,3 +433,106 @@
 - Analysis prompts editor page at /admin/prompts per FR-P2-029
 - Auth: leadership, admin only per FR-P2-016
 - All runbooks stored in docs/phase2/runbooks/","Operational documentation + admin UI."
+"CR-P0","GitHub-Slack Linkage","Sprint 9","Doc-drift correction — mcp-server-core persistence DynamoDB to RDS","Backend","3","High","Backlog","","docs/phase1/mcp-server-core-architecture.md §3.2, §5 (§0 v3 CR overlay); change-requests/2026-07-02-github-slack-linkage-impact.md v3-1","AC:
+- mcp-server-core-architecture.md §3.2 and §5 describe record_progress persistence as RDS Postgres (writeGovernanceEvent to postgres.service), matching V001 and unified-data-model
+- All DynamoDB persistence references for record_progress removed from the doc
+- No code change required; verified record-progress.ts already imports writeGovernanceEvent from postgres.service
+- Append-only described via ownership model (forward-reference to CR-01A)","Documentation-only; no runtime behaviour change. Prerequisite for CR-08. Requires human go-ahead D-v3-1."
+"CR-11","GitHub-Slack Linkage","Sprint 9","Dead DynamoDB code + table-name SSM leftover removal","Backend","2","High","Backlog","","docs/phase1/mcp-server-core-architecture.md §0 overlay; impact v3-5.6 (Decision J)","AC:
+- packages/mcp-server/src/services/dynamodb.service.ts deleted
+- services/__tests__/dynamodb.service.test.ts deleted
+- loadServerConfig() in index.ts no longer reads /kiro-governance/config/table-name
+- tableName removed from ServerConfig interface; build + full test suite pass with zero references
+- /kiro-governance/config/table-name SSM parameter retired out-of-band and documented in runbook","Cleanup (Decision J). Independent — no functional dependency."
+"CR-01","GitHub-Slack Linkage","Sprint 9","V004 additive schema migration (github/Slack columns, audit, mapping)","Backend","3","High","Backlog","","docs/phase2/architecture/unified-data-model.md §4.4; projects-architecture.md §12; impact v3-4 (§A-E)","AC:
+- V004 adds nullable columns to projects: github_repo, github_url, slack_micro_channel_id, slack_macro_channel_id, updated_by, updated_at
+- Partial unique index uq_projects_github_repo ON projects(github_repo) WHERE github_repo IS NOT NULL created
+- project_link_audit table created (id, project_id FK, field, old_value, new_value, actor_sub, changed_at) + idx_project_link_audit_project
+- BEFORE UPDATE trigger audit_project_linkage emits ONE row per changed linkage field using IS DISTINCT FROM (PLAN-M3)
+- AFTER INSERT trigger audit_project_linkage_insert writes one row per non-NULL linkage field at create, old_value NULL (SEC-M5)
+- micro_artifact_mapping table created INERT (Level-2 deferred; no seed data, no kiro_mcp grant)
+- Migration idempotent (IF NOT EXISTS) and V004 sorts lexically last","Additive only. Pre-impl F10: confirm two V002 files converge on single projects definition. Ownership/grants delivered separately in CR-01A. Requires D-v3-1/D-v3-2."
+"CR-01A","GitHub-Slack Linkage","Sprint 9","Ownership-reassignment + grants hardening migration (append-only)","Backend","2","High","Backlog","CR-01","docs/phase2/architecture/unified-data-model.md §4.4.4; impact v3-4 §F (SEC-H1/SEC-L4), v3-5.4","AC:
+- DO-block idempotently creates kiro_migrator (NOLOGIN NOINHERIT) and kiro_mcp (LOGIN) roles — replaces invalid V001 CREATE USER IF NOT EXISTS (SEC-L4)
+- Ownership of governance_events, projects, micro_artifacts, macro_checkpoints, project_link_audit, micro_artifact_mapping + all sequences reassigned to kiro_migrator
+- kiro_mcp granted exactly INSERT,SELECT on governance_events + USAGE,SELECT on its sequence + column SELECT(jira_key,github_repo,slack_micro_channel_id,slack_macro_channel_id) on projects; no UPDATE/DELETE anywhere; no grant on micro_artifact_mapping (PLAN-L2)
+- kiro_phase2 runtime role granted DML on all DeliverPro tables + SELECT on governance_events/v_timeline + sequence usage (survives ownership reassignment — PLAN-H2)
+- ALTER DEFAULT PRIVILEGES FOR ROLE kiro_migrator revokes future TABLE/SEQUENCE privileges from kiro_mcp
+- Post-migration audit confirms kiro_mcp holds no UPDATE/DELETE and is not table owner; pg_auth_members/rolsuper/master-user checks pass
+- Pre-impl ownership audit recorded: SELECT tablename,tableowner FROM pg_tables WHERE schemaname='public'","BLOCKING pre-impl human sign-off D-v3-3 + D-v3-11. Ops items: (a) repoint MCP runtime off RDS master to kiro_mcp non-master role; (b) confirm/repoint Phase-2 Lambda DB_USER=kiro_phase2. Mandatory security re-review."
+"CR-02","GitHub-Slack Linkage","Sprint 9","Projects API linkage retrofit (fields, validation, authz, audit)","Backend","5","High","Backlog","CR-01,CR-01A","docs/phase2/projects-architecture.md §2.2, §2.4, §12.1-§12.3; impact v3-3 (FR-P2-033/034/035/040)","AC:
+- POST /api/projects and PATCH accept github_repo, github_url, slack_micro_channel_id, slack_macro_channel_id (all optional)
+- github_repo validated ^[A-Za-z0-9._-]{1,100}$ -> 400 VALIDATION_ERROR; duplicate non-null -> 409 DUPLICATE_GITHUB_REPO
+- github_url validated ^https://github.com/[A-Za-z0-9._/-]{1,200}$ (https + github.com only) -> 400 VALIDATION_ERROR (SEC-M3)
+- Cross-column guard: github_repo equal to any existing jira_key rejected -> 409 DUPLICATE_GITHUB_REPO (SEC-M4)
+- jira_key change attempt -> 422 IMMUTABLE_FIELD (FR-P2-033)
+- Linkage field change by non-admin/leadership (Cognito sub/group) -> 403 FORBIDDEN; admin/leadership succeeds
+- Each linkage create/change writes per-field project_link_audit rows + sets updated_by/updated_at
+- Shared TS types + specs/api/projects.yaml updated with new fields + error codes; unit tests pass","Retrofit of live projects API (DP-05). Security-sensitive (linkage authz) — plan + security review."
+"CR-04","GitHub-Slack Linkage","Sprint 9","Onboarding soft-capture of Slack micro/macro channel ids","Backend","4","High","Backlog","CR-02","docs/phase2/projects-architecture.md §2.6, §2.7; FR-P2-019 (soft capture); impact v3-3","AC:
+- Completing onboarding item Set up Slack/Teams channel prompts for slack_micro_channel_id and slack_macro_channel_id
+- Values optional — completion is NOT blocked when omitted (soft capture, OQ-CR-15 default)
+- Supplied channel ids persist to projects columns via the audited linkage path
+- No secret (bot token/webhook) is ever accepted or stored via this path","Soft capture only; must not hard-block onboarding completion."
+"CR-05","GitHub-Slack Linkage","Sprint 10","App-managed Slack — workspace bot token, two-token split, channel provisioning","Full-stack","8","High","Backlog","CR-01,CR-02","docs/phase1/mcp-server-core-architecture.md §0 overlay; projects-architecture.md §12.4 (FR-P2-039); impact v3-5.3, v3-6.2","AC:
+- Single workspace Slack app created; runtime bot token (chat:write only) stored in SSM SecureString single param /kiro-governance/slack/bot-token
+- Separate provisioning credential (channels:read + channels:manage) held only by the app link/onboarding path (two-token split, SEC-M1); no admin.* scope on either
+- Link-time provisioning resolves/creates micro+macro channels via conversations.list/conversations.create and stores ids in slack_micro_channel_id/slack_macro_channel_id
+- notify_slack runtime IAM: ssm:GetParameter + kms:Decrypt scoped to the single bot-token param ARN only (not a wildcard, SEC-M1/S-14)
+- Bot token never appears in any API response, PG column, or log
+- Provisioning UI (admin/leadership) triggers channel resolve/create and shows resulting channel ids","Infrastructure + backend + admin UI. Secret store default SSM SecureString + aws/ssm (D-v3-7). Mandatory security re-review (token split)."
+"CR-08","GitHub-Slack Linkage","Sprint 10","record_progress no-orphan resolve-or-reject + resolveProject + classifyEvent fix","Backend","5","High","Backlog","CR-P0,CR-01A","docs/phase1/mcp-server-core-architecture.md §0, §3.2; impact v3-5.1 (FR-P2-038); packages/shared/constants/macro-gates classifyEvent (PLAN-H1)","AC:
+- record_progress resolves SELECT jira_key FROM projects WHERE github_repo=$1 LIMIT 1 before write, for BOTH macro and micro
+- 0 rows -> event NOT written; returns {written:false, reason:no_matching_project}; dimensionless GovernanceEventRejected metric incremented (no repo dimension); repo in structured log only
+- 1 row -> existing classify + dedup (ON CONFLICT) + writeGovernanceEvent unchanged
+- resolveProject(repo) added to postgres.service.ts (parameterized, reuses IAM-auth pool)
+- classifyEvent honours an explicit type unconditionally (drops flag_override && guard); unit test asserts classifyEvent with update_text SRS approved + type micro resolves to micro
+- kiro_mcp uses only INSERT,SELECT on events + column SELECT on projects (verified against CR-01A grants)","Requires CR-01A ownership/grants. Live-tool change — security re-review. Cutover gated behind validated CR-06 backfill (webhook fallback bridges)."
+"CR-09","GitHub-Slack Linkage","Sprint 10","notify_slack dual-channel bot-token rewrite + slack.service rewrite","Backend","8","High","Backlog","CR-01A,CR-05","docs/phase1/mcp-server-core-architecture.md §0, §3.1; impact v3-5.2, v3-5.3 (FR-P2-039)","AC:
+- notify_slack no longer skips micro; routes by event_type: micro to slack_micro_channel_id, macro to slack_macro_channel_id
+- Resolves project by github_repo, reads channel id from PG, posts via chat.postMessage with SSM bot token
+- Unresolved project or NULL channel -> {notified:false, reason:channel_not_configured} (graceful; no secret/SSM path/repo leaked)
+- Message project-labelled [jira_key]; mention tokens (<!here>,<!channel>,<!everyone>,<@..>,<#..>) stripped/escaped (SEC-L1)
+- slack.service.ts: getBotToken (SSM SecureString, 5-min cache, chat:write only) + postMessage (Bearer, JSON channel+text); HTTP-200 with ok:false treated as error; 3s timeout
+- Legacy per-repo webhook getWebhookUrl retained as deprecation fallback during transition; retired only after CR-06 backfill + channel config validate (PLAN-H2b)
+- Unit + integration tests for both channels + graceful skip + sanitization","Replaces webhook-by-repo. Live-tool change — security re-review. CLI-macro path uses macro channel (CR-10)."
+"CR-03","GitHub-Slack Linkage","Sprint 11","Micro Level-1 timeline surfacing (join repoint) + macro app-owned lock","Backend","5","High","Backlog","CR-01","docs/phase2/gates-architecture.md §2.8, §5.4; reporting-architecture.md §5.3; unified-data-model §4.4.6; impact v3-4 join repoint (FR-P2-036/037/041)","AC:
+- v_timeline source-1 join repointed jira_key to github_repo; interim collision-safe branch OR (p.github_repo IS NULL AND p.jira_key=ge.project_id) guarded by collision check
+- packages/gates/handlers/project-timeline.ts and reporting timeline SQL repointed identically
+- Governance events (macro included) appear on timeline as source kiro_mcp but macro events do NOT set macro_checkpoints.reached_at
+- Unlinked project (github_repo NULL) timeline shows only DeliverPro-native events; no error raised
+- Confirmed no governance_events to macro_checkpoints auto-completion path exists or is introduced
+- Backfilled repo surfaces historical governance events immediately (read-side join)","Interim jira_key branch dropped after CR-06 validates. Display-only; macro completion stays app-owned (D-v3-4)."
+"CR-06","GitHub-Slack Linkage","Sprint 10","Backfill projects.github_repo + validation report (cutover gate)","Backend","3","Medium","Blocked","CR-02","change-requests/2026-07-02-github-slack-linkage-impact.md v3-8 CR-06, §3.4; unified-data-model §4.4.6","AC:
+- One-time backfill sets projects.github_repo from the authoritative repo-to-project mapping (OQ-CR-14)
+- Collision guard run: SELECT p1.jira_key FROM projects p1 JOIN projects p2 ON p2.github_repo=p1.jira_key returns zero rows before enabling strict join
+- Validation report lists every repo currently emitting governance events or receiving Slack and confirms it maps to a project
+- Interim jira_key fallback branch in v_timeline/handlers dropped only after backfill validates","DATA-BLOCKED on OQ-CR-14 (authoritative repo-to-project mapping). HARD PREDECESSOR of CR-08/CR-09/CR-03 go-live cutover (webhook transition fallback bridges the window). Not Spec Ready until OQ-CR-14 answered."
+"CR-10","GitHub-Slack Linkage","Sprint 11","Event-source split — CI micro adaptation + CLI-macro path + app-backend macro notify","Backend","5","High","Backlog","CR-08,CR-09","docs/phase1/github-trigger-architecture.md §0 overlay; impact v3-6.1, v3-6.2 (FR-P2-040/041)","AC:
+- governance-trigger.js record_progress changed to type:micro + flag_override:true + non-gate update_text label; notify_slack event_type:micro
+- Persisted governance_events row from CI path has type=micro (asserted in test) — no accidental macro reclassification (PLAN-H1)
+- no_matching_project from record_progress logged and non-blocking (unlinked repos produce nothing)
+- CLI-macro backward-compat path (D-v3-10): repos with no in-app approver may emit display-only macro event (type:macro, flag_override:true, does NOT set reached_at) + macro-channel notify — preserves demoed progress-MD to gate to Slack
+- App backend calls MCP notify_slack event_type:macro with project_id=github_repo on in-app macro-gate approval; app builds no Slack client
+- App skips notify_slack entirely when github_repo IS NULL (PLAN-L3); macro completion still recorded in macro_checkpoints
+- No double-notify: micro from CI only, macro from app only (verified in CR-13)","Retains CLI-macro path per D-v3-10. Direct sub-agent micro record_progress calls surface on timeline but do not auto-notify Slack (PLAN-I1)."
+"CR-15","GitHub-Slack Linkage","Sprint 11","Frontend — project GitHub/Slack linkage fields + provisioning trigger UI","Frontend","3","High","Backlog","CR-02,CR-05","docs/phase2/projects-architecture.md §12.1, §12.2, §12.4; frontend-standards; impact v3-3 (FR-P2-034/035)","AC:
+- Project create + edit forms expose github_repo, github_url, slack_micro_channel_id, slack_macro_channel_id (admin/leadership only; hidden/disabled for other roles via CASL)
+- Client-side validation mirrors server (github_repo charset; github_url https+github.com); inline errors on 400/409/422 (VALIDATION_ERROR/DUPLICATE_GITHUB_REPO/IMMUTABLE_FIELD)
+- github_url rendered as clickable link with rel=noopener noreferrer
+- Provision Slack channels action calls the CR-05 provisioning endpoint and displays returned channel ids
+- Re-point/clear github_repo shows warning about historical-event visibility impact (FR-P2-040)
+- No bot token/secret ever rendered","Linkage UI (user-requested). Uses design system + CASL role gating."
+"CR-13","GitHub-Slack Linkage","Sprint 11","Level-1 integration tests — feature switch + coexistence (no double-notify)","Testing","3","High","Backlog","CR-03,CR-08,CR-09,CR-10","change-requests/2026-07-02-github-slack-linkage-impact.md v3-8 CR-13 (FR-P2-040/041)","AC:
+- Feature switch: unlinked project neither stores (record_progress no_matching_project) nor notifies (no channel); no regression vs current app-only behaviour
+- Linked project: micro event stored, surfaces on timeline, posts to micro channel
+- Coexistence: micro originates only from CI path; macro only from app; asserts no event yields both a micro and macro notification
+- No-orphan: event for unmapped repo not written; dimensionless GovernanceEventRejected incremented
+- Macro app-owned: Kiro macro governance event does not set macro_checkpoints.reached_at","Level-1 integration coverage. NUMBERING NOTE: instruction exclude list said CR-12/13/14; this CR-13 is Level-1 tests (per arch v3-8) and is RETAINED — see PM summary."
+"CR-07","GitHub-Slack Linkage","","Rejected-writes metric dashboard (Could-Have)","Backend","3","Low","Backlog","CR-08","change-requests/2026-07-02-github-slack-linkage-impact.md v3-8 CR-07","AC:
+- CloudWatch dashboard surfaces the dimensionless GovernanceEventRejected count over time
+- Operational runbook entry references the dashboard","Could-Have; NOT in Level-1 core scope. Unscheduled/deferred."
+"CR-ICEBOX","GitHub-Slack Linkage","","DEFERRED (customer dropped) — Level-2 auto-completion + event_code + GitHub OIDC","Deferred","","Low","Deferred","","change-requests/2026-07-02-github-slack-linkage-impact.md v3-3 FR-P2-042, v3-8 (CR-12/CR-14/CR-OIDC)","AC:
+- NOT SCHEDULED. Bundles CR-12 (micro to micro_artifacts auto-completion, FR-P2-042), CR-14 (event_code Phase-1 addition to record_progress input + GovernanceEventRecord + governance_events column), and CR-OIDC (GitHub OIDC per-repo identity)
+- Gated on OQ-CR-13 (event-code vocabulary) + D-v3-8 (adopt OIDC as Level-2 prerequisite) before any scheduling
+- micro_artifact_mapping table already created inert by CR-01; no kiro_mcp grant on it","Customer dropped Level-2 for this delivery. SEC-H2/H3 require OIDC before reactivation. Single icebox row per instruction."

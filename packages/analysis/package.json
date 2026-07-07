@@ -6,6 +6,10 @@
   "exports": {
     ".": "./index.ts"
   },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
   "dependencies": {
     "@aws-sdk/client-bedrock-agent-runtime": "^3.600.0",
     "@aws-sdk/client-s3": "^3.600.0",

@@ -57,7 +57,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
         expiresIn: 300,
       };
 
-      log('UPLOAD_URL_GENERATED', {
+      log('info', 'UPLOAD_URL_GENERATED', {
         projectId: input.projectId,
         phase: input.phase,
         fileName: sanitizedFileName,

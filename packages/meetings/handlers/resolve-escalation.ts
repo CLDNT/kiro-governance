@@ -60,7 +60,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
         result.warning = 'Escalation resolved without notes. Consider adding resolution context.';
       }
 
-      log('ESCALATION_RESOLVED', {
+      log('info', 'ESCALATION_RESOLVED', {
         projectId,
         escalationId,
         resolvedDate: input.resolved_date,

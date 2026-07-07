@@ -4,7 +4,7 @@
  * See specs/api/projects.yaml for API documentation.
  */
 
-import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import { z } from 'zod';
 import { withRoles } from '@kiro-governance/shared/middleware/rbac';
 import { ok, handleError, ValidationError } from '@kiro-governance/shared/middleware/error-handler';

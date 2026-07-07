@@ -124,7 +124,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
         expiresIn: 300,
       };
 
-      log('DOWNLOAD_URL_GENERATED', {
+      log('info', 'DOWNLOAD_URL_GENERATED', {
         s3Key: input.s3Key,
         requestedBy: email,
         role: auth.role,

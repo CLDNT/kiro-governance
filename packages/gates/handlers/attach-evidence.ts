@@ -65,7 +65,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
           `UPDATE macro_checkpoints SET meeting_link = $1 WHERE id = $2`,
           [input.value, checkpointId],
         );
-        log('CHECKPOINT_ENRICHED', { checkpointId, field: 'meeting_link' });
+        log('info', 'CHECKPOINT_ENRICHED', { checkpointId, field: 'meeting_link' });
       }
 
       // If ai_analysis type, also update checkpoint analysis_result (for analysis domain)
@@ -76,7 +76,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
         );
       }
 
-      log('EVIDENCE_ATTACHED', {
+      log('info', 'EVIDENCE_ATTACHED', {
         projectId,
         checkpointId,
         evidenceType: input.evidence_type,

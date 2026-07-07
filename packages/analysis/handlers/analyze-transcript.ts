@@ -61,7 +61,7 @@ async function fetchTranscriptFromS3(s3Url: string): Promise<string> {
     const buffer = Buffer.concat(chunks);
     return buffer.toString('utf-8');
   } catch (err) {
-    log('TRANSCRIPT_RETRIEVAL_ERROR', { s3Url, error: String(err) });
+    log('error', 'TRANSCRIPT_RETRIEVAL_ERROR', { s3Url, error: String(err) });
     throw new AppError(
       'TRANSCRIPT_NOT_FOUND',
       'Failed to retrieve transcript from storage',
@@ -154,7 +154,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
           throw new Error('Empty SSM parameter values');
         }
       } catch (err) {
-        log('SSM_PARAMETER_ERROR', { error: String(err) });
+        log('error', 'SSM_PARAMETER_ERROR', { error: String(err) });
         throw new AppError(
           'AGENT_UNAVAILABLE',
           'Failed to retrieve Bedrock agent configuration',
@@ -202,7 +202,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
         ]
       );
 
-      log('ANALYZE_TRANSCRIPT_COMPLETE', {
+      log('info', 'ANALYZE_TRANSCRIPT_COMPLETE', {
         projectId,
         checkpointId,
         passed: analysisResult.passed,

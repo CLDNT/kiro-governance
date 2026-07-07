@@ -54,7 +54,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
         throw new Error('Failed to create status log');
       }
 
-      log('STATUS_LOG_CREATED', {
+      log('info', 'STATUS_LOG_CREATED', {
         projectId,
         logDate: input.log_date,
         loggedBy: userEmail,

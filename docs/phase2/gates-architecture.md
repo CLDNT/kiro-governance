@@ -4,6 +4,7 @@
 
 | Date | Version | Author | Change |
 |------|---------|--------|--------|
+| 2026-07-02 | v1.1 | AWS Architect | GitHub↔Slack linkage CR (FR-P2-036/037/041). §5 rewritten: timeline governance join repointed `jira_key`→`github_repo` (Level 1 surfacing); **removed the §5.3 macro auto-completion write path** — macro completion is app-owned and Kiro macro events are display-only (never set `reached_at`); §5.2 gate-name map retained for label display only. Added Phase-1 cross-references (`notify_slack` dual-channel, `record_progress` no-orphan resolve). |
 | 2026-06-29 | v1.0 | AWS Architect | Initial gates domain architecture from SRS v1.3 (FR-P2-002, 003, 004, 007, 008, 011, 017, 024, 026, 027), domain decomposition v1.0 §2.3, auth-architecture v1.0, projects-architecture v1.0 §4, V002 migration |
 
 ---
@@ -535,23 +536,25 @@ async function evaluateChecklistCompletion(tx: PoolClient, projectId: string): P
 
 ## 5. Phase 1 Governance Events Integration
 
-**Source:** FR-P2-011, SRS §8.4
+**Source:** FR-P2-011, FR-P2-036, FR-P2-037, FR-P2-041 (SRS §5).
 
-The Phase 1 MCP server writes `governance_events` to the same RDS instance. This domain reads those rows to surface them in the project timeline and to auto-complete matching checkpoints.
+The Phase 1 MCP server writes `governance_events` to the same RDS instance. This domain **reads** those rows to surface them in the project timeline (Level 1). It does **not** auto-complete any checkpoint from a governance event — macro completion is app-owned (see §5.3).
 
-### 5.1 Join Condition
+### 5.1 Join Condition (repointed — V004)
 
 ```sql
-governance_events.project_id = projects.jira_key
+governance_events.project_id = projects.github_repo
 ```
 
-The Phase 1 MCP server uses the Jira key (e.g., `rainn`, `CST-674`) as `project_id`. The join is exact-match on `projects.jira_key`.
+Phase 1 keys `governance_events.project_id` by the **GitHub repository name** (`github.event.repository.name`, e.g. `deliverpro`), NOT the Jira key. The timeline therefore joins on `projects.github_repo` (the linkage set per FR-P2-034), which is the identifier-reconciliation bridge between Phase 1 (repo-keyed) and Phase 2 (`jira_key`-keyed).
 
-### 5.2 Gate Name Matching
+- A project with `github_repo IS NULL` (unlinked / feature switch OFF) surfaces **only** DeliverPro-native events — identical to prior behaviour; no error is raised.
+- Backfilling a project's `github_repo` makes its historical governance events appear immediately (read-side join; no reprocessing) — FR-P2-037.
+- During the linkage backfill window a collision-safe interim predicate may also match the legacy `jira_key` branch for still-unlinked projects; it is dropped once backfill validates. See `unified-data-model.md` §4.4.6.
 
-Phase 1 `governance_events.gate` field uses canonical gate names from the kiro-governance shared constants (e.g., `'SRS approved'`, `'Design docs approved'`). These must be matched to `macro_checkpoints.checkpoint_name`.
+### 5.2 Gate Name Matching (display label only)
 
-**Matching strategy:** Case-insensitive, trimmed exact match against the canonical names:
+Phase 1 `governance_events.gate` uses canonical gate names from the kiro-governance shared constants (e.g., `'SRS approved'`, `'Design docs approved'`). This map is used **only** to render a friendly timeline label alongside a Kiro macro event — it does **NOT** drive checkpoint completion (see §5.3).
 
 ```typescript
 const GATE_TO_CHECKPOINT: Record<string, string> = {
@@ -568,57 +571,54 @@ const GATE_TO_CHECKPOINT: Record<string, string> = {
 };
 ```
 
-### 5.3 Auto-Completion from Governance Events
+### 5.3 Macro Completion Is App-Owned — Kiro Macro Events Are Display-Only
 
-When loading the gate view, if a `governance_events` row matches a checkpoint AND the checkpoint has no `reached_at`, auto-set completion:
+**Source:** FR-P2-041 (Decisions F, H).
 
-```sql
--- Run during gate view assembly (read path, not a persistent write)
-UPDATE macro_checkpoints mc
-SET
-  reached_at = ge.created_at,
-  reviewed_by = ge.actor
-FROM governance_events ge
-WHERE ge.project_id = mc.project_id
-  AND ge.type = 'macro'
-  AND mc.reached_at IS NULL
-  AND LOWER(TRIM(ge.gate)) = ANY($1::text[])  -- array of mapped gate names
-  AND mc.checkpoint_name = $2                   -- resolved checkpoint_name from mapping
-  AND mc.project_id = $3;
+`macro_checkpoints.reached_at` is set **only** by in-app triggers — the §4 state machine (`human_review` / `meeting` / `transcript_analysis` / `checklist`). **No `governance_events → macro_checkpoints` auto-completion write path exists or is introduced.** A Phase 1 `type = 'macro'` governance event surfaces on the timeline (with its friendly label from §5.2) but never mutates checkpoint state.
+
+Rationale (per the change-request design of record):
+
+- **Ownership split (no double-notification):** MICRO events are owned by the CI/Kiro path (micro channel); MACRO completion + macro-channel notification are owned by the DeliverPro app when a human approves a gate in-app. No single event produces both a micro and a macro notification.
+- **Backward-compatible CLI-macro path:** For a linked repo with no in-app approver (pure Kiro-CLI), the CI script MAY emit a macro governance event (`type = 'macro'`, `flag_override: true`) that is **display-only** (surfaces on the timeline, triggers the macro-channel notification) and still does NOT set `reached_at`. This preserves the "progress-MD → gate → Slack" behaviour without violating app-owned completion.
+
+> Prior drafts of this doc contained a `UPDATE macro_checkpoints ... FROM governance_events WHERE type='macro'` reconciliation block. That path is **removed** — it contradicts FR-P2-041. Macro completion is exclusively the in-app §4 state machine.
+
+### 5.3.1 App → MACRO `notify_slack` Trigger (concrete spec)
+
+**Source:** FR-P2-041 (Decisions F, H); v3 CR §v3-6.2; `mcp-server-core-architecture.md` §0.1/§0.4.
+
+When the §4 state machine sets `macro_checkpoints.reached_at` (i.e. a human approves a macro gate in-app), the DeliverPro app backend fires the MACRO Slack notification through the **shared MCP `notify_slack` tool** — it does NOT build its own Slack client. Exact contract:
+
+```
+on macro-gate approval (reached_at just set for project P):
+  ├─ if P.github_repo IS NULL:
+  │     SKIP the notify_slack call ENTIRELY.
+  │     (Do NOT call with a null/empty project_id — the tool input is z.string().min(1); a null
+  │      fails schema validation rather than returning a graceful reason. PLAN-L3.)
+  │     Macro completion is still recorded in macro_checkpoints (linkage is display/notify only).
+  └─ else (P.github_repo set):
+        call notify_slack({ project_id: P.github_repo, message: <gate label>, event_type: 'macro' })
+          → MCP resolves the project by github_repo and routes to slack_macro_channel_id.
+          → if slack_macro_channel_id IS NULL → MCP returns { notified:false, reason:'channel_not_configured' }
+             (graceful). The app treats this as a non-error; it MAY also skip proactively when it knows
+             the macro channel is unconfigured. Either is acceptable.
 ```
 
-**Alternative (lazy auto-complete on read):** To avoid mutating data on a GET request, the auto-completion can run as a background reconciliation job or be triggered on the first GET after a new governance event arrives. For MVP, we use a **write-through on first read** approach:
-
-```typescript
-async function reconcileGovernanceEvents(projectId: string): Promise<void> {
-  const events = await pool.query(
-    `SELECT ge.gate, ge.actor, ge.created_at
-     FROM governance_events ge
-     WHERE ge.project_id = $1 AND ge.type = 'macro'
-     ORDER BY ge.created_at ASC`,
-    [projectId]
-  );
-
-  for (const event of events.rows) {
-    const checkpointName = GATE_TO_CHECKPOINT[event.gate.toLowerCase().trim()];
-    if (!checkpointName) continue;
-
-    // Use earliest matching event — skip if checkpoint already reached
-    await pool.query(
-      `UPDATE macro_checkpoints
-       SET reached_at = $1, reviewed_by = $2
-       WHERE project_id = $3 AND checkpoint_name = $4 AND reached_at IS NULL`,
-      [event.created_at, event.actor, projectId, checkpointName]
-    );
-  }
-}
-```
+- **No double-notify:** the app is the ONLY macro-notification source; the CI script is the ONLY micro source (§5.7, PLAN-I1). A single gate approval produces exactly one macro post.
+- **No macro `governance_events` write by the app:** macro milestones already surface on the timeline via the `v_timeline` `macro_checkpoints` (`reached_at`) branch — the app does not write a governance event for macro (avoids double-sourcing). Any Kiro-emitted macro governance events remain display-only.
+- **Auth (SEC-M3, recorded):** the app→MCP call currently uses the same shared API key as CI; a distinct app service identity is the recommended hardening, deferred with OIDC under the POC risk-accept (`mcp-server-core-architecture.md` §0.7).
+- **CLI-only repos:** for a linked repo with no in-app approver, the retained CLI-macro path (§5.3, PLAN-H2) emits the display-only macro event + macro-channel notify instead.
 
 ### 5.4 Timeline Interleaving SQL
 
 ```sql
 WITH timeline_events AS (
-  -- Source 1: governance_events from Phase 1 MCP
+  -- Source 1: governance_events from Phase 1 MCP — joined via github_repo (V004 repoint).
+  -- $1 remains the jira_key (route param); the join resolves the repo-keyed governance rows.
+  -- Unlinked project (github_repo IS NULL) → zero governance rows (feature switch OFF).
+  -- Interim collision-safe branch during backfill (drop after CR-06): also match
+  --   (p.github_repo IS NULL AND p.jira_key = ge.project_id). See unified-data-model §4.4.6.
   SELECT
     'ge-' || ge.id::text AS id,
     'governance_event' AS event_type,
@@ -629,7 +629,14 @@ WITH timeline_events AS (
     ge.update_text AS detail,
     'kiro_mcp' AS source
   FROM governance_events ge
-  WHERE ge.project_id = $1
+  JOIN projects p
+    ON p.github_repo = ge.project_id
+    -- INTERIM collision-safe branch during CR-06 backfill (DROP after backfill validates, alongside
+    -- the v_timeline branch): keep imported-but-not-yet-linked projects visible so the per-project
+    -- endpoint and v_timeline stay in lock-step. Guarded by the pre-implementation no-collision check
+    -- (no github_repo equals any other project's jira_key). See unified-data-model.md §4.4.6.
+    OR (p.github_repo IS NULL AND p.jira_key = ge.project_id)
+  WHERE p.jira_key = $1
 
   UNION ALL
 
@@ -683,15 +690,24 @@ LIMIT $2;
 
 Where `$3` is the `cursor` parameter (ISO timestamp of the last event from the previous page).
 
-### 5.5 Orphan Governance Events
+### 5.5 Orphan Governance Events (no-orphan hard reject)
 
-If `governance_events.project_id` does not match any `projects.jira_key`, those events are silently excluded from the timeline (the JOIN naturally filters them). No error is raised.
+Under FR-P2-038, orphan governance events are prevented **at write time**, not filtered on read: the MCP `record_progress` tool resolves `SELECT jira_key FROM projects WHERE github_repo = $1 LIMIT 1` before writing; if no project matches the repo, the event is **hard-rejected** (`{ "written": false, "reason": "no_matching_project" }`), a dimensionless `GovernanceEventRejected` metric increments, and nothing is stored. As defence-in-depth, the timeline join on `github_repo` also naturally excludes any event that does not resolve. No error is raised on the read path.
 
-### 5.6 Multiple Events Matching Same Checkpoint
+### 5.6 Multiple Governance Events (all display-only)
 
-When multiple `governance_events` rows match the same checkpoint:
-- **Auto-completion uses the earliest** (`ORDER BY created_at ASC`, first match wins due to `AND reached_at IS NULL`)
-- **Timeline shows all matching events** (they are distinct timeline entries regardless of auto-completion)
+When multiple `governance_events` rows exist for a project's repo:
+
+- **All matching events are shown** as distinct timeline entries, ordered chronologically.
+- **None auto-complete any checkpoint** — macro completion is app-owned (§5.3). There is no "earliest wins" completion behaviour anymore (that belonged to the removed auto-completion path).
+
+### 5.7 Phase 1 Cross-References
+
+| Phase 1 doc | Relevance to `gates` timeline |
+|-------------|-------------------------------|
+| `docs/phase1/mcp-server-core-architecture.md` | `record_progress` resolve-or-reject (no-orphan, FR-P2-038); `notify_slack` dual-channel routing by `event_type` (micro→`slack_micro_channel_id`, macro→`slack_macro_channel_id`) resolving the project by `github_repo`. The macro-channel notification is triggered by the DeliverPro app on in-app gate approval (§4), not by this timeline read. |
+| `docs/phase1/github-trigger-architecture.md` | CI script emits `type: 'micro'` (`flag_override: true`, non-gate `update_text`) — these are the micro events surfaced here. Retained **CLI-macro path** emits display-only macro events (see §5.3). |
+| `docs/phase1/agent-integration-architecture.md` | `project_id ↔ github_repo` reconciliation — Phase 1 keys events by repo name; this domain joins them to `projects` via `github_repo`. |
 
 ---
 
@@ -869,8 +885,8 @@ export interface ListNotesResponse {
 | Scenario | Handling | Source |
 |----------|----------|--------|
 | Checkpoint already completed — re-patching | Only `meeting_date` and `result_detail` are allowed on re-PATCH (enrichment). Attempting to change `occurred`, `reviewed_by`, or clear `reached_at` returns `400 CHECKPOINT_ALREADY_COMPLETE`. | FR-P2-008: "A checkpoint cannot be un-completed once marked (append-only audit trail)" |
-| `governance_events` match for project not in `projects` table | Silently skipped — the JOIN excludes orphan events. No error raised. | Architect decision |
-| Multiple `governance_events` matching same checkpoint | Use the **earliest** event (lowest `created_at`) for auto-completion. All events still appear in the timeline. | Architect decision |
+| `governance_events` match for project not in `projects` table | Cannot occur post-V004: orphan events are hard-rejected at write time (`record_progress` → `no_matching_project`, FR-P2-038 / §5.5). As defence-in-depth the timeline join on `github_repo` also excludes any non-resolving event. No error raised. | FR-P2-038, §5.5 |
+| Multiple `governance_events` matching same project's repo | **All** are shown as distinct timeline entries, ordered chronologically. **None** auto-complete any checkpoint — macro completion is app-owned (§5.3); there is no "earliest wins" behaviour (that belonged to the removed auto-completion path). | FR-P2-041, §5.3/§5.6 |
 | Checklist checkpoint auto-completion race condition | Wrap the checklist item update + checkpoint evaluation in a single DB transaction with `FOR UPDATE` on the checklist items row. | FR-P2-019 + architect decision |
 | `transcript_analysis` checkpoint PATCH without meeting_link evidence | Return `400 VALIDATION_ERROR`: "Meeting link evidence required before analysis can run." | FR-P2-005 pre-condition |
 | PATCH on `checklist` type checkpoint | Return `400 VALIDATION_ERROR`: "Checklist checkpoints are auto-completed when all child items are done." | FR-P2-008 |

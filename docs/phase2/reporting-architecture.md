@@ -4,6 +4,7 @@
 
 | Date | Version | Author | Change |
 |------|---------|--------|--------|
+| 2026-07-02 | v1.1 | AWS Architect | GitHub↔Slack linkage CR (FR-P2-037). Repointed the `v_timeline` governance source join and the per-project reporting-timeline query from `projects.jira_key` to `projects.github_repo` (emitting `jira_key` as `project_id`), with the collision-safe backfill transition. Macro governance events remain display-only. |
 | 2026-06-30 | v1.0 | AWS Architect | Initial reporting domain architecture from SRS v1.3 (FR-P2-010), gates-architecture v1.0 §2.8 (timeline), projects-architecture v1.0 §4 (phase computation) |
 
 ---
@@ -120,7 +121,7 @@ interface ReportingTimelineResponse {
 }
 ```
 
-This handler wraps the same timeline SQL from `gates-architecture.md` §5.4 but adds project metadata (title, current_phase) to the response for reporting context. It also uses a larger default limit (100 vs 50) since leadership reviews full project history.
+This handler wraps the same timeline SQL from `gates-architecture.md` §5.4 (which, per V004, joins Phase 1 `governance_events` via `projects.github_repo = governance_events.project_id` while `projectId`/`$1` remains the `jira_key`) but adds project metadata (title, current_phase) to the response for reporting context. It also uses a larger default limit (100 vs 50) since leadership reviews full project history. Unlinked projects (`github_repo IS NULL`) show only DeliverPro-native events; Kiro macro events are display-only.
 
 **Error codes:**
 
@@ -369,12 +370,14 @@ GROUP BY mc.checkpoint_name, mc.checkpoint_type, mc.phase, mc.phase_name, p.proj
 
 ### 5.3 `v_timeline`
 
+> **Authoritative DDL:** The runnable `v_timeline` definition lives in the migrations (`V004__github_slack_linkage.sql`, which `DROP`s + re-creates the V003 view with source-1 joined on `github_repo`). The migration preserves the deployed V003 column contract (`project_id, project_title, event_type, event_id, event_timestamp, phase, phase_name, title, actor, detail, sub_type`). The illustrative SQL below shows the **join repoint only** (the pre-existing column-name drift between this doc and the deployed view predates this CR and is tracked as a separate consistency cleanup — do not copy this column shape into a migration).
+
 ```sql
 CREATE OR REPLACE VIEW v_timeline AS
 -- Source 1: governance_events from Phase 1 MCP
 SELECT
   'ge-' || ge.id::text AS event_id,
-  ge.project_id,
+  p.jira_key AS project_id,   -- V004: emit jira_key (governance_events.project_id is the repo name)
   'governance_event' AS event_type,
   ge.created_at AS event_timestamp,
   ge.phase,
@@ -383,6 +386,10 @@ SELECT
   ge.update_text AS detail,
   'kiro_mcp' AS source
 FROM governance_events ge
+JOIN projects p
+  ON p.github_repo = ge.project_id
+  -- INTERIM collision-safe branch (remove after CR-06 backfill validates; see unified-data-model §4.4.6):
+  OR (p.github_repo IS NULL AND p.jira_key = ge.project_id)
 
 UNION ALL
 
@@ -662,7 +669,7 @@ GROUP BY mc.checkpoint_name, mc.checkpoint_type, mc.phase, mc.phase_name, p.proj
 CREATE OR REPLACE VIEW v_timeline AS
 SELECT
   'ge-' || ge.id::text AS event_id,
-  ge.project_id,
+  p.jira_key AS project_id,   -- V004: emit jira_key (governance_events.project_id is the repo name)
   'governance_event' AS event_type,
   ge.created_at AS event_timestamp,
   ge.phase,
@@ -671,6 +678,10 @@ SELECT
   ge.update_text AS detail,
   'kiro_mcp' AS source
 FROM governance_events ge
+JOIN projects p
+  ON p.github_repo = ge.project_id
+  -- INTERIM collision-safe branch (remove after CR-06 backfill validates; see unified-data-model §4.4.6):
+  OR (p.github_repo IS NULL AND p.jira_key = ge.project_id)
 
 UNION ALL
 

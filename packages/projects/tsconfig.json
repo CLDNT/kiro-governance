@@ -6,7 +6,9 @@
     "baseUrl": ".",
     "paths": {
       "@kiro-governance/shared/*": ["../shared/src/*"],
-      "@kiro-governance/projects/*": ["./*"]
+      "@kiro-governance/projects/*": ["./*"],
+      "@kiro-governance/gates": ["../gates/dist/index"],
+      "@kiro-governance/gates/*": ["../gates/dist/*"]
     }
   },
   "include": [

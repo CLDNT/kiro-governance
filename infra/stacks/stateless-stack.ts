@@ -9,6 +9,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 import { DeliverProLambdasStack } from './deliverpro-lambdas-stack';
+import { SsmSecretGrant } from '../constructs/ssm-secret-grant';
 
 /**
  * Stateless stack for DeliverPro Phase 2.
@@ -73,6 +74,10 @@ export class StatelessStack extends cdk.NestedStack {
   public readonly cognitoAuthorizer: apigateway.CognitoUserPoolsAuthorizer;
   public readonly distribution: cloudfront.Distribution;
   public readonly lambdaBaseRole: iam.Role;
+  /** Dedicated role for the projects-linkage function group (create/update/sync-gates) — reads the GitHub read-token ONLY. */
+  public readonly projectsLinkageRole: iam.Role;
+  /** Dedicated role for the Slack channel-provisioning Lambda — reads the Slack provisioning-token ONLY. */
+  public readonly provisioningRole: iam.Role;
 
   constructor(scope: Construct, id: string, props: StatelessStackProps) {
     super(scope, id, props);
@@ -187,90 +192,62 @@ export class StatelessStack extends cdk.NestedStack {
       enableLogging: environment === 'prod',
     });
 
-    // ==================== Lambda Base Execution Role ====================
-    // Per DP-01 spec §2, backend Lambdas inherit permissions from this role
-    // Base permissions: RDS, S3, Secrets Manager, SSM
+    // ==================== Lambda Execution Roles (least-privilege secret isolation) ====================
+    // Per DP-01 spec §2 the generic Lambdas share a base role. The two credential-bearing consumers
+    // get DEDICATED roles so each reads exactly one SSM secret (CR-05 / CR-16 role↔secret-ARN matrix;
+    // runbook §5). All three roles share the same common permissions (RDS IAM auth as kiro_phase2,
+    // S3 evidence, deliverpro secrets/config, logs, VPC ENI) via applyCommonLambdaPolicies().
+    //
+    //   Role                 | May read (SSM secret)                       | Consumers
+    //   ---------------------|---------------------------------------------|-------------------------------
+    //   lambdaBaseRole       | (none of the three secrets)                 | ~33 generic Lambdas
+    //   projectsLinkageRole  | /kiro-governance/github/read-token          | ProjectsCreate/Update/SyncGates
+    //   provisioningRole     | /kiro-governance/slack/provisioning-token   | ProvisionSlackChannels
+
     this.lambdaBaseRole = new iam.Role(this, 'LambdaBaseRole', {
       roleName: 'deliverpro-lambda-base-role',
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      description: 'Base role for DeliverPro Lambda functions',
+      description: 'Base role for DeliverPro Lambda functions (no linkage secrets)',
     });
 
-    // Policy 1: RDS IAM authentication (to connect to existing RDS)
-    this.lambdaBaseRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        sid: 'RDSConnect',
-        effect: iam.Effect.ALLOW,
-        actions: ['rds-db:connect'],
-        resources: [
-          `arn:aws:rds-db:${region}:${accountId}:dbuser:*/kiro_phase2`,
-        ],
-      }),
+    this.projectsLinkageRole = new iam.Role(this, 'ProjectsLinkageRole', {
+      roleName: 'deliverpro-projects-linkage-role',
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      description:
+        'DeliverPro projects-linkage role (create/update/sync-gates) - GitHub read-token ONLY',
+    });
+
+    this.provisioningRole = new iam.Role(this, 'ProvisioningRole', {
+      roleName: 'deliverpro-slack-provisioning-role',
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      description: 'DeliverPro Slack channel-provisioning role - Slack provisioning-token ONLY',
+    });
+
+    // Common permissions applied to all three roles.
+    [this.lambdaBaseRole, this.projectsLinkageRole, this.provisioningRole].forEach((role) =>
+      this.applyCommonLambdaPolicies(role, region, accountId, props.evidenceBucket),
     );
 
-    // Policy 2: S3 evidence bucket (evidence/ prefix only)
-    this.lambdaBaseRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        sid: 'S3EvidenceBucket',
-        effect: iam.Effect.ALLOW,
-        actions: ['s3:PutObject', 's3:GetObject'],
-        resources: [props.evidenceBucket.arnForObjects('evidence/*')],
-      }),
-    );
+    // Secret grant 1 — GitHub read-token → projects-linkage role ONLY (single ARN, kms:ViaService=ssm).
+    // Used by sync-gates + the best-effort link-time trigger in create/update (CR-16). The GitHub
+    // token is never in an env var — only this scoped SSM read reaches it.
+    new SsmSecretGrant(this, 'GithubReadTokenGrant', {
+      role: this.projectsLinkageRole,
+      parameterName: '/kiro-governance/github/read-token',
+      region,
+      account: accountId,
+      sidPrefix: 'GithubReadToken',
+    });
 
-    // Policy 3: Secrets Manager (deliverpro/* paths)
-    this.lambdaBaseRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        sid: 'SecretsManager',
-        effect: iam.Effect.ALLOW,
-        actions: ['secretsmanager:GetSecretValue'],
-        resources: [
-          `arn:aws:secretsmanager:${region}:${accountId}:secret:/deliverpro/*`,
-        ],
-      }),
-    );
-
-    // Policy 4: SSM GetParameter (deliverpro/* parameters)
-    this.lambdaBaseRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        sid: 'SSMGetParameter',
-        effect: iam.Effect.ALLOW,
-        actions: ['ssm:GetParameter'],
-        resources: [
-          `arn:aws:ssm:${region}:${accountId}:parameter/deliverpro/*`,
-        ],
-      }),
-    );
-
-    // Policy 5: CloudWatch Logs (standard for Lambda)
-    this.lambdaBaseRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        sid: 'CloudWatchLogs',
-        effect: iam.Effect.ALLOW,
-        actions: [
-          'logs:CreateLogGroup',
-          'logs:CreateLogStream',
-          'logs:PutLogEvents',
-        ],
-        resources: [`arn:aws:logs:${region}:${accountId}:log-group:/aws/lambda/*`],
-      }),
-    );
-
-    // Policy 6: VPC ENI management (required for Lambda in VPC)
-    this.lambdaBaseRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        sid: 'VPCNetworkInterface',
-        effect: iam.Effect.ALLOW,
-        actions: [
-          'ec2:CreateNetworkInterface',
-          'ec2:DescribeNetworkInterfaces',
-          'ec2:DeleteNetworkInterface',
-          'ec2:AssignPrivateIpAddresses',
-          'ec2:UnassignPrivateIpAddresses',
-        ],
-        resources: ['*'],
-      }),
-    );
+    // Secret grant 2 — Slack provisioning-token → provisioning role ONLY (single ARN, channels:manage).
+    // Distinct from the runtime bot-token (read by the MCP server role) — SEC-M1 two-token split.
+    new SsmSecretGrant(this, 'ProvisioningTokenGrant', {
+      role: this.provisioningRole,
+      parameterName: '/kiro-governance/slack/provisioning-token',
+      region,
+      account: accountId,
+      sidPrefix: 'SlackProvisioningToken',
+    });
 
     // ==================== SSM Parameter Exports (DP-01) ====================
     // Per DP-01 spec §3
@@ -292,6 +269,8 @@ export class StatelessStack extends cdk.NestedStack {
       restApi: this.restApi,
       cognitoAuthorizer: this.cognitoAuthorizer,
       lambdaBaseRole: this.lambdaBaseRole,
+      projectsLinkageRole: this.projectsLinkageRole,
+      provisioningRole: this.provisioningRole,
       dbEndpoint: props.dbEndpoint,
       dbName: props.dbName,
       dbUser: props.dbUser,
@@ -305,5 +284,84 @@ export class StatelessStack extends cdk.NestedStack {
     // ==================== Stack Tags ====================
     cdk.Tags.of(this).add('Project', 'DeliverPro');
     cdk.Tags.of(this).add('Stack', 'Stateless');
+  }
+
+  /**
+   * Attach the permissions every DeliverPro Lambda role needs, regardless of which SSM secret
+   * (if any) it may read: RDS IAM auth as the non-master kiro_phase2 runtime role (V005 append-only
+   * model), S3 evidence, deliverpro secrets + config params, CloudWatch Logs, and VPC ENI management.
+   * Secret grants are attached SEPARATELY, per-role, via SsmSecretGrant — never here.
+   */
+  private applyCommonLambdaPolicies(
+    role: iam.Role,
+    region: string,
+    accountId: string,
+    evidenceBucket: s3.Bucket,
+  ): void {
+    // RDS IAM authentication — connect ONLY as kiro_phase2 (non-master Phase-2 app role).
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        sid: 'RDSConnect',
+        effect: iam.Effect.ALLOW,
+        actions: ['rds-db:connect'],
+        resources: [`arn:aws:rds-db:${region}:${accountId}:dbuser:*/kiro_phase2`],
+      }),
+    );
+
+    // S3 evidence bucket (evidence/ prefix only).
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        sid: 'S3EvidenceBucket',
+        effect: iam.Effect.ALLOW,
+        actions: ['s3:PutObject', 's3:GetObject'],
+        resources: [evidenceBucket.arnForObjects('evidence/*')],
+      }),
+    );
+
+    // Secrets Manager (deliverpro/* paths — e.g. Avoma API key).
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        sid: 'SecretsManager',
+        effect: iam.Effect.ALLOW,
+        actions: ['secretsmanager:GetSecretValue'],
+        resources: [`arn:aws:secretsmanager:${region}:${accountId}:secret:/deliverpro/*`],
+      }),
+    );
+
+    // SSM GetParameter (NON-SECRET deliverpro/* config only — NOT the /kiro-governance/* secrets).
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        sid: 'SSMGetParameter',
+        effect: iam.Effect.ALLOW,
+        actions: ['ssm:GetParameter'],
+        resources: [`arn:aws:ssm:${region}:${accountId}:parameter/deliverpro/*`],
+      }),
+    );
+
+    // CloudWatch Logs (standard for Lambda).
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        sid: 'CloudWatchLogs',
+        effect: iam.Effect.ALLOW,
+        actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+        resources: [`arn:aws:logs:${region}:${accountId}:log-group:/aws/lambda/*`],
+      }),
+    );
+
+    // VPC ENI management (required for Lambda in VPC).
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        sid: 'VPCNetworkInterface',
+        effect: iam.Effect.ALLOW,
+        actions: [
+          'ec2:CreateNetworkInterface',
+          'ec2:DescribeNetworkInterfaces',
+          'ec2:DeleteNetworkInterface',
+          'ec2:AssignPrivateIpAddresses',
+          'ec2:UnassignPrivateIpAddresses',
+        ],
+        resources: ['*'],
+      }),
+    );
   }
 }

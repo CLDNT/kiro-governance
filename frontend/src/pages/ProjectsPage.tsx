@@ -15,7 +15,6 @@ import {
   RefreshCw,
 } from 'lucide-react';
 
-import { useProjects } from '@/hooks/useProjects';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProjectSummary } from '@/types';
 import { cn } from '@/lib/utils';
@@ -48,6 +47,28 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { useProjects, useCreateProject, useImportJira } from '@/hooks/useProjects';
+import { LinkageFields } from '@/components/projects/LinkageFields';
+import {
+  buildLinkagePayload,
+  canManageLinkage,
+  EMPTY_LINKAGE_VALUES,
+  hasErrors,
+  mapServerError,
+  validateLinkageValues,
+  type LinkageErrors,
+  type LinkageField,
+  type LinkageValues,
+} from '@/lib/linkage';
 
 type ViewMode = 'table' | 'card';
 type SortKey =
@@ -213,6 +234,7 @@ function ProjectsPage(): JSX.Element {
   const navigate = useNavigate();
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
+  const canManageLink = canManageLinkage(user?.role);
 
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -221,6 +243,84 @@ function ProjectsPage(): JSX.Element {
   const [typeFilter, setTypeFilter] = useState('');
   const [pmFilter, setPmFilter] = useState('');
   const [saFilter, setSaFilter] = useState('');
+
+  const [showNewProject, setShowNewProject] = useState(false);
+  const [showImportJira, setShowImportJira] = useState(false);
+  const [newProjectForm, setNewProjectForm] = useState({
+    title: '',
+    project_type: 'AppDev',
+    description: '',
+    project_manager: '',
+    solution_architect: '',
+    sow_hours: '',
+  });
+  const [jiraForm, setJiraForm] = useState({
+    jira_base_url: 'https://cloudelligent.atlassian.net',
+    project_key: 'CST',
+  });
+  const [linkage, setLinkage] = useState<LinkageValues>(EMPTY_LINKAGE_VALUES);
+  const [linkageErrors, setLinkageErrors] = useState<LinkageErrors>({});
+  const [createFormError, setCreateFormError] = useState<string | null>(null);
+  const createProject = useCreateProject();
+  const importJira = useImportJira();
+
+  const handleLinkageChange = (field: LinkageField, value: string): void => {
+    setLinkage((v) => ({ ...v, [field]: value }));
+    setLinkageErrors((e) => (e[field] ? { ...e, [field]: undefined } : e));
+  };
+
+  const resetNewProject = (): void => {
+    setNewProjectForm({
+      title: '',
+      project_type: 'AppDev',
+      description: '',
+      project_manager: '',
+      solution_architect: '',
+      sow_hours: '',
+    });
+    setLinkage(EMPTY_LINKAGE_VALUES);
+    setLinkageErrors({});
+    setCreateFormError(null);
+  };
+
+  const handleCreateProject = async (): Promise<void> => {
+    setCreateFormError(null);
+
+    let linkagePayload: Partial<Record<LinkageField, string | null>> = {};
+    if (canManageLink) {
+      const clientErrors = validateLinkageValues(linkage);
+      if (hasErrors(clientErrors)) {
+        setLinkageErrors(clientErrors);
+        return;
+      }
+      linkagePayload = buildLinkagePayload(linkage, 'create');
+    }
+
+    try {
+      await createProject.mutateAsync({
+        title: newProjectForm.title,
+        project_type: newProjectForm.project_type,
+        ...(newProjectForm.project_manager && {
+          project_manager: newProjectForm.project_manager,
+        }),
+        ...(newProjectForm.solution_architect && {
+          solution_architect: newProjectForm.solution_architect,
+        }),
+        ...(newProjectForm.sow_hours && { sow_hours: Number(newProjectForm.sow_hours) }),
+        ...linkagePayload,
+      });
+      toast.success('Project created successfully');
+      setShowNewProject(false);
+      resetNewProject();
+    } catch (err) {
+      const mapped = mapServerError(err);
+      setLinkageErrors(mapped.fieldErrors);
+      setCreateFormError(mapped.formError);
+      if (!hasErrors(mapped.fieldErrors) && !mapped.formError) {
+        toast.error('Failed to create project');
+      }
+    }
+  };
 
   const [view, setView] = useState<ViewMode>(
     () => (localStorage.getItem(VIEW_STORAGE_KEY) as ViewMode | null) ?? 'table'
@@ -307,10 +407,6 @@ function ProjectsPage(): JSX.Element {
     setSaFilter('');
   };
 
-  const notImplemented = (label: string): void => {
-    toast.info(`${label} is not available in this preview.`);
-  };
-
   return (
     <div className="space-y-6">
       {/* Page header */}
@@ -324,12 +420,12 @@ function ProjectsPage(): JSX.Element {
         </div>
         <div className="flex shrink-0 items-center gap-2">
           {isAdmin && (
-            <Button variant="outline" className="gap-2" onClick={() => notImplemented('Import from Jira')}>
+            <Button variant="outline" className="gap-2" onClick={() => setShowImportJira(true)}>
               <Download />
               Import from Jira
             </Button>
           )}
-          <Button className="gap-2" onClick={() => notImplemented('New Project')}>
+          <Button className="gap-2" onClick={() => setShowNewProject(true)}>
             <Plus />
             New Project
           </Button>
@@ -490,7 +586,7 @@ function ProjectsPage(): JSX.Element {
                 Clear filters
               </Button>
             ) : (
-              <Button onClick={() => notImplemented('New Project')} className="gap-2">
+              <Button onClick={() => setShowNewProject(true)} className="gap-2">
                 <Plus />
                 Create your first project
               </Button>
@@ -592,6 +688,170 @@ function ProjectsPage(): JSX.Element {
           </TabsContent>
         </Tabs>
       )}
+
+      {/* New Project dialog */}
+      <Dialog
+        open={showNewProject}
+        onOpenChange={(open) => {
+          setShowNewProject(open);
+          if (!open) resetNewProject();
+        }}
+      >
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create New Project</DialogTitle>
+            <DialogDescription>
+              Add a new delivery project. CASDM gate template will be seeded automatically.
+            </DialogDescription>
+          </DialogHeader>
+          {createFormError && (
+            <Alert variant="destructive">
+              <AlertDescription>{createFormError}</AlertDescription>
+            </Alert>
+          )}
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="title">Project Title *</Label>
+              <Input
+                id="title"
+                placeholder="e.g. RAINN Referral Platform"
+                value={newProjectForm.title}
+                onChange={(e) => setNewProjectForm((f) => ({ ...f, title: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="project_type">Project Type</Label>
+              <Select
+                value={newProjectForm.project_type}
+                onValueChange={(v) => setNewProjectForm((f) => ({ ...f, project_type: v }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="AppDev">App Development</SelectItem>
+                  <SelectItem value="AppMod">App Modernization</SelectItem>
+                  <SelectItem value="AIML">AI / ML</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="pm">Project Manager (email)</Label>
+              <Input
+                id="pm"
+                placeholder="pm@cloudelligent.com"
+                value={newProjectForm.project_manager}
+                onChange={(e) =>
+                  setNewProjectForm((f) => ({ ...f, project_manager: e.target.value }))
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="sa">Solution Architect (email)</Label>
+              <Input
+                id="sa"
+                placeholder="sa@cloudelligent.com"
+                value={newProjectForm.solution_architect}
+                onChange={(e) =>
+                  setNewProjectForm((f) => ({ ...f, solution_architect: e.target.value }))
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="sow">SOW Hours</Label>
+              <Input
+                id="sow"
+                type="number"
+                placeholder="160"
+                value={newProjectForm.sow_hours}
+                onChange={(e) => setNewProjectForm((f) => ({ ...f, sow_hours: e.target.value }))}
+              />
+            </div>
+            {canManageLink && (
+              <div className="space-y-3 border-t pt-4">
+                <p className="text-sm font-semibold text-foreground">GitHub &amp; Slack linkage</p>
+                <LinkageFields
+                  mode="create"
+                  values={linkage}
+                  errors={linkageErrors}
+                  onChange={handleLinkageChange}
+                  disabled={createProject.isPending}
+                />
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowNewProject(false)}>
+              Cancel
+            </Button>
+            <Button
+              disabled={!newProjectForm.title || createProject.isPending}
+              onClick={() => void handleCreateProject()}
+            >
+              {createProject.isPending ? 'Creating...' : 'Create Project'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Import from Jira dialog */}
+      <Dialog open={showImportJira} onOpenChange={setShowImportJira}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Import from Jira</DialogTitle>
+            <DialogDescription>
+              One-time import of projects from your Jira CST board. Requires Jira API token in
+              Secrets Manager.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="jira_url">Jira Base URL</Label>
+              <Input
+                id="jira_url"
+                value={jiraForm.jira_base_url}
+                onChange={(e) => setJiraForm((f) => ({ ...f, jira_base_url: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="project_key">Project Key</Label>
+              <Input
+                id="project_key"
+                placeholder="CST"
+                value={jiraForm.project_key}
+                onChange={(e) => setJiraForm((f) => ({ ...f, project_key: e.target.value }))}
+              />
+              <p className="text-xs text-muted-foreground">
+                The Jira project key to import (e.g. CST for Customer Status Tracking)
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowImportJira(false)}>
+              Cancel
+            </Button>
+            <Button
+              disabled={!jiraForm.project_key || importJira.isPending}
+              onClick={async () => {
+                try {
+                  const result = await importJira.mutateAsync(jiraForm);
+                  toast.success(`Imported ${result.imported} projects (${result.errors} errors)`);
+                  setShowImportJira(false);
+                } catch (err: unknown) {
+                  const msg =
+                    err && typeof err === 'object' && 'response' in err
+                      ? (err as { response: { data: { message: string } } }).response?.data?.message
+                      : 'Import failed';
+                  toast.error(msg || 'Import failed');
+                }
+              }}
+            >
+              {importJira.isPending ? 'Importing...' : 'Start Import'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

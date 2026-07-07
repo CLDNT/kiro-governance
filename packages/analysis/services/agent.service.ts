@@ -52,7 +52,7 @@ export async function invokeAnalysisAgent(
   if (transcript.length > maxChars) {
     truncatedTranscript = transcript.slice(-maxChars);
     wasTruncated = true;
-    log('TRANSCRIPT_TRUNCATED', { originalLength: transcript.length, truncatedLength: maxChars });
+    log('warn', 'TRANSCRIPT_TRUNCATED', { originalLength: transcript.length, truncatedLength: maxChars });
   }
 
   const inputText = `${prompt}\n\n---TRANSCRIPT BEGIN---${wasTruncated ? '\n[Transcript truncated — showing final portion]\n' : '\n'}${truncatedTranscript}\n---TRANSCRIPT END---`;
@@ -91,7 +91,7 @@ export async function invokeAnalysisAgent(
     // Extract JSON from response (agent may wrap in markdown code blocks)
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      log('AGENT_NO_JSON', { responseText: responseText.slice(0, 200) });
+      log('warn', 'AGENT_NO_JSON', { responseText: responseText.slice(0, 200) });
       throw new AppError(
         'AGENT_UNAVAILABLE',
         'Failed to parse analysis result — agent response contained no JSON',
@@ -105,7 +105,7 @@ export async function invokeAnalysisAgent(
     // Validate result shape
     const result = TranscriptAnalysisResultSchema.parse(parsed);
 
-    log('AGENT_ANALYSIS_COMPLETE', {
+    log('info', 'AGENT_ANALYSIS_COMPLETE', {
       sessionId,
       passed: result.passed,
       confidence: result.confidence,
@@ -127,7 +127,7 @@ export async function invokeAnalysisAgent(
       }
 
       if (err.message.includes('VALIDATION_ERROR') || err.message.includes('Validation')) {
-        log('AGENT_VALIDATION_ERROR', { error: err.message });
+        log('error', 'AGENT_VALIDATION_ERROR', { error: err.message });
         throw new AppError(
           'AGENT_UNAVAILABLE',
           'Analysis result validation failed',
@@ -135,7 +135,7 @@ export async function invokeAnalysisAgent(
         );
       }
 
-      log('AGENT_ERROR', { error: err.message });
+      log('error', 'AGENT_ERROR', { error: err.message });
       throw new AppError(
         'AGENT_UNAVAILABLE',
         `Bedrock invocation failed: ${err.message}`,

@@ -10,6 +10,9 @@ export const UpdateCheckpointInputSchema = z.object({
 
 export const UpdateArtifactInputSchema = z.object({
   status: z.enum(['pending', 'in_progress', 'complete']),
+  // CR-12: admin/leadership-only re-enable of Kiro auto-sync (clears manual_override). Authz is
+  // enforced in the handler; the schema only allows the field through.
+  reset_to_auto: z.boolean().optional(),
 });
 
 export const AttachEvidenceInputSchema = z.object({

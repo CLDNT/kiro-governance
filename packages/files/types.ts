@@ -44,3 +44,14 @@ export interface AuthContext {
   role: string;
   email: string;
 }
+
+/**
+ * Metadata extracted from an evidence link (meeting recording, document).
+ * Local to the files domain — extraction runs in the files SQS consumer.
+ */
+export interface LinkMetadata {
+  meeting_title?: string;
+  meeting_date?: string;
+  duration_minutes?: number;
+  participants?: string[];
+}

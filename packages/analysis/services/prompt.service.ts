@@ -33,14 +33,14 @@ export async function resolvePrompt(checkpointName: string): Promise<string> {
     );
 
     if (result) {
-      log('PROMPT_RESOLVED', { source: 'admin', checkpointName });
+      log('info', 'PROMPT_RESOLVED', { source: 'admin', checkpointName });
       return result.prompt_text;
     }
 
-    log('PROMPT_RESOLVED', { source: 'fallback', checkpointName });
+    log('info', 'PROMPT_RESOLVED', { source: 'fallback', checkpointName });
     return GENERIC_FALLBACK_PROMPT;
   } catch (err) {
-    log('PROMPT_RESOLUTION_ERROR', { checkpointName, error: String(err) });
+    log('error', 'PROMPT_RESOLUTION_ERROR', { checkpointName, error: String(err) });
     // On DB error, return fallback
     return GENERIC_FALLBACK_PROMPT;
   }

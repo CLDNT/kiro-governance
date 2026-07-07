@@ -2,8 +2,15 @@
   "name": "cloudelligent-orchestrator",
   "description": "Solution Architect and Manager - Handles requirements gathering, system architecture, technology decisions, and planning document creation.",
   "tools": ["use_subagent", "knowledge", "fs_read", "fs_write", "grep", "glob"],
-  "allowedTools": ["use_subagent", "knowledge", "fs_read", "fs_write", "grep", "glob"],
+  "allowedTools": [
+    "use_subagent",
+    "knowledge",
+    "fs_read",
+    "fs_write",
+    "grep",
+    "glob"
+  ],
   "resources": ["file://.kiro/steering/orchestrator-standards.md"],
   "prompt": "file://orchestrator/prompt.md",
-  "model": "claude-sonnet-4.6"
+  "model": "claude-opus-4.8"
 }

@@ -70,34 +70,76 @@ export const MACRO_GATE_ALIASES: Record<string, MacroGate> = {
 };
 
 /**
- * Auto-classify a governance update based on text content.
- * Returns: macro event with matched gate, or micro event.
- * Source: data-persistence-architecture.md §7.1, F-01 §4.1
+ * Match free text against the canonical macro gates using case-insensitive
+ * substring matching. Canonical gate names are tried FIRST, then aliases.
+ *
+ * Ordering matters: the alias `documentation approved` is a substring of the
+ * canonical gate `Project documentation approved`. Trying aliases first would
+ * make any "Project documentation approved" line bleed to `Runbooks approved`
+ * (the alias target). Canonical-first prevents that bleed while still resolving
+ * true aliases (e.g. `sprint plan approved`), which never contain a canonical
+ * gate as a substring. First match wins; returns undefined when nothing matches.
+ * Source: F-01 §4.2 (case-insensitive substring matching); CR-16 alias-bleed fix.
+ */
+export function matchGateFromText(text: string): MacroGate | undefined {
+  const lowerText = text.toLowerCase().trim();
+
+  // Try canonical gate matches first (avoids alias/canonical substring bleed).
+  for (const gate of MACRO_GATES) {
+    if (lowerText.includes(gate.toLowerCase())) {
+      return gate;
+    }
+  }
+
+  // Then try alias matches.
+  for (const [alias, canonical] of Object.entries(MACRO_GATE_ALIASES)) {
+    if (lowerText.includes(alias.toLowerCase())) {
+      return canonical;
+    }
+  }
+
+  return undefined;
+}
+
+/**
+ * Classify a governance update.
+ *
+ * Precedence (PLAN-H1 — change-requests/2026-07-02-github-slack-linkage-impact.md
+ * v3-5.1, github-trigger-architecture.md §0.1):
+ *   1. An explicitly-provided `type` is AUTHORITATIVE and always wins. A caller
+ *      that passes `type:'micro'` is NEVER upgraded to macro, even when
+ *      `update_text` contains a canonical gate name (this fixes the CI=MICRO
+ *      split — a stored `type='macro'` from the CI path is a defect). For an
+ *      explicit `type:'macro'` we still surface the matched gate label (if any)
+ *      so downstream can derive the canonical gate name.
+ *   2. Only when `type` is ABSENT do we auto-classify from the text via
+ *      case-insensitive substring matching against MACRO_GATES / aliases.
+ *
+ * `flag_override` no longer gates whether an explicit `type` is honored — an
+ * explicit `type` is enough on its own. `flag_override` is retained on the input
+ * for the persistence layer / audit trail and belt-and-suspenders callers.
+ *
+ * Source: data-persistence-architecture.md §7.1, F-01 §4.1, PLAN-H1.
  */
 export function classifyEvent(input: {
   update_text: string;
   type?: 'macro' | 'micro';
   flag_override?: boolean;
 }): { resolvedType: 'macro' | 'micro'; matchedGate?: string } {
-  // If caller provided explicit type + flag_override, use it as-is
-  if (input.flag_override && input.type) {
-    return { resolvedType: input.type, matchedGate: undefined };
+  // Explicit type is authoritative — it always wins over text-based inference.
+  if (input.type) {
+    return {
+      resolvedType: input.type,
+      // Only a macro event carries a matched gate; an explicit micro event is
+      // never given a gate even if the text happens to contain one.
+      matchedGate: input.type === 'macro' ? matchGateFromText(input.update_text) : undefined,
+    };
   }
 
-  const lowerText = input.update_text.toLowerCase().trim();
-
-  // Try alias matches first
-  for (const [alias, canonical] of Object.entries(MACRO_GATE_ALIASES)) {
-    if (lowerText.includes(alias.toLowerCase())) {
-      return { resolvedType: 'macro', matchedGate: canonical };
-    }
-  }
-
-  // Try canonical gate matches
-  for (const gate of MACRO_GATES) {
-    if (lowerText.includes(gate.toLowerCase())) {
-      return { resolvedType: 'macro', matchedGate: gate };
-    }
+  // No explicit type → auto-classify from the update text.
+  const matchedGate = matchGateFromText(input.update_text);
+  if (matchedGate) {
+    return { resolvedType: 'macro', matchedGate };
   }
 
   // No match → micro event

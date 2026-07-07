@@ -67,7 +67,12 @@ export class DeliverProStack extends cdk.Stack {
       evidenceBucket: this.statefulStack.evidenceBucket,
       dbEndpoint: 'kirogovernancestack-governancedb222ac1c0-zylylm08i7to.c2hys06m2tn2.us-east-1.rds.amazonaws.com',
       dbName: 'kiro_governance',
-      dbUser: 'kiro_mcp',
+      // DB-role repoint (GATE 2): Phase-2 Lambdas authenticate as the NON-master kiro_phase2 role
+      // (IAM DB auth), NOT kiro_mcp/master. This is what makes the V005 append-only model real —
+      // kiro_phase2 has DeliverPro DML but is READ-ONLY on governance_events. The Lambda roles'
+      // rds-db:connect ARN is already scoped to .../dbuser:*/kiro_phase2 (stateless-stack).
+      // Source: runbook §3 (GATE 2); impact v3 §F.4 (D-v3-3 / D-v3-11).
+      dbUser: 'kiro_phase2',
       environment,
       vpc,
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },

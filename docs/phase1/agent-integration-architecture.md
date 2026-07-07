@@ -4,13 +4,26 @@
 
 | Date | Version | Author | Change |
 |------|---------|--------|--------|
+| 2026-07-02 | v1.3 | AWS Architect | GitHub↔Slack linkage CR (v3 Final Design of Record). `record_progress` may now return `{ written:false, reason:'no_matching_project' }` when the repo is not linked to a project — callers (orchestrator hook + sub-agent micro logging) **log and continue** (non-blocking), consistent with the existing best-effort micro-logging error handling. Micro sub-agent logging is otherwise unchanged; those events surface on the timeline (Level 1). `project_id ↔ github_repo` reconciliation: Phase 1 keys events by repo name and DeliverPro joins to `projects` via `github_repo`. Persistence is RDS PostgreSQL (2026-06-23 CR), not DynamoDB. See §0 overlay. |
 | 2026-06-11 | v1.2 | AWS Architect | Security Gate 1 fixes: HTTPS URL (HIGH-1), .env gitignore rule (HIGH-2), cert fingerprint in mcp.json (HIGH-1). |
 | 2026-06-11 | v1.1 | AWS Architect | Removed aspirational session-persistence claim for lost gate (FINDING-1), simplified update_text format (FINDING-2). |
 | 2026-06-11 | v1.0 | AWS Architect | Initial architecture doc for F-02 from SRS v1.5, F-01 v1.1, F-04 v1.1, domain decomposition v1.0 |
 
 ---
 
-## 1. Overview
+## 0. v3 GitHub/Slack Linkage CR — Authoritative Behavior Overlay
+
+> **AUTHORITATIVE (2026-07-02).** Under the linkage CR (`docs/phase2/change-requests/2026-07-02-github-slack-linkage-impact.md`
+> §v3-6), this doc's `record_progress`/`notify_slack` usage inherits the following. Where older prose
+> assumes an always-successful write or DynamoDB persistence, **this section wins**.
+
+- **`no_matching_project` return:** `record_progress` resolves the repo to a project (`projects.github_repo`) before writing. If the repo is unlinked, it returns `{ written:false, reason:'no_matching_project' }` and stores nothing. The orchestrator hook (FR-05) and sub-agent micro logging (FR-07) MUST treat this as non-blocking — log and continue (same best-effort posture the "Micro Logging" steering already prescribes). It is NOT an error for an unlinked repo to produce no governance event (optional-linkage feature switch, FR-P2-040).
+- **Micro routing:** sub-agent `record_progress type:'micro'` events persist and surface on the project timeline (Level 1). They do NOT themselves call `notify_slack` (the CI script is the sole micro-Slack source — PLAN-I1). The orchestrator macro path (FR-05) is the app-owned MACRO notification source on human approval.
+- **`project_id ↔ github_repo`:** Phase 1 keys `governance_events.project_id` by the GitHub **repo name**; DeliverPro reconciles to `jira_key` via `projects.github_repo`. Callers keep passing the repo name as `project_id`.
+- **Persistence:** RDS PostgreSQL via the MCP server's `postgres.service.ts` (2026-06-23 DynamoDB→RDS CR). "DynamoDB" references below (incl. FR-07 summary) are stale doc-drift corrected by story P0/CR-11.
+- **Append-only + shared-key:** governance writes are append-only at the DB layer (ownership reassignment — `mcp-server-core-architecture.md` §0.5); cross-project mis-attribution under the shared key is a recorded POC risk-accept with OIDC deferred (§0.6 there; `docs/phase2/srs.md` §NFR security).
+
+---
 
 **Domain:** Agent Integration
 **Feature:** F-02 — Human-Approval Gate & Orchestrator Hook

@@ -9,7 +9,8 @@
     "./constants/*": "./dist/constants/*.js",
     "./types/*": "./dist/types/*.js",
     "./middleware/*": "./dist/middleware/*.js",
-    "./db/*": "./dist/db/*.js"
+    "./db/*": "./dist/db/*.js",
+    "./mcp/*": "./dist/mcp/*.js"
   },
   "scripts": {
     "build": "tsc",

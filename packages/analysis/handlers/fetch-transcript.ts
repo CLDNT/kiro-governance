@@ -66,7 +66,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
           throw new Error('Secret value is empty');
         }
       } catch (err) {
-        log('SECRETS_ERROR', { error: String(err) });
+        log('error', 'SECRETS_ERROR', { error: String(err) });
         throw new AppError(
           'AVOMA_UNAVAILABLE',
           'Failed to retrieve Avoma API credentials',
@@ -91,9 +91,9 @@ export const handler: APIGatewayProxyHandler = withRoles(
           })
         );
 
-        log('TRANSCRIPT_STORED', { projectId, checkpointId, s3Key });
+        log('info', 'TRANSCRIPT_STORED', { projectId, checkpointId, s3Key });
       } catch (err) {
-        log('S3_UPLOAD_ERROR', { error: String(err), s3Key });
+        log('error', 'S3_UPLOAD_ERROR', { error: String(err), s3Key });
         // S3 storage failure is best-effort — don't block the response
         // But log it for operational awareness
       }
@@ -110,7 +110,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
 
       const charCount = transcript.transcript_text.length;
 
-      log('FETCH_TRANSCRIPT_COMPLETE', {
+      log('info', 'FETCH_TRANSCRIPT_COMPLETE', {
         projectId,
         checkpointId,
         charCount,

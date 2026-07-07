@@ -4,6 +4,8 @@
 
 | Date | Version | Author | Change |
 |------|---------|--------|--------|
+| 2026-07-03 | v1.5 | AWS Architect | Doc-drift reconciliation (deploy-finalization). §2.7 (`PATCH …/checklist/{itemId}`) contract updated for the **CR-04 optional Slack soft-capture** fields (`slack_micro_channel_id?`, `slack_macro_channel_id?`) — soft/non-blocking, position- and secret-guarded, admin/leadership-only, audited via the CR-02 linkage path (FR-P2-040). §12.4 records the **channel-visibility ADR (PUBLIC by default, `isPrivate` opt-in) + anti-squatting note** (resolve-by-exact-name adoption risk + mitigations), resolving the CR-05 open item. No code change. |
+| 2026-07-02 | v1.4 | AWS Architect | GitHub↔Slack linkage CR (FR-P2-033/034/035/039/040). Added `github_repo`, `github_url`, `slack_micro_channel_id`, `slack_macro_channel_id`, `updated_by`, `updated_at` to Project/Create/Update; new §12 linkage domain (admin/leadership-only authz on Cognito `sub`/group, per-field `project_link_audit`, Slack channel provisioning at link time); `jira_key` uniqueness+immutability (FR-P2-033); error codes 409 `DUPLICATE_GITHUB_REPO`, 422 `IMMUTABLE_FIELD` (jira_key), 403 `FORBIDDEN` (linkage), 400 `VALIDATION_ERROR` (github_repo/github_url). Phase-1 cross-references added. |
 | 2026-06-30 | v1.3 | AWS Architect | Resolved PD-13: project_type confirmed IMMUTABLE after creation. PATCH returns 422 if attempted. |
 | 2026-06-30 | v1.2 | AWS Architect | Security Gate 1 fix: Added §10 IAM Permissions section; import-jira SSM PutParameter scoped to /deliverpro/config/jira-import-completed only |
 | 2026-06-29 | v1.1 | AWS Architect | Fix §4.1 CTE semantics for zero-mandatory-checkpoint phases (LEFT JOIN + COALESCE); fix §4.3 LATERAL to use WHEN EXISTS for clarity and consistent semantics; add default status filter to §2.1; add `sa` role to PATCH /checklist/{itemId} |
@@ -122,6 +124,11 @@ interface CreateProjectInput {
   planned_kickoff_date?: string;     // ISO date
   expected_completion_date?: string; // ISO date
   description?: string;
+  // Linkage (optional — feature switch OFF when omitted; see §12). Admin/leadership only.
+  github_repo?: string;              // ^[A-Za-z0-9._-]{1,100}$ — 1:1 repo↔project
+  github_url?: string;               // ^https://github\.com/[A-Za-z0-9._/-]{1,200}$ (https + github.com only)
+  slack_micro_channel_id?: string;   // non-secret Slack channel id (e.g. C0123ABCD)
+  slack_macro_channel_id?: string;   // non-secret Slack channel id
 }
 ```
 
@@ -142,8 +149,9 @@ interface CreateProjectResponse {
 
 | Status | Code | Condition |
 |--------|------|-----------|
-| 400 | `VALIDATION_ERROR` | Missing required fields, invalid project_type |
+| 400 | `VALIDATION_ERROR` | Missing required fields, invalid project_type, or invalid `github_repo`/`github_url` format (§12.2) |
 | 409 | `DUPLICATE_JIRA_KEY` | Generated jira_key already exists |
+| 409 | `DUPLICATE_GITHUB_REPO` | `github_repo` already linked to another project (partial unique index; §12.1) |
 | 422 | `NO_CASDM_TEMPLATE` | No `casdm_config` rows for the specified project_type AND no 'default' fallback |
 
 ---
@@ -182,6 +190,12 @@ interface Project {
   burn_rate_pct: number | null;
   current_phase: string;           // computed at query time
   jira_link: string | null;
+  github_repo: string | null;       // §12 — reconciliation key + feature switch
+  github_url: string | null;        // §12 — clickable repo link (rendered with rel="noopener noreferrer")
+  slack_micro_channel_id: string | null;  // §12 — non-secret channel id (no token ever returned)
+  slack_macro_channel_id: string | null;  // §12 — non-secret channel id
+  updated_by: string | null;        // Cognito sub of last linkage mutator
+  updated_at: string | null;        // last linkage mutation timestamp
   created_at: string;
 }
 ```
@@ -218,6 +232,13 @@ interface UpdateProjectInput {
   planned_kickoff_date?: string | null;
   expected_completion_date?: string | null;
   sow_hours?: number | null;
+  // Linkage fields — ADMIN/LEADERSHIP ONLY (see §12). Changing any of these when the caller is
+  // not admin/leadership → 403 FORBIDDEN. Each changed field writes one project_link_audit row.
+  github_repo?: string | null;
+  github_url?: string | null;
+  slack_micro_channel_id?: string | null;
+  slack_macro_channel_id?: string | null;
+  // jira_key is IMMUTABLE and cannot appear here — any attempt → 422 IMMUTABLE_FIELD (FR-P2-033).
 }
 ```
 
@@ -230,7 +251,10 @@ interface UpdateProjectInput {
 | 400 | `VALIDATION_ERROR` | Invalid field values |
 | 403 | `FORBIDDEN` | PM trying to update a project they don't manage |
 | 404 | `PROJECT_NOT_FOUND` | No project with that jira_key |
-| 422 | `IMMUTABLE_FIELD` | Attempt to change `project_type` after creation (immutable — PD-13) |
+| 422 | `IMMUTABLE_FIELD` | Attempt to change `project_type` after creation (immutable — PD-13), or any attempt to change `jira_key` (FR-P2-033) → `{ "code": "IMMUTABLE_FIELD", "field": "jira_key" }` |
+| 403 | `FORBIDDEN` | PM trying to update a project they don't manage, **or a non-admin/leadership user changing any linkage field** (`github_repo`/`github_url`/`slack_micro_channel_id`/`slack_macro_channel_id`) → `{ "code": "FORBIDDEN", "message": "Only admin or leadership may change project linkage" }` (§12.1) |
+| 409 | `DUPLICATE_GITHUB_REPO` | `github_repo` already linked to another project (§12.1) |
+| 400 | `VALIDATION_ERROR` | Invalid `github_repo`/`github_url` format (§12.2) |
 
 ---
 
@@ -311,15 +335,38 @@ interface ChecklistResponse {
 ```typescript
 interface UpdateChecklistInput {
   completed: boolean;
+  // CR-04 — OPTIONAL soft-capture of Slack channel ids, valid ONLY when completing the
+  // 'Set up Slack/Teams channel' item (itemName === SLACK_TEAMS_CHECKLIST_ITEM) with
+  // completed === true. Non-secret channel ids only (^[A-Za-z0-9]{1,64}$) — a bot token
+  // (`xoxb-…`) or webhook URL fails the format check → 400. Omitting them NEVER blocks
+  // completion (capture is soft). When supplied, they persist to projects.slack_*_channel_id
+  // via the SAME CR-02 audited linkage path (updated_by/updated_at set → per-field
+  // project_link_audit rows), so attaching ids requires admin/leadership (§12.1).
+  slack_micro_channel_id?: string;
+  slack_macro_channel_id?: string;
 }
 ```
 
 **Response (200):** Updated `OnboardingChecklistItem`.
 
+**CR-04 soft-capture contract (FR-P2-040):**
+
+- **Auth split.** A `pm`/`sa` may COMPLETE the item, but attaching channel ids is a linkage mutation and is **admin/leadership only** — a non-privileged caller supplying ids gets `403 FORBIDDEN` before any write (`assertLinkageAuthz`).
+
+- **Position guard.** Channel ids are accepted only on the `Set up Slack/Teams channel` item and only when `completed === true`; otherwise `400 VALIDATION_ERROR` (`slack_channel_capture`).
+
+- **Secret rejection.** Only non-secret channel ids (`^[A-Za-z0-9]{1,64}$`) are accepted; a token/webhook is rejected `400`. No secret is ever written to Postgres.
+
+- **Audited + non-clearing.** Only the supplied columns are updated (this path never clears an id); each write goes through the `audit_project_linkage` trigger (one `project_link_audit` row per changed field, `actor_sub` = Cognito `sub`).
+
+- **Transactional with the checklist update.** The item update, the optional linkage write, and the `Onboarding Checklist` checkpoint `reached_at` set/clear all run in one transaction.
+
 **Error codes:**
 
 | Status | Code | Condition |
 |--------|------|-----------|
+| 400 | `VALIDATION_ERROR` | Channel id fails `^[A-Za-z0-9]{1,64}$`; or ids supplied off the Slack item / with `completed=false` |
+| 403 | `FORBIDDEN` | Non-admin/leadership caller supplied channel ids (linkage mutation) |
 | 404 | `CHECKLIST_ITEM_NOT_FOUND` | Item does not exist or does not belong to project |
 
 **Side effect:** When all 9 items are completed, the corresponding `macro_checkpoints` row with `checkpoint_type = 'checklist'` and `checkpoint_name = 'Onboarding Checklist'` has its `reached_at` set to `now()`. When any item is unchecked, `reached_at` is cleared.
@@ -1092,4 +1139,82 @@ RDS load is negligible on the existing Phase 1 instance (db.t4g.medium, 2 vCPU, 
 
 ---
 
-*End of Projects Architecture v1.0*
+## 12. Project ↔ GitHub / Slack Linkage (V004)
+
+**Source:** FR-P2-033, FR-P2-034, FR-P2-035, FR-P2-039, FR-P2-040. Migration: `V004__github_slack_linkage.sql`; data model: `unified-data-model.md` §4.4.
+
+Linkage is **optional per project** and is the feature switch (FR-P2-040): a project with `github_repo IS NULL` behaves exactly as today (no Kiro governance events resolve to it; no external Slack routing). Setting `github_repo` turns ON micro governance surfacing and micro-channel Slack routing for that repo.
+
+### 12.1 Authorization (admin / leadership only)
+
+Changing any linkage field (`github_repo`, `github_url`, `slack_micro_channel_id`, `slack_macro_channel_id`) is restricted to `admin` or `leadership`, verified on the **Cognito `sub` / group claim** — NOT the free-text `project_manager` field.
+
+- A non-admin/leadership caller changing a linkage field → HTTP 403 `{ "code": "FORBIDDEN", "message": "Only admin or leadership may change project linkage" }`.
+- Non-linkage metadata edits (title, dates, hours, etc.) keep their existing `pm`/`leadership`/`admin` authorization from §2.4.
+- `jira_key` is immutable (FR-P2-033) — any change attempt → HTTP 422 `{ "code": "IMMUTABLE_FIELD", "field": "jira_key" }`.
+
+### 12.2 Validation
+
+| Field | Rule | On failure |
+|-------|------|-----------|
+| `github_repo` | `^[A-Za-z0-9._-]{1,100}$`; globally unique among non-NULL values (partial unique index) | 400 `VALIDATION_ERROR` (field `github_repo`); 409 `DUPLICATE_GITHUB_REPO` on collision |
+| `github_url` | `^https://github\.com/[A-Za-z0-9._/-]{1,200}$` — `https` scheme only, host allow-listed to `github.com`, no embedded control chars | 400 `VALIDATION_ERROR` (field `github_url`) |
+| `slack_micro_channel_id` / `slack_macro_channel_id` | Non-secret Slack channel id (e.g. `C0123ABCD`); never a token or webhook URL | — |
+
+When `github_url` is rendered as a clickable link in the UI, the anchor uses `rel="noopener noreferrer"` (prevents stored-XSS / open-redirect — SEC-M3).
+
+> **Secret handling (FR-P2-035):** The workspace Slack **bot token** is a SECRET stored only in SSM SecureString (default KMS key) as a single workspace-level parameter. It is **never** a `projects` column, an API response field, or a log line. `projects` holds only the non-secret channel ids.
+
+> **Cross-column collision guard (SEC-M4):** On both **link-set** (PATCH linkage) and **project-create** with a non-NULL `github_repo`, the app MUST reject a `github_repo` value that equals ANY existing project's `jira_key` (and reject setting a `jira_key`-shaped repo that would collide) → 409 `DUPLICATE_GITHUB_REPO` (or 400 `VALIDATION_ERROR`). This keeps the `v_timeline`/handler interim collision-safe branch (`OR (p.github_repo IS NULL AND p.jira_key = ge.project_id)`, `unified-data-model.md` §4.4.6) injective during the CR-06 backfill window so an event cannot double-attribute across two projects. The interim branch is dropped immediately after backfill validates; routing/storage always use the strict `github_repo` path (the interim branch is display-scope only).
+
+### 12.3 Per-Field Audit
+
+Every create/change of a linkage field writes **one `project_link_audit` row per changed field** (`field` = the exact column name, `old_value`, `new_value`, `actor_sub` = Cognito `sub`, `changed_at`), and sets `projects.updated_by` (Cognito `sub`) + `projects.updated_at`. This is enforced at two layers:
+
+1. **Application layer** — the update handler sets `updated_by` from the JWT `sub` and performs the authz check.
+2. **Database layer (belt-and-suspenders)** — the `BEFORE UPDATE` trigger `audit_project_linkage` writes the per-field rows using `IS DISTINCT FROM` comparisons, deriving `actor_sub` from `NEW.updated_by` (falling back to `'db_direct'` for out-of-band SQL). See `unified-data-model.md` §4.4.3.
+3. **Create path (SEC-M5)** — a project created **already linked** (INSERT with a non-NULL linkage field) is audited by the `AFTER INSERT` trigger `audit_project_linkage_insert`, which writes one `project_link_audit` row per non-NULL linkage field at creation (`old_value = NULL`). This closes the gap where the BEFORE UPDATE trigger never fires on create. See `V004__github_slack_linkage.sql` §D.2.
+
+> **Audit actor-attribution limitation (SEC-L3 / plan LOW-8):** `actor_sub` derives from `COALESCE(NEW.updated_by, 'db_direct')`. If an out-of-band SQL statement changes a linkage field **without** resetting `updated_by`, the trigger records the *previous* app mutator's Cognito `sub` rather than `'db_direct'`. `actor_sub` is therefore best-effort for out-of-band changes. Mitigation options (accepted as documented for the POC): an out-of-band operator should `SET projects.updated_by = NULL` (or a session marker) before such an update. This is acceptable because out-of-band writes are already gated by the append-only/ownership hardening (only the migrator/admin identity can mutate `projects` outside the app) — see `unified-data-model.md` §4.4.4.
+
+### 12.4 Slack Channel Provisioning at Link Time
+
+**Source:** FR-P2-039.
+
+When a project is linked, the app resolves or creates the micro and/or macro Slack channels (`conversations.list` / `conversations.create`) using the **provisioning** credential (`channels:read` + `channels:manage`, held only by the link/onboarding path — separate from the runtime `chat:write`-only token) and stores the resulting ids in `slack_micro_channel_id` / `slack_macro_channel_id`. The app does not build its own Slack posting client — all posts flow through the shared MCP `notify_slack` tool.
+
+**Deterministic channel names:** `<slugified jira_key>-micro` and `<slugified jira_key>-macro` (e.g. `DP-001` → `dp-001-micro` / `dp-001-macro`). Resolution is idempotent — `conversations.list` matches an existing channel by exact name (`created:false`) before any `conversations.create`, and a lost create race (`name_taken`) re-resolves — so a re-run never creates a duplicate.
+
+#### Decision (ADR): channel visibility = PUBLIC by default + anti-squatting
+
+**Status:** Accepted (AWS Architect, 2026-07-03) — resolves the CR-05 open item "channel visibility (public default) + anti-squatting (finding #4)".
+
+**Decision:** `resolveOrCreateChannel` creates channels with `is_private: false` (**public** by default; `opts.isPrivate` defaults to `false` in `slack-provisioning.service.ts`). This is the right default for an internal delivery-governance tracker: public channels are discoverable/joinable by the delivery org, require no per-channel invite management, and match the transparency intent of a shared progress feed.
+
+**Rationale / trade-offs:** Public = discoverable + zero invite overhead, at the cost of workspace-wide readability. For a project handling sensitive customer material a caller may pass `isPrivate: true` at provision time (private channel — invite-only), accepting the added membership-management overhead. No customer requirement mandates private channels for the POC, so public is the default and private is opt-in per project.
+
+**Anti-squatting (name pre-emption) note:** Because provisioning **resolves an existing channel by exact name before creating**, a channel that already exists under the deterministic name is adopted (`created:false`) and its id is persisted. An actor who pre-creates `<jira_key>-micro`/`-macro` could therefore cause the app to route posts to a channel they control. Mitigations, in force:
+
+- **Deterministic, org-scoped names** derived from the app-controlled `jira_key` (not free-text), so squatting requires knowing/guessing the project key.
+
+- **Two-token split + least privilege** — only the admin/leadership-gated link/onboarding path holds the `channels:manage` provisioning credential; the always-loaded runtime token is `chat:write`-only and cannot create/rename channels.
+
+- **Audited linkage** — every stored channel id is written through the `project_link_audit` path (`created` vs resolved is observable), so an unexpected pre-existing channel is visible in the audit trail.
+
+- **Operator verification** — on provision, the endpoint returns whether each channel was `created` or `resolved`; operators SHOULD confirm a `resolved` (pre-existing) channel is the intended one before first macro/micro post, and MAY provision `isPrivate: true` for sensitive projects. Restricting `conversations.create` to a bounded workspace and reviewing channel ownership are the residual operational controls (accepted for the POC).
+
+### 12.5 Re-pointing / Clearing Linkage
+
+Per FR-P2-040: clearing or re-pointing `github_repo` stops previously-stored events (keyed to the old repo) from surfacing (the timeline join is on the current `github_repo`), writes the change to `project_link_audit`, and the UI warns the operator of the historical-event visibility impact. Re-pointing back to the original repo restores visibility (read-side join; no reprocessing).
+
+### 12.6 Phase 1 Cross-References
+
+| Phase 1 doc | Relevance |
+|-------------|-----------|
+| `docs/phase1/mcp-server-core-architecture.md` | `notify_slack` dual-channel routing by `event_type` (resolving the project by `github_repo`, reading the SSM bot token); `record_progress` no-orphan `resolveProject` (`SELECT jira_key FROM projects WHERE github_repo = $1`). The hardened `kiro_mcp` grants (column-scoped `SELECT` on `projects`) are what let MCP read these linkage fields without any write access. |
+| `docs/phase1/github-trigger-architecture.md` | CI script emits `type:'micro'` for linked repos; unlinked repos are hard-rejected (no-orphan). Retained CLI-macro path for repos with no in-app approver. |
+| `docs/phase1/agent-integration-architecture.md` | `project_id ↔ github_repo` reconciliation — Phase 1 keys by repo name; DeliverPro resolves to `jira_key` via `github_repo`. |
+
+---
+
+*End of Projects Architecture v1.5*

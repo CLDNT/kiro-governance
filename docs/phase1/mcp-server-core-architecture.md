@@ -4,13 +4,65 @@
 
 | Date | Version | Author | Change |
 |------|---------|--------|--------|
+| 2026-07-03 | v1.5 | AWS Architect | Doc-drift reconciliation (deploy-finalization). §3.2 `record_progress` **`RecordProgressOutput` documented as the complete two-reason-code model**: when `written:false`, `reason` is exactly one of `'no_matching_project'` (no-orphan reject, FR-P2-038) or `'duplicate'` (idempotency-key dedup, FR-09); typed as a union and annotated with caller-branching guidance. No code change. |
+| 2026-07-02 | v1.4 | AWS Architect | **CR-P0 — persistence doc-drift correction (DynamoDB → RDS PostgreSQL).** The system migrated from DynamoDB to RDS PostgreSQL (2026-06-23 CR); the DynamoDB code/stub was removed in CR-11. This revision replaces all remaining stale DynamoDB wording with the deployed RDS reality: §1 FRs-owned + dependency table (RDS `governance_events`, `ON CONFLICT` dedup), §2.5 egress (RDS API, not DynamoDB), §4.3 (`flag_override` persisted in PostgreSQL), §5 rewritten (INSERT … `ON CONFLICT (idempotency_key)` DO NOTHING — no sentinel/pk/sk), §6.4/NFR-02 (append-only PostgreSQL write), §7.3 + §10 `ServerConfig` (drop `tableName`), §9.1/§9.3 (`database_write_failed`, `PostgresWriteLatency`), §11 edge cases (unique-constraint conflict, not conditional PutItem), §12 Hallucination Gate (RDS table + idempotency-key self-check). Persistence is **RDS PostgreSQL 16** with **RDS IAM auth** (`postgres.service.ts`, `Signer`, 14-min token refresh) and the **append-only role model** (V005: `kiro_migrator` owns tables, runtime `kiro_mcp` holds INSERT+SELECT only). Documentation only — no application code changed. Source: `docs/phase2/change-requests/2026-07-02-github-slack-linkage-impact.md` §v3-1 (F7/P0), `docs/phase1/change-requests/2026-06-23-dynamodb-to-rds-migration.md`. |
+| 2026-07-02 | v1.3 | AWS Architect | GitHub↔Slack linkage CR (v3 Final Design of Record). `notify_slack` rewritten: dual-channel routing by `event_type` (micro→`slack_micro_channel_id`, macro→`slack_macro_channel_id`), resolve project by `github_repo`, workspace **bot token** `chat.postMessage` (replaces per-project webhook, with transition fallback), project-labelled (`[jira_key]`) messages, Slack-mention sanitization (SEC-L1), two-token split (SEC-M1); **the micro-skip guard is removed** (micro now notifies its channel). `record_progress`: **resolve-or-reject** (`no_matching_project`, dimensionless `GovernanceEventRejected`); persistence is RDS PostgreSQL (not DynamoDB — 2026-06-23 CR). `classifyEvent`: **explicit `type` is authoritative** (PLAN-H1 fix). SSM inventory: add bot-token param, remove `table-name`, deprecate per-repo webhook params. Append-only hardened via ownership reassignment (SEC-H1); V001's invalid `CREATE USER IF NOT EXISTS` superseded (SEC-L4). Shared-key cross-project residual risk recorded (SEC-H2, POC risk-accept). See §0 overlay. |
 | 2026-06-11 | v1.2 | AWS Architect | Security Gate 1 fixes: HTTPS/TLS self-signed cert (HIGH-1), public exposure documented (MED-3), shared key accepted risk documented (MED-5), SSM path removed from error response (LOW-8). |
 | 2026-06-11 | v1.1 | AWS Architect | Fixed gate normalization in dedup key (FINDING-1), added gate auto-derivation for macro events (FINDING-2), added client initialization comment (FINDING-3), aligned import paths (FINDING-4). |
 | 2026-06-11 | v1.0 | AWS Architect | Initial architecture doc for F-01 from SRS v1.5, F-04 v1.1, domain decomposition v1.0 |
 
 ---
 
-## 1. Overview
+## 0. v3 GitHub/Slack Linkage CR — Authoritative Behavior Overlay
+
+> **AUTHORITATIVE (2026-07-02).** This section states the locked behaviour for the two MCP tools under
+> the GitHub↔Slack linkage change request (`docs/phase2/change-requests/2026-07-02-github-slack-linkage-impact.md`
+> §v3-5, v3 Final Design of Record). Where the older §3–§9 prose below conflicts, **this section wins**;
+> the specific §3.1 (`notify_slack`), §3.2 (`record_progress`), §4.2 (`classifyEvent`) code blocks have
+> been updated in place to match. Persistence is **RDS PostgreSQL** (the DynamoDB→RDS migration,
+> `docs/phase1/change-requests/2026-06-23-dynamodb-to-rds-migration.md`, is already implemented in
+> `postgres.service.ts`); the "DynamoDB" wording that previously survived in §1/§4.3/§5/§6/§7/§9/§10/§11/§12
+> was stale doc-drift and has been corrected to RDS PostgreSQL by story P0/CR-11 (this v1.4 revision).
+
+### 0.1 `notify_slack` — dual-channel, bot-token (Decisions D, E)
+
+- **No micro-skip.** The `event_type === 'micro'` early-return is **removed**. Both micro and macro events notify — routed to different channels.
+- **Resolve by `github_repo`:** `SELECT jira_key, slack_micro_channel_id, slack_macro_channel_id FROM projects WHERE github_repo = $1`. No matching project → `{ notified: false, reason: 'channel_not_configured' }` (graceful; no repo/SSM path/secret leaked).
+- **Route by `event_type`:** `event_type==='macro'` → `slack_macro_channel_id`; else `slack_micro_channel_id`. A NULL resolved channel id → `{ notified: false, reason: 'channel_not_configured' }`.
+- **Bot token, not webhook:** post via `POST https://slack.com/api/chat.postMessage` with `Authorization: Bearer <token>`, `{ channel, text }`. The token is a single workspace-level SSM SecureString (`/kiro-governance/slack/bot-token`, 5-min cache). Treat HTTP-200 with `{ ok:false }` as an error → `{ notified:false, reason:'slack_error:<error>' }`.
+- **Project-labelled + sanitized:** message is `[${jira_key}] ${message}` (jira_key, not repo). Before posting, strip/escape Slack broadcast tokens (`<!here>`, `<!channel>`, `<!everyone>`) and `<@…>`/`<#…>` link syntax (SEC-L1) so a crafted `update_text` cannot trigger mass mentions.
+- **Two-token split (SEC-M1):** the runtime token used here is `chat:write`-only (cannot create/rename channels). Channel provisioning scopes (`channels:read` + `channels:manage`) live on a separate credential held only by the DeliverPro app's link/onboarding path. No `admin.*` scope on either. The `notify_slack` role reads only the runtime token ARN.
+- **Transition fallback (PLAN-H2b):** do NOT delete the legacy webhook path at cutover. If a project has no channel ids configured yet BUT a legacy webhook param exists for its repo, fall back to the webhook post and log a deprecation warning — prevents currently-notifying repos going dark. Retire the webhook path + per-repo params only after CR-06 backfill + channel configuration validate for every notifying repo.
+
+### 0.2 `record_progress` — resolve-or-reject (Decision G)
+
+- After classification, **resolve the project before writing**: `SELECT jira_key FROM projects WHERE github_repo = $1 LIMIT 1` (via `resolveProject()` in `postgres.service.ts`). Applies to BOTH macro and micro events.
+- 0 rows → **hard reject**: `{ written: false, reason: 'no_matching_project' }`; increment a **dimensionless** `GovernanceEventRejected` CloudWatch counter (NO repo dimension — SEC-M/denial-of-wallet); log the repo name to the structured log only. Nothing is stored.
+- 1 row → existing classify → dedup → RDS `writeGovernanceEvent` (unchanged). The tool input contract is unchanged (`project_id` remains the repo name).
+
+### 0.3 `classifyEvent` — explicit `type` is authoritative (PLAN-H1)
+
+- The current guard `if (input.flag_override && input.type) return input.type` only honours an explicit `type` when `flag_override` is also true, so a CI `type:'micro'` call whose `update_text` contains a gate-name substring is silently re-classified and stored as `type='macro'` — breaking the CI=micro/app=macro split, the no-double-notify contract, and (future) Level-2.
+- **Fix:** a caller-supplied `type` always wins; substring gate-matching applies **only when `type` is absent**. See the corrected §4.2 implementation. Unit test: `classifyEvent({update_text:'SRS approved', type:'micro'}).resolvedType === 'micro'`.
+
+### 0.4 CI = micro / app = macro (Decisions F, H)
+
+- The CI/Kiro path (`scripts/governance-trigger.js`) owns **micro** notifications; the DeliverPro app owns **macro** notifications (on in-app gate approval). No single event produces both — no double-notify. See `github-trigger-architecture.md` and `gates-architecture.md` §5.3.
+- **App→macro trigger:** on in-app macro-gate approval the app calls THIS `notify_slack` with `event_type:'macro'`, `project_id = <project.github_repo>`. If the project is unlinked (`github_repo IS NULL`) the app **skips the call entirely** — it does NOT call with a null `project_id` (the input is `z.string().min(1)`; a null fails validation, not a graceful reason). This is PLAN-L3.
+
+### 0.5 Append-only DB hardening (SEC-H1)
+
+The runtime MCP role — the dedicated non-master **`kiro_mcp_app`** (`NOSUPERUSER`) — is append-only on `governance_events` (INSERT, SELECT) and column-scoped read-only on `projects` — enforced by **reassigning table ownership** to a non-runtime `kiro_migrator` role (a plain `REVOKE` is cosmetic because the tables were previously owned by the connecting role). `kiro_migrator` is `NOINHERIT` and the runtime role is not a member of it. **Blocking pre-implementation caveat (iam-review Finding 2):** the RDS **master user is `kiro_mcp`** (rds_superuser), and reusing that same name for the runtime role caused its grants to be bypassed — the runtime role is therefore a DISTINCT `kiro_mcp_app`, and the master is admin/migrations only. Append-only is only a real DB guarantee once the MCP runtime authenticates as the non-master `kiro_mcp_app` (GATE 2 — `DB_USER=kiro_mcp_app` + IAM `rds-db:connect` ARN). See `migrations/V005__append_only_hardening.sql` (CR-01A) and `docs/phase2/architecture/unified-data-model.md` §4.4.4. V001's invalid `CREATE USER IF NOT EXISTS kiro_mcp` is superseded by the V005 DO-block role guards (SEC-L4).
+
+### 0.6 Cross-project isolation — shared-key residual risk (SEC-H2, recorded)
+
+Under the shared MCP API key, a key holder can assert **another linked project's** repo name and post to that project's channel / mis-attribute governance events. No-orphan (§0.2) blocks only *unlinked* repos; a valid other-project repo still resolves. **Human decision recorded (2026-07-02 go-ahead, D-v3-8):** Level 1 ships under **POC risk-accept**; GitHub OIDC per-repo identity (which structurally closes this) and Level 2 are **deferred** from this build. Compensating controls in force: no-orphan + append-only bound tampering to *insert-with-wrong-attribution* (never edit/delete); Slack posts limited to app-provisioned channels; dimensionless rejection metric + structured logs. This risk-accept is recorded in `docs/phase2/srs.md` (§NFR security) and must be revisited before Level 2.
+
+### 0.7 App→MCP macro-call identity (SEC-M3, recorded)
+
+The DeliverPro app's macro `notify_slack` call currently uses the **same shared API key** as the CI path. Recommended hardening (deferred with OIDC): a distinct app service identity for the app→MCP calls. For the POC this is accepted under the same SEC-H2 risk-accept; noted here so it is not lost.
+
+---
 
 **Domain:** MCP Server Core
 **Feature:** F-01 — MCP Server — Tools, Classification & Deduplication
@@ -20,16 +72,16 @@
 
 | FR | Title | Summary |
 |----|-------|---------|
-| FR-01 | Slack Notification Tool | POST to per-project Slack webhook on macro events |
-| FR-02 | DynamoDB Write Tool | Write governance event record to `kiro-governance-tracker` |
+| FR-01 | Slack Notification Tool | POST to per-project Slack channel on governance events |
+| FR-02 | Governance Event Write Tool | Write governance event record to the RDS PostgreSQL `governance_events` table |
 | FR-03 | Macro/Micro Auto-Classification | Classify events using 10 canonical macro-gate lingo matches |
-| FR-09 | Dual Trigger Path Consistency | Deduplication via conditional PutItem sentinel pattern |
+| FR-09 | Dual Trigger Path Consistency | Deduplication via `INSERT … ON CONFLICT (idempotency_key) DO NOTHING` |
 
 **Dependencies:**
 
 | Dependency | Document | What F-01 Consumes |
 |-----------|----------|-------------------|
-| F-04 — Data & Persistence | `docs/phase1/data-persistence-architecture.md` v1.1 | `GovernanceEventRecord` type, DynamoDB table schema, conditional PutItem dedup pattern, SSM parameter paths |
+| F-04 — Data & Persistence | `docs/phase1/data-persistence-architecture.md` v1.1 | `GovernanceEventRecord` type, RDS PostgreSQL `governance_events` schema (V001), `ON CONFLICT (idempotency_key)` dedup pattern, RDS IAM auth, SSM parameter paths |
 
 ---
 
@@ -85,7 +137,8 @@
 |------|------|----------|------|--------|---------|
 | Inbound | TCP | HTTPS | 443 | 0.0.0.0/0 | GitHub Actions (dynamic IPs) + Kiro agent tool calls |
 | Inbound | TCP | SSH | 22 | Admin CIDR (specific IP) | Maintenance only |
-| Outbound | TCP | HTTPS | 443 | 0.0.0.0/0 | Slack API, DynamoDB API, SSM API |
+| Outbound | TCP | HTTPS | 443 | 0.0.0.0/0 | Slack API, SSM API |
+| Outbound | TCP | PostgreSQL | 5432 | RDS security group | RDS PostgreSQL (`governance_events` writes via IAM auth) |
 
 > `Architect decision — not customer-specified:` The EC2 instance has a **public Elastic IP**. Inbound port 443 is open to `0.0.0.0/0` because GitHub Actions runners use dynamic IPs (published at `https://api.github.com/meta` under the `actions` key) making CIDR allowlisting impractical, and developer machines running the Kiro agent may also have dynamic IPs.
 
@@ -107,7 +160,7 @@ import { z } from 'zod';
 export const NotifySlackInputSchema = z.object({
   project_id: z.string().min(1).describe('GitHub repository name'),
   message: z.string().min(1).describe('Notification message text'),
-  event_type: z.enum(['macro', 'micro']).describe('Event classification'),
+  event_type: z.enum(['macro', 'micro']).describe('Event classification — routes to micro vs macro channel'),
 });
 
 export type NotifySlackInput = z.infer<typeof NotifySlackInputSchema>;
@@ -122,52 +175,47 @@ export interface NotifySlackOutput {
 }
 ```
 
-**Handler Logic:**
+**Handler Logic (v3 — dual-channel bot token; see §0.1):**
 
 ```typescript
-import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
+import { resolveProjectChannels } from '../services/postgres.service';
+import { getBotToken, postMessage } from '../services/slack.service';
 
-// ssm and dynamoClient initialized at server startup — see §7.3 Bootstrap Strategy
+// Strip/escape Slack broadcast + link syntax so a crafted update_text cannot mass-mention (SEC-L1).
+function sanitizeForSlack(text: string): string {
+  return text
+    .replace(/<!(here|channel|everyone)>/gi, '')
+    .replace(/<([@#][^>]*)>/g, '$1'); // neutralize <@U…>/<#C…> link syntax
+}
 
 async function handleNotifySlack(input: NotifySlackInput): Promise<NotifySlackOutput> {
-  // 1. If micro, skip notification
-  if (input.event_type === 'micro') {
-    return { notified: false, reason: 'micro_event' };
+  // 1. Resolve the project + its dual channel ids by GitHub repo (NO micro-skip — v3).
+  const project = await resolveProjectChannels(input.project_id); // SELECT jira_key, slack_micro_channel_id, slack_macro_channel_id FROM projects WHERE github_repo = $1
+  if (!project) {
+    return { notified: false, reason: 'channel_not_configured' }; // no repo/SSM path/secret leaked
   }
 
-  // 2. Resolve webhook URL from SSM
-  const ssmPath = `/kiro-governance/slack/webhooks/${input.project_id}`;
-  let webhookUrl: string;
-  try {
-    const param = await ssm.send(new GetParameterCommand({
-      Name: ssmPath,
-      WithDecryption: true,
-    }));
-    webhookUrl = param.Parameter!.Value!;
-  } catch (err) {
-    // Log full path internally for debugging; do not expose to caller
-    console.error(`SSM parameter not found: ${ssmPath}`);
-    return { notified: false, reason: 'webhook_not_configured' };
+  // 2. Route by event_type.
+  const channelId =
+    input.event_type === 'macro' ? project.slack_macro_channel_id : project.slack_micro_channel_id;
+  if (!channelId) {
+    return { notified: false, reason: 'channel_not_configured' }; // graceful skip when unconfigured
   }
 
-  // 3. POST to Slack
-  const slackBody = JSON.stringify({
-    text: `🏁 *[${input.project_id}]* ${input.message}`,
-  });
-
-  const resp = await fetch(webhookUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: slackBody,
-  });
-
-  if (!resp.ok) {
-    return { notified: false, reason: `slack_error: ${resp.status}` };
+  // 3. Post via bot token + chat.postMessage. Project-labelled with jira_key (not repo).
+  const token = await getBotToken(); // SSM SecureString, single workspace param, 5-min cache
+  const text = `[${project.jira_key}] ${sanitizeForSlack(input.message)}`;
+  const result = await postMessage(token, channelId, text); // Slack returns HTTP 200 even on {ok:false}
+  if (!result.ok) {
+    return { notified: false, reason: `slack_error: ${result.error}` };
   }
-
   return { notified: true };
 }
 ```
+
+> **Transition fallback (PLAN-H2b):** if `project` has no channel ids yet but a legacy webhook param
+> exists for its repo, fall back to the webhook post and log a deprecation warning (see §0.1) — retire
+> only after CR-06 backfill + channel config validate for every notifying repo.
 
 ---
 
@@ -194,47 +242,65 @@ export const RecordProgressInputSchema = z.object({
 export type RecordProgressInput = z.infer<typeof RecordProgressInputSchema>;
 ```
 
-**Output Schema:**
+**Output Schema (two-reason-code model):**
 
 ```typescript
 export interface RecordProgressOutput {
   written: boolean;
-  pk?: string;
-  sk?: string;
-  reason?: string;
+  // Present ONLY when written === false. Exactly two values are possible — this is the
+  // complete "two-reason-code" model for a non-write:
+  //   'no_matching_project' — no-orphan reject (FR-P2-038): no projects row has
+  //                           github_repo = project_id, so nothing is stored. A
+  //                           dimensionless GovernanceEventRejected metric increments
+  //                           and the repo name is logged (structured log only).
+  //   'duplicate'           — dedup hit (FR-09): an event with the same
+  //                           idempotency_key already exists (ON CONFLICT), so the
+  //                           insert is a no-op. Not an error — safe to ignore.
+  // When written === true, reason is omitted. Callers (CI trigger, orchestrator) branch on
+  // these two codes only; any other value is unexpected.
+  reason?: 'no_matching_project' | 'duplicate';
 }
 ```
 
-**Handler Logic:**
+> **Two-reason-code model (reconciled):** `written:false` carries exactly one of
+> `no_matching_project` (no-orphan resolve-or-reject, §3.2 step 2 / §4.4.5 of the data model) or
+> `duplicate` (idempotency-key dedup, §3.2 step 4). Both are non-fatal to the caller: the CI
+> trigger logs and continues on `no_matching_project` (unlinked repo = feature switch off) and
+> skips the follow-on `notify_slack` on either code (nothing new was written).
+
+**Handler Logic (v3 — resolve-or-reject + RDS persistence; see §0.2):**
 
 ```typescript
 import { ulid } from 'ulid';
 import { classifyEvent, MACRO_GATES } from '../../packages/shared/constants/macro-gates';
-import { writeGovernanceEvent } from './dynamo-writer';
-
-// ssm and dynamoClient initialized at server startup — see §7.3 Bootstrap Strategy
+import { resolveProject, writeGovernanceEvent } from '../services/postgres.service';
+import { metrics } from '../observability'; // Powertools Metrics
 
 async function handleRecordProgress(input: RecordProgressInput): Promise<RecordProgressOutput> {
-  // 1. Classify event (FR-03)
+  // 1. Classify event (FR-03). Explicit `type` is authoritative — see §0.3 / §4.2.
   const { resolvedType, matchedGate } = classifyEvent(input);
 
-  // 2. Resolve gate (FINDING-2 — gate derivation for macro events)
-  //    - If caller provides gate explicitly → use it (normalized)
-  //    - If gate is absent AND event auto-classifies as macro → derive from classification match
-  //    - If gate is absent AND event is micro → leave undefined (no dedup needed)
+  // 2. NO-ORPHAN resolve-or-reject (FR-P2-038). Applies to BOTH macro and micro.
+  const project = await resolveProject(input.project_id); // SELECT jira_key FROM projects WHERE github_repo = $1 LIMIT 1
+  if (!project) {
+    metrics.addMetric('GovernanceEventRejected', MetricUnit.Count, 1); // dimensionless — no repo dimension
+    logger.warn('Governance event rejected — no matching project', { repo: input.project_id }); // repo in log only
+    return { written: false, reason: 'no_matching_project' };
+  }
+
+  // 3. Resolve gate for macro events (gate auto-derivation, unchanged).
   let resolvedGate: string | undefined;
   if (input.gate) {
     resolvedGate = input.gate.toLowerCase().trim();
   } else if (resolvedType === 'macro' && matchedGate) {
-    resolvedGate = matchedGate; // canonical gate name from MACRO_GATES
+    resolvedGate = matchedGate;
   }
-  // Note: Architect decision — not customer-specified: gate auto-derivation from classification
-  // match ensures idempotency key is always populated for macro events, even when caller omits
-  // the gate parameter.
 
-  // 3. Build write input
-  const writeInput = {
-    project_id: input.project_id,
+  // 4. Write to RDS PostgreSQL with dedup (FR-09). Persistence is PostgreSQL — NOT DynamoDB
+  //    (DynamoDB→RDS migration 2026-06-23 is already implemented in postgres.service.ts).
+  const eventUlid = ulid();
+  const result = await writeGovernanceEvent({
+    project_id: input.project_id, // repo name — stored as-is; timeline joins via projects.github_repo
     update_text: input.update_text,
     type: resolvedType,
     gate: resolvedGate,
@@ -242,19 +308,18 @@ async function handleRecordProgress(input: RecordProgressInput): Promise<RecordP
     source_ref: input.source_ref,
     actor: input.actor,
     flag_override: input.flag_override,
-  };
-
-  // 4. Write with dedup check (FR-09) — uses F-04 conditional PutItem pattern
-  const eventUlid = ulid();
-  const result = await writeGovernanceEvent(dynamoClient, writeInput, eventUlid);
+  }, eventUlid);
 
   if (!result.written) {
     return { written: false, reason: result.reason }; // 'duplicate'
   }
-
-  return { written: true, pk: result.pk, sk: result.sk };
+  return { written: true };
 }
 ```
+
+> **Note (P0/CR-11 — resolved):** `record_progress` persists to **RDS PostgreSQL** via
+> `postgres.service.ts` (`writeGovernanceEvent`, dedup via `ON CONFLICT (idempotency_key)`), not
+> DynamoDB. All "DynamoDB" references elsewhere in this doc were stale and have been corrected to RDS PostgreSQL in this v1.4 revision.
 
 ---
 
@@ -324,11 +389,30 @@ export function classifyEvent(input: {
   type?: 'macro' | 'micro';
   flag_override?: boolean;
 }): { resolvedType: 'macro' | 'micro'; matchedGate?: string } {
-  // flag_override: trust the caller's explicit type
-  if (input.flag_override && input.type) {
-    return { resolvedType: input.type };
+  // PLAN-H1 FIX: an explicit caller-supplied `type` is AUTHORITATIVE — it always wins, whether or
+  // not flag_override is set. Substring gate-matching runs ONLY when `type` is absent. This prevents
+  // a CI `type:'micro'` call whose update_text contains a gate-name substring (e.g. "SRS approved")
+  // from being silently re-classified and stored as macro (which would break the CI=micro/app=macro
+  // split, the no-double-notify contract, and future Level-2). flag_override remains persisted as an
+  // audit marker but is no longer required for the explicit type to be honoured.
+  if (input.type) {
+    if (input.type === 'macro') {
+      // Derive the canonical gate label for a caller-asserted macro (best-effort, for dedup/label).
+      const text = input.update_text.toLowerCase();
+      for (const gate of MACRO_GATES) {
+        if (text.includes(gate.toLowerCase())) return { resolvedType: 'macro', matchedGate: gate };
+      }
+      for (const alias of Object.keys(MACRO_GATE_ALIASES)) {
+        if (text.includes(alias.toLowerCase())) {
+          return { resolvedType: 'macro', matchedGate: MACRO_GATE_ALIASES[alias] };
+        }
+      }
+      return { resolvedType: 'macro' };
+    }
+    return { resolvedType: 'micro' }; // explicit micro — never re-derive to macro
   }
 
+  // No explicit type → auto-classify from update_text content.
   const text = input.update_text.toLowerCase();
 
   // Check canonical gates
@@ -349,12 +433,14 @@ export function classifyEvent(input: {
 }
 ```
 
+> **Unit test (PLAN-H1):** `classifyEvent({ update_text: 'SRS approved', type: 'micro' }).resolvedType === 'micro'` — an explicit `type` must win over a gate-name substring.
+
 ### 4.3 `flag_override` Handling
 
 > Source: SRS FR-03 — "A manual `flag_override` shall allow correction of the auto-classification."
 
 - When `flag_override: true` is present in the tool call, the `type` field provided by the caller is stored verbatim — no auto-classification runs.
-- The `flag_override` attribute is persisted in DynamoDB as an audit marker (per F-04 §2.3).
+- The `flag_override` attribute is persisted in the PostgreSQL `governance_events.flag_override` column as an audit marker (per F-04 §2.3).
 - When `flag_override` is absent or `false`, auto-classification determines `type`.
 
 ### 4.4 Shared Module Location
@@ -376,101 +462,136 @@ packages/
 
 ## 5. Deduplication Logic (FR-09)
 
+Deduplication is enforced in **RDS PostgreSQL** by a single atomic upsert — `INSERT … ON CONFLICT (idempotency_key) DO NOTHING` — against the `UNIQUE (idempotency_key)` constraint on `governance_events` (V001). There is no separate sentinel record and no `pk`/`sk` — the DynamoDB conditional-PutItem sentinel pattern was replaced by the migration to RDS (2026-06-23 CR; DynamoDB code removed in CR-11).
+
 ### 5.1 Idempotency Key Construction
 
-> Source: SRS FR-09 — "Deduplication uses an idempotency key composed of: PK (PROJECT#<project_id>) + gate name + day-granularity date (YYYY-MM-DD)."
-
-Uses the **conditional PutItem sentinel pattern** from F-04 §4.2 exactly:
+> Source: SRS FR-09 — "Deduplication uses an idempotency key composed of: `PROJECT#<project_id>` + gate name + day-granularity date (YYYY-MM-DD)." Implemented by `buildIdempotencyKey()` in `tools/record-progress.ts`.
 
 ```
 Macro events:  <project_id>#<gate.toLowerCase().trim()>#<YYYY-MM-DD>
 Micro events:  <project_id>#micro#<ULID>   (always unique — no dedup needed)
 ```
 
+The composed string is stored in the `governance_events.idempotency_key` column (`TEXT NOT NULL`, `CONSTRAINT uq_idempotency UNIQUE`).
+
 > `Architect decision — not customer-specified:` gate names are normalized to lowercase+trimmed before building the idempotency key to prevent case-sensitivity bypass. Callers should use values from the MACRO_GATES constant but normalization provides a safety net.
 
-### 5.2 Dedup Sentinel Record
+### 5.2 Unique Constraint (dedup mechanism)
 
-Per F-04 §4.4:
+Per V001 / F-04 §5.1, dedup is a table-level constraint — no sentinel row:
 
-| Attribute | Value |
-|-----------|-------|
-| `pk` | `PROJECT#<project_id>` |
-| `sk` | `DEDUP#<idempotency_key>` |
-| `created_at` | ISO timestamp (when first trigger wrote it) |
-| `idempotency_key` | Same as the key value |
+| Object | Definition |
+|--------|-----------|
+| Column | `idempotency_key TEXT NOT NULL` on `governance_events` |
+| Constraint | `CONSTRAINT uq_idempotency UNIQUE (idempotency_key)` |
+| Write pattern | `INSERT INTO governance_events (…) VALUES (…) ON CONFLICT (idempotency_key) DO NOTHING` |
+| Duplicate signal | `result.rowCount === 0` → the row already existed → `{ written: false, reason: 'duplicate' }` |
+
+The event row itself carries all governance fields (`project_id`, `update_text`, `type`, `flag_override`, `gate`, `phase`, `phase_name`, `source_ref`, `actor`, `created_at`, `idempotency_key`). Writes use RDS IAM auth (`postgres.service.ts`, `Signer`, 14-min token refresh) and run under the append-only runtime role `kiro_mcp` (INSERT + SELECT only; V005).
 
 ### 5.3 Dedup Flow
 
 ```
 record_progress called
   │
-  ├─ type == micro?  ──YES──▶  Skip dedup, write directly (ULID guarantees uniqueness)
+  ├─ classify (macro/micro) → build idempotency_key
+  │       macro: <project_id>#<gate>#<YYYY-MM-DD>   micro: <project_id>#micro#<ULID>
   │
-  └─ type == macro?  ──YES──▶  Attempt PutItem for DEDUP sentinel
-                                  │
-                                  ├─ Succeeds ──▶ Write event record (Pattern 1)
-                                  │
-                                  └─ ConditionalCheckFailedException ──▶ Return { written: false, reason: 'duplicate' }
+  └─ INSERT … ON CONFLICT (idempotency_key) DO NOTHING
+        │
+        ├─ rowCount == 1 ──▶ new row written → { written: true }
+        │
+        └─ rowCount == 0 ──▶ idempotency_key already present → { written: false, reason: 'duplicate' }
 ```
+
+Micro events use a ULID in the key so they are always unique — the `ON CONFLICT` clause never fires for them; macro events collapse to one row per `project_id`+gate+day.
 
 ### 5.4 Duplicate Detected Behavior
 
-When a duplicate is detected:
+When a duplicate is detected (`rowCount === 0`):
 1. **Return** `{ written: false, reason: 'duplicate' }` to the caller
 2. **Log** at INFO level: `Dedup hit: idempotency_key=<key>`
 3. **No Slack re-fire** — the `notify_slack` tool is only called by the orchestrator/workflow *after* a successful `record_progress` write. If `record_progress` returns duplicate, the caller must not proceed with `notify_slack`.
 
-> `Architect decision — not customer-specified:` Dedup enforcement is in `record_progress` only. The caller (Agent Integration / GitHub Trigger) is responsible for checking the return value and skipping `notify_slack` on duplicate. This keeps dedup logic centralized in F-01.
+> `Architect decision — not customer-specified:` Dedup enforcement is in `record_progress` only, delegated to the PostgreSQL unique constraint (single atomic statement — no read-then-write race). The caller (Agent Integration / GitHub Trigger) is responsible for checking the return value and skipping `notify_slack` on duplicate. This keeps dedup logic centralized in F-01.
 
 ---
 
 ## 6. Slack Integration
 
-### 6.1 Webhook POST Format
+### 6.1 `chat.postMessage` Request Format
 
-> Source: Slack Incoming Webhooks API
+> Source: Slack Web API `chat.postMessage` (bot-token model — CR-05/CR-09). Replaces the retired per-project Incoming Webhook.
 
-```json
+`notify_slack` posts via the Slack Web API using the workspace bot token:
+
+```
+POST https://slack.com/api/chat.postMessage
+Authorization: Bearer <workspace bot token from SSM>
+Content-Type: application/json; charset=utf-8
+
 {
-  "text": "🏁 *[rainn]* SRS approved by human — gate: SRS approved"
+  "channel": "C0123ABCD",                 // resolved per event_type (see §6.3)
+  "text": "[DP-001] SRS approved by human — gate: SRS approved"
 }
 ```
 
-**Content-Type:** `application/json`
-**Method:** `POST`
+**Note:** Slack returns HTTP 200 even on logical failure — the response body
+`{ ok: false, error }` MUST be inspected. `error` is a Slack error code (e.g.
+`channel_not_found`, `not_in_channel`) and never contains the token.
 
 ### 6.2 Message Format Template
 
 ```
-🏁 *[{project_id}]* {message}
+[{jira_key}] {sanitized message}
 ```
 
 Where:
-- `{project_id}` = GitHub repository name (e.g., `rainn`)
-- `{message}` = the `message` parameter from the `notify_slack` tool call
+- `{jira_key}` = the linked project's business key (e.g. `DP-001`) — **project-labelled, NOT the raw GitHub repo name** (CR-09 / FR-P2-039).
+- `{sanitized message}` = the `message` parameter, with Slack control characters (`&`, `<`, `>`) escaped so a crafted message cannot inject `<!channel>` / `<!here>` / `<@…>` / `<#…>` broadcast or mention tokens (SEC-L1). The body is length-capped to 3000 chars (truncated with an ellipsis, never silently dropped — CR-05 LOW #2).
 
-> `Architect decision — not customer-specified:` Minimal message format for POC. Emoji prefix for visual scanning in Slack channel. Bold project name for at-a-glance identification.
+> `Architect decision — not customer-specified:` project-key label enables at-a-glance identification and decouples the display from the repo name.
 
-### 6.3 SSM Lookup Pattern
+### 6.3 Project + Channel Resolution (dual-channel routing)
+
+`notify_slack` resolves the destination from RDS `projects` by `github_repo` (= the
+`project_id` = repo name), then routes by `event_type`:
 
 ```
-Path: /kiro-governance/slack/webhooks/{project_id}
-Type: SecureString
-Example: /kiro-governance/slack/webhooks/rainn → https://hooks.slack.com/services/T.../B.../xxx
+resolveProject(project_id) →
+  { jira_key, slack_micro_channel_id, slack_macro_channel_id } | null
+
+  null                          → { notified:false, reason:'no_matching_project' }   (graceful skip)
+  event_type = 'micro'          → channel = slack_micro_channel_id
+  event_type = 'macro'          → channel = slack_macro_channel_id
+  channel IS NULL               → { notified:false, reason:'channel_not_configured' } (graceful skip)
 ```
 
-> Source: SRS FR-01, OQ-01 + OQ-04 resolutions
+The channel ids are non-secret and live in PostgreSQL (CR-01A column-scoped grant:
+`SELECT (jira_key, github_repo, slack_micro_channel_id, slack_macro_channel_id)`).
+The **bot token** is the only secret and is read from SSM SecureString
+(`/kiro-governance/slack/bot-token`, single workspace param), cached 5 min — never a
+PG column, API response, or log line.
+
+> Source: v3 CR §v3-5.2 (Decisions D, E). The legacy per-repo webhook path
+> (`/kiro-governance/slack/webhooks/{repo}`) is retired from the runtime routing;
+> `getWebhookUrl`/`postToSlack` remain `@deprecated` only as the CR-06 transition
+> fallback (PLAN-H2b) and are no longer called by `notify_slack`.
 
 ### 6.4 Error Handling
 
 | Scenario | Behavior | Source |
 |----------|----------|--------|
-| Slack returns non-200 | Return `{ notified: false, reason: 'slack_error: <status>' }`. DB write is unaffected (independent job). | SRS NFR-02: "Failed Slack notifications shall not block DynamoDB writes" |
-| Slack timeout (>5s) | Abort fetch, return `{ notified: false, reason: 'slack_timeout' }` | `Architect decision — not customer-specified` |
+| No project matches the repo | Return `{ notified: false, reason: 'no_matching_project' }` (graceful skip) | v3 CR §v3-5.2 |
+| Channel for the event_type is unconfigured (NULL) | Return `{ notified: false, reason: 'channel_not_configured' }` (graceful skip) | v3 CR §v3-5.2 |
+| Malformed channel id | Return `{ notified: false, reason: 'invalid_channel' }` (never posts) | CR-05 LOW #2 |
+| Bot token missing/SSM error | Return `{ notified: false, reason: 'bot_token_not_found' \| 'ssm_error' }` (no SSM path leaked) | SEC-M1 |
+| Slack `{ ok:false }` / non-2xx | Return `{ notified: false, reason: '<slack error code>' }` (e.g. `slack_api_error`). DB write is unaffected (independent job). | SRS NFR-02 |
+| Slack timeout (>3s) | Abort fetch, return `{ notified: false, reason: 'slack_timeout' }` | `Architect decision — not customer-specified` |
 | Network unreachable | Return `{ notified: false, reason: 'slack_network_error' }` | `Architect decision — not customer-specified` |
 
-> SRS NFR-02: "the two jobs are independent" — `notify_slack` and `record_progress` are separate tool calls. A Slack failure in `notify_slack` never blocks or rolls back a `record_progress` DynamoDB write.
+> SRS NFR-02: "the two jobs are independent" — `notify_slack` and `record_progress` are separate tool calls. A Slack failure in `notify_slack` never blocks or rolls back a `record_progress` RDS PostgreSQL write. No reason string ever contains the bot token, an SSM path, or the raw repo name.
 
 ---
 
@@ -480,10 +601,22 @@ Example: /kiro-governance/slack/webhooks/rainn → https://hooks.slack.com/servi
 
 | Path | Type | Used By | Source |
 |------|------|---------|--------|
-| `/kiro-governance/slack/webhooks/{project_id}` | SecureString | `notify_slack` — webhook URL per project | SRS FR-01, OQ-01 |
+| `/kiro-governance/slack/bot-token` | SecureString | `notify_slack` — workspace **bot token** (`chat:write`-only runtime scope) for `chat.postMessage` | v3 CR §v3-5.2 (Decisions D, E), SEC-M1 |
+| `/kiro-governance/slack/webhooks/{project_id}` | SecureString | **DEPRECATED (transition fallback only)** — legacy per-project webhook; retire after CR-06 backfill + channel config validate for every notifying repo | v3 CR §v3-5.3 (PLAN-H2b) |
 | `/kiro-governance/config/mcp-api-key` | SecureString | Request auth validation (GitHub Actions → MCP) | SRS NFR-03, OQ-04 |
-| `/kiro-governance/config/table-name` | String | `record_progress` — DynamoDB table name | F-04 §6.2 |
+| ~~`/kiro-governance/config/table-name`~~ | ~~String~~ | **REMOVED** — DynamoDB table name; unused by the RDS path (dropped from `loadServerConfig()` + `ServerConfig`, story CR-11) | v3 CR §v3-5.6 |
 | `/kiro-governance/config/region` | String | AWS region for SDK clients | F-04 §6.2 |
+| `/kiro-governance/config/db-endpoint`, `db-port`, `db-name`, `db-user` | String | RDS IAM connection (`postgres.service.ts`) | 2026-06-23 DynamoDB→RDS CR |
+
+> **Two-token split (SEC-M1):** the runtime bot token above is `chat:write`-only. The channel
+> **provisioning** credential (`channels:read` + `channels:manage` for `conversations.list`/`create`)
+> is a SEPARATE secret held only by the DeliverPro app's link/onboarding path — the `notify_slack`
+> role can read only the runtime token ARN. Neither credential carries any `admin.*` scope.
+
+> **Bot token is a SECRET** — SSM SecureString (default `aws/ssm` KMS key) or Secrets Manager. Never a
+> `projects` column, an API response field, or a log line. IAM `ssm:GetParameter` + `kms:Decrypt`
+> scoped to the single token ARN only (not `/kiro-governance/*`). CMK for tight decrypt-scoping is
+> optional (~$1/mo, OQ-CR-18).
 
 > `Architect decision — not customer-specified:` The shared API key provides no per-caller identity. Any process with the key and network access can call the MCP server. The `actor` field in `record_progress` is caller-supplied and unverified — it is an audit annotation, not an authenticated identity. Accepted risk for POC — all callers are internal (Kiro agents, GitHub Actions). Upgrade to per-client JWTs or mTLS for production.
 
@@ -504,13 +637,12 @@ Example: /kiro-governance/slack/webhooks/rainn → https://hooks.slack.com/servi
 
 | Config Type | Load Strategy | Rationale |
 |-------------|---------------|-----------|
-| Table name, region, API key | Load on startup (cache in memory) | Static values that never change during runtime |
+| Region, API key | Load on startup (cache in memory) | Static values that never change during runtime |
 | Slack webhook URLs | Load per-request (with 5-min TTL cache) | New projects may be added without server restart |
 
 ```typescript
-// Startup config (loaded once)
+// Startup config (loaded once from SSM: /kiro-governance/config/region + /mcp-api-key)
 interface ServerConfig {
-  tableName: string;
   region: string;
   apiKey: string;
 }
@@ -636,19 +768,23 @@ Used by:
 
 | Scenario | Response | HTTP Status (if applicable) |
 |----------|----------|----------------------------|
-| Success (macro) | `{ notified: true }` | — |
-| Micro event (skip) | `{ notified: false, reason: 'micro_event' }` | — |
-| SSM param missing | `{ notified: false, reason: 'webhook_not_configured' }` | — |
-| Slack non-200 | `{ notified: false, reason: 'slack_error: <status>' }` | — |
+| Success (micro → micro channel, macro → macro channel) | `{ notified: true }` | — |
+| No project matches the repo | `{ notified: false, reason: 'no_matching_project' }` | — |
+| Channel for the event_type unconfigured (NULL) | `{ notified: false, reason: 'channel_not_configured' }` | — |
+| Malformed channel id | `{ notified: false, reason: 'invalid_channel' }` | — |
+| Bot token missing / SSM error | `{ notified: false, reason: 'bot_token_not_found' \| 'ssm_error' }` | — |
+| Slack `{ ok:false }` / non-2xx | `{ notified: false, reason: '<slack error code>' }` (e.g. `slack_api_error`) | — |
 | Slack timeout | `{ notified: false, reason: 'slack_timeout' }` | — |
+
+> Micro events are **no longer skipped** (CR-09) — they route to the project's micro channel. No reason string contains the bot token, an SSM path, or the raw repo name.
 
 **`record_progress` errors:**
 
 | Scenario | Response |
 |----------|----------|
-| Success | `{ written: true, pk: '...', sk: '...' }` |
+| Success | `{ written: true }` |
 | Duplicate detected | `{ written: false, reason: 'duplicate' }` |
-| DynamoDB error | Throws — MCP SDK returns error to caller |
+| PostgreSQL write error | `{ written: false, reason: 'database_write_failed' }` (error logged, not exposed) |
 | Invalid input (schema validation) | MCP SDK returns validation error before handler runs |
 
 ### 9.2 CloudWatch Log Group
@@ -667,8 +803,8 @@ Used by:
 |--------|-----------|-----------|--------|
 | `ToolInvocationCount` | `KiroGovernance/MCP` | `tool_name`, `project_id` | Emitted per tool call |
 | `SlackFailureCount` | `KiroGovernance/MCP` | `project_id`, `error_type` | On non-200 or timeout |
-| `DynamoDBWriteLatency` | `KiroGovernance/MCP` | `project_id` | Duration of PutItem call |
-| `DedupHitCount` | `KiroGovernance/MCP` | `project_id`, `gate` | On ConditionalCheckFailedException |
+| `PostgresWriteLatency` | `KiroGovernance/MCP` | `project_id` | Duration of the `INSERT … ON CONFLICT` call |
+| `DedupHitCount` | `KiroGovernance/MCP` | `project_id`, `gate` | On `ON CONFLICT` no-op (`rowCount === 0`) |
 
 > `Architect decision — not customer-specified:` Custom CloudWatch metrics via `PutMetricData`. At POC volume (<100 events/day), cost is negligible (first 10 custom metrics free).
 
@@ -713,8 +849,6 @@ export interface RecordProgressInput {
 /** record_progress output */
 export interface RecordProgressOutput {
   written: boolean;
-  pk?: string;
-  sk?: string;
   reason?: string;
 }
 
@@ -722,7 +856,6 @@ export interface RecordProgressOutput {
 
 /** Server startup config (from SSM, cached on boot) */
 export interface ServerConfig {
-  tableName: string;
   region: string;
   apiKey: string;
 }
@@ -742,12 +875,12 @@ export interface WebhookCacheEntry {
 |---|----------|----------|--------|
 | 1 | SSM param missing for a `project_id` | `notify_slack` returns `{ notified: false, reason: 'webhook_not_configured' }`. Full SSM path logged internally to CloudWatch for debugging but NOT returned to the MCP caller. Caller (orchestrator/workflow) logs the warning. | `Architect decision — not customer-specified` |
 | 2 | Slack API returns non-200 | Return `{ notified: false, reason: 'slack_error: <status>' }`. No retry — caller may retry the entire tool call. DB write (separate tool call) is unaffected. | SRS NFR-02 |
-| 3 | DynamoDB conditional write fails (race condition) | `ConditionalCheckFailedException` on dedup sentinel → return `{ written: false, reason: 'duplicate' }`. This is expected behavior, not an error. Both dual-trigger paths may race; exactly one wins. | SRS FR-09, F-04 §4.2 |
+| 3 | Concurrent write with the same idempotency_key (race condition) | `INSERT … ON CONFLICT (idempotency_key) DO NOTHING` returns `rowCount === 0` → return `{ written: false, reason: 'duplicate' }`. This is expected behavior, not an error. Both dual-trigger paths may race; the `UNIQUE (idempotency_key)` constraint guarantees exactly one wins. | SRS FR-09, F-04 §5.1 |
 | 4 | Invalid `event_type` in `notify_slack` tool call | Zod schema validation rejects before handler runs. MCP SDK returns a schema validation error to the caller. | `Architect decision — not customer-specified` |
 | 5 | MCP server restart mid-request | `systemd` `Restart=on-failure` brings server back in ~5s. In-flight request is lost (no persistence of request state). Caller receives connection error and should retry. Idempotency sentinel ensures no double-write on retry. | `Architect decision — not customer-specified` |
 | 6 | `update_text` exceeds 4 KB | Zod schema `.max(4096)` rejects at input validation. Returns schema error. | F-04 §8.1: "Validate `update_text` ≤ 4 KB" |
-| 7 | `gate` value not in canonical list | Accepted — `gate` is a free-text field in DynamoDB. Classification uses `update_text` content, not the `gate` parameter. Non-canonical gates are stored as-is. | `Architect decision — not customer-specified` |
-| 8 | Both trigger paths fire within same second | Dedup sentinel atomic write ensures exactly one succeeds. DynamoDB strongly consistent writes on same PK/SK guarantee no corruption. | F-04 §8.2 |
+| 7 | `gate` value not in canonical list | Accepted — `gate` is a free-text column in the `governance_events` table. Classification uses `update_text` content, not the `gate` parameter. Non-canonical gates are stored as-is. | `Architect decision — not customer-specified` |
+| 8 | Both trigger paths fire within same second | The `UNIQUE (idempotency_key)` constraint + single atomic `ON CONFLICT` upsert ensures exactly one insert succeeds. PostgreSQL guarantees no duplicate or corrupt row on the same key. | F-04 §5.1 |
 | 9 | API key header missing/invalid | Return HTTP 401 before MCP protocol handling. Log as `auth_failure`. | SRS NFR-03 |
 
 ---
@@ -756,12 +889,14 @@ export interface WebhookCacheEntry {
 
 | Item | Value | Source |
 |------|-------|--------|
-| Table name | `kiro-governance-tracker` | SRS §6, F-04 §2.1 |
-| PK format | `PROJECT#<project_id>` | SRS §7, F-04 §2.2 |
-| SK format | `UPDATE#<ISO-timestamp>#<ULID>` | SRS §7, F-04 §2.2 |
-| Dedup sentinel SK | `DEDUP#<idempotency_key>` | F-04 §4.4 |
-| Idempotency key (macro) | `<project_id>#<gate>#<YYYY-MM-DD>` | SRS FR-09, F-04 §4.1 |
-| Idempotency key (micro) | `<project_id>#micro#<ULID>` | F-04 §4.1 |
+| Persistence | RDS PostgreSQL 16 (`governance_events` table, V001) | F-04 §5, 2026-06-23 DynamoDB→RDS CR |
+| Table | `governance_events` (single table) | SRS §6, F-04 §5, migration V001 |
+| Primary key | `id BIGSERIAL PRIMARY KEY` (surrogate) | migration V001 |
+| Dedup mechanism | `idempotency_key TEXT NOT NULL`, `CONSTRAINT uq_idempotency UNIQUE`; `INSERT … ON CONFLICT (idempotency_key) DO NOTHING` | migration V001, F-04 §5.1 |
+| Idempotency key (macro) | `<project_id>#<gate>#<YYYY-MM-DD>` | SRS FR-09, F-04 §5.1 |
+| Idempotency key (micro) | `<project_id>#micro#<ULID>` | F-04 §5.1 |
+| Auth | RDS IAM auth (`postgres.service.ts`, `Signer`, 14-min token refresh) | F-04 §8, 2026-06-23 CR |
+| Append-only role model | `kiro_migrator` owns tables; runtime `kiro_mcp` = INSERT+SELECT only | migration V005 (CR-01A) |
 | EC2 cost: ~$7.49/mo (t3.micro) | $0.0104/hr × 720hr | AWS Pricing API (validated 2026-06-11) |
 | Port: 443 | — | `Architect decision — not customer-specified` |
 | Transport: HTTPS/SSE (self-signed TLS) | — | `Architect decision — not customer-specified` (Kiro remote MCP support) |
@@ -796,4 +931,4 @@ export interface WebhookCacheEntry {
 
 ---
 
-*End of MCP Server Core Architecture v1.2*
+*End of MCP Server Core Architecture v1.4*

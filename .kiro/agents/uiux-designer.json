@@ -29,9 +29,12 @@
   "tools": ["read", "write", "shell", "grep", "glob", "knowledge"],
   "toolAliases": {},
   "allowedTools": ["knowledge", "grep", "glob", "shell", "write", "read"],
-  "resources": ["file://docs/code-structure.md", "file://.kiro/steering/frontend-standards.md"],
+  "resources": [
+    "file://docs/code-structure.md",
+    "file://.kiro/steering/frontend-standards.md"
+  ],
   "hooks": {},
   "toolsSettings": {},
   "useLegacyMcpJson": true,
-  "model": "claude-sonnet-4.5"
+  "model": "claude-opus-4.8"
 }

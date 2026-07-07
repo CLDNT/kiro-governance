@@ -1,9 +1,14 @@
 {
-  "name": "@deliverpro/gates",
+  "name": "@kiro-governance/gates",
   "version": "1.0.0",
   "description": "Gates domain - gate status, checkpoint tracking, evidence management",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./services/*": "./dist/services/*.js",
+    "./types": "./dist/types.js"
+  },
   "scripts": {
     "build": "tsc",
     "test": "jest",

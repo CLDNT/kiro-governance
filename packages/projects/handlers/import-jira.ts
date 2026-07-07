@@ -142,7 +142,7 @@ async function fetchJiraIssues(
         throw new AppError('JIRA_UNAVAILABLE', `Jira API returned ${response.status}`, 502);
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as { issues: JiraIssue[]; total: number };
       allIssues.push(...data.issues);
       isFinished = startAt + pageSize >= data.total;
       startAt += pageSize;

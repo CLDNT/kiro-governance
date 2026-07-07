@@ -4,6 +4,7 @@
 
 | Date | Version | Author | Change |
 |------|---------|--------|--------|
+| 2026-07-02 | v1.4 | AWS Architect | GitHub↔Slack linkage CR (v3 Final Design of Record). CI script now owns the **MICRO** path: `record_progress` with `type:'micro'` + `flag_override:true` + a **non-gate** `update_text`, and `notify_slack` with `event_type:'micro'` (micro channel). Unlinked repos are **hard-rejected** by `record_progress` (`no_matching_project`) — the script logs and continues (feature switch). Gate-name matching, if retained, builds a human-readable label ONLY and no longer implies `type:'macro'`. Retained **CLI-macro path** (PLAN-H2, gated on the 2026-07-02 go-ahead) for pure-Kiro-CLI repos with no in-app approver: emits a display-only macro event + macro-channel notify. GitHub OIDC per-repo identity (SEC-H2/H3) is **deferred** from this build. See §0 overlay. |
 | 2026-06-11 | v1.3 | AWS Architect | Security Gate 1 NEW-1: replaced fetch()+NODE_TLS_REJECT_UNAUTHORIZED=0 with https.request()+checkServerIdentity fingerprint pinning. Removed unauthenticated TLS bypass. |
 | 2026-06-11 | v1.2 | AWS Architect | Security Gate 1 fixes: HTTPS call (HIGH-1), cert fingerprint secret (HIGH-1), permissions block (MED-6). |
 | 2026-06-11 | v1.1 | AWS Architect | Added npm run build step to workflow YAML (FINDING-1), clarified type parameter pass-through (FINDING-2). |
@@ -11,7 +12,37 @@
 
 ---
 
-## 1. Overview
+## 0. v3 GitHub/Slack Linkage CR — Authoritative Behavior Overlay
+
+> **AUTHORITATIVE (2026-07-02).** Under the linkage CR (`docs/phase2/change-requests/2026-07-02-github-slack-linkage-impact.md`
+> §v3-6.1), the CI/GitHub-Actions path becomes the **MICRO** notification source (the DeliverPro app
+> owns MACRO — no double-notify). Where the older §3–§4 prose says `type:'macro'` / `event_type:'macro'`,
+> **this section wins**; the §3.4 script and §4.2/§4.3 param tables are updated to match.
+
+### 0.1 CI script → MICRO (Decision F)
+
+- `record_progress` call changes from `type:'macro'` to **`type:'micro'`**, and MUST also pass
+  **`flag_override: true`** and build `update_text` from a **non-gate label** (e.g. `"Progress update: <file> changed"`, NOT the canonical gate name). Both safeguards are required so the event persists as `type='micro'`: (a) the `classifyEvent` fix (mcp-server-core §0.3/§4.2) makes an explicit `type` authoritative; (b) a non-gate `update_text` + `flag_override:true` prevents any accidental substring re-classification. A stored `type='macro'` from the CI path is a defect (FR-P2-040 AC).
+- `notify_slack` call changes from `event_type:'macro'` to **`event_type:'micro'`** → routes to `slack_micro_channel_id`.
+- The gate-name match, if retained, is used ONLY to build a human-readable message label — it no longer implies `type:'macro'` and never drives macro completion.
+
+### 0.2 No-orphan (Decision G)
+
+If `PROJECT_ID` (the repo name) does not resolve to a linked project, `record_progress` returns `{ written:false, reason:'no_matching_project' }`; the script logs and **continues** (non-blocking) — consistent with the optional-linkage feature switch (unlinked repos produce nothing). Do not fail the workflow on `no_matching_project`.
+
+### 0.3 CLI-macro backward-compat path (PLAN-H2 — retained per 2026-07-02 go-ahead)
+
+For a linked repo that has **no in-app macro approver** (pure Kiro-CLI), the CI script MAY emit a macro governance event (`type:'macro'`, `flag_override:true`) that is **display-only** — it surfaces on the timeline and triggers the **macro-channel** notification (`notify_slack event_type:'macro'`) but does NOT set `macro_checkpoints.reached_at` (macro completion stays app-owned — `gates-architecture.md` §5.3). This preserves the demoed "progress-MD → gate → Slack" behaviour for CLI-only repos.
+
+### 0.4 Micro Slack source is the CI script only (PLAN-I1)
+
+Only the adapted CI script triggers a micro Slack post. Kiro sub-agents that call `record_progress type:'micro'` directly (per the steering "Micro Logging" sections) persist the event and surface it on the timeline (Level 1) but do NOT themselves call `notify_slack` — they do not post to the micro channel. A curated notify subset for direct sub-agent events is a separate future change (OQ-CR-16).
+
+### 0.5 Identity — deferred (SEC-H2/H3)
+
+GitHub OIDC per-repo identity (which would let the MCP verify the asserted repo == the authenticated repository, closing cross-project mis-attribution) is **deferred** from this build. Level 1 ships under the recorded POC risk-accept (see `mcp-server-core-architecture.md` §0.6 and `docs/phase2/srs.md` §NFR security). Under the shared API key + `X-API-Key` model, treat `PROJECT_ID` as caller-asserted.
+
+---
 
 **Domain:** GitHub Trigger
 **Feature:** F-03 — GitHub Actions Governance Trigger
@@ -275,11 +306,14 @@ async function main() {
     console.log(`Processing gate: "${gate}" from line: "${line}"`);
 
     try {
-      // Call record_progress
+      // Call record_progress — MICRO path (v3 §0.1). Explicit type:'micro' + flag_override:true +
+      // a NON-GATE update_text so no substring re-classifies it to macro. `gate` is passed only to
+      // build the human-readable label; it does NOT imply macro.
       const recordResult = await callMcpTool('record_progress', {
         project_id: PROJECT_ID,
-        update_text: line,
-        type: 'macro',
+        update_text: `Progress update: docs/project-progress.md — ${gate}`, // non-gate-leading label
+        type: 'micro',
+        flag_override: true,
         gate,
         source_ref: SOURCE_REF,
         actor: ACTOR,
@@ -288,19 +322,24 @@ async function main() {
       const content = recordResult?.result?.content?.[0]?.text;
       const parsed = content ? JSON.parse(content) : {};
 
+      // No-orphan (v3 §0.2): unlinked repo → not stored; log and continue (non-blocking).
+      if (parsed.reason === 'no_matching_project') {
+        console.log(`  → Repo "${PROJECT_ID}" not linked to a project. Skipping (feature switch off).`);
+        continue;
+      }
       if (parsed.written === false) {
         console.log(`  → Duplicate (already recorded). Skipping notify_slack.`);
         continue;
       }
 
-      // Call notify_slack only if record_progress succeeded with written: true
+      // Call notify_slack (MICRO channel) only if record_progress succeeded with written: true.
       await callMcpTool('notify_slack', {
         project_id: PROJECT_ID,
         message: `${gate} — committed by ${ACTOR} (ref: ${SOURCE_REF.slice(0, 7)})`,
-        event_type: 'macro',
+        event_type: 'micro',
       });
 
-      console.log(`  → Recorded and notified.`);
+      console.log(`  → Recorded (micro) and notified micro channel.`);
     } catch (err) {
       console.error(`  → ERROR: ${err.message}`);
       failures++;

@@ -3,8 +3,7 @@
  * GET /api/admin/config/project-types — list all project types
  * POST /api/admin/config/copy-template — copy template from source to target
  */
-import { APIGatewayProxyHandler } from 'aws-lambda';
-import { requireRole } from '@kiro-governance/shared/middleware/auth';
+import { withRoles } from '@kiro-governance/shared/middleware/rbac';
 import { ok, handleError } from '@kiro-governance/shared/middleware/error-handler';
 import { CopyTemplateSchema } from '../validation';
 import { listProjectTypes, copyTemplate } from '../services/config.service';
@@ -15,10 +14,10 @@ import { listProjectTypes, copyTemplate } from '../services/config.service';
  * Auth: all roles can read
  * Source: docs/phase2/config-architecture.md §6 (per task)
  */
-export const listProjectTypesHandler: APIGatewayProxyHandler = async (event) => {
+export const listProjectTypesHandler = withRoles(['pm', 'sa', 'engineer', 'leadership', 'admin'], async (event, context) => {
   try {
     // All roles can read project types
-    const auth = requireRole(['pm', 'sa', 'engineer', 'leadership', 'admin'], event);
+    const auth = context.auth;
 
     const projectTypes = await listProjectTypes();
 
@@ -26,7 +25,7 @@ export const listProjectTypesHandler: APIGatewayProxyHandler = async (event) => 
   } catch (err) {
     return handleError(err);
   }
-};
+});
 
 /**
  * POST /api/admin/config/copy-template
@@ -35,16 +34,16 @@ export const listProjectTypesHandler: APIGatewayProxyHandler = async (event) => 
  * Auth: leadership/admin only
  * Source: docs/phase2/config-architecture.md §6 (per task)
  */
-export const copyTemplateHandler: APIGatewayProxyHandler = async (event) => {
+export const copyTemplateHandler = withRoles(['leadership', 'admin'], async (event, context) => {
   try {
-    const auth = requireRole(['leadership', 'admin'], event);
+    const auth = context.auth;
 
     const input = JSON.parse(event.body || '{}');
 
     // Validate input
     CopyTemplateSchema.parse(input);
 
-    const rowsCopied = await copyTemplate(input, auth.email || auth.sub);
+    const rowsCopied = await copyTemplate(input, auth.email || auth.userId);
 
     return ok(
       {
@@ -56,4 +55,4 @@ export const copyTemplateHandler: APIGatewayProxyHandler = async (event) => {
   } catch (err) {
     return handleError(err);
   }
-};
+});

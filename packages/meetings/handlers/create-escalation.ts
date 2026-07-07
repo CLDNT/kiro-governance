@@ -45,7 +45,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
         throw new Error('Failed to create escalation');
       }
 
-      log('ESCALATION_RAISED', {
+      log('info', 'ESCALATION_RAISED', {
         projectId,
         escalationId: result.id,
         severity: input.severity,

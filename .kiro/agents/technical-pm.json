@@ -1,7 +1,15 @@
 {
   "name": "technical-pm",
   "description": "Technical Project Manager - Transforms architecture docs into Kanban-ready implementation plans. Supports both traditional development and spec-based development with Kiro.",
-  "tools": ["fs_read", "fs_write", "grep", "glob", "knowledge", "web_search", "execute_bash"],
+  "tools": [
+    "fs_read",
+    "fs_write",
+    "grep",
+    "glob",
+    "knowledge",
+    "web_search",
+    "execute_bash"
+  ],
   "allowedTools": [
     "fs_read",
     "fs_write",
@@ -17,5 +25,5 @@
     "file://docs/code-structure.md"
   ],
   "prompt": "file://technical-pm/prompt.md",
-  "model": "claude-opus-4.6"
+  "model": "claude-opus-4.8"
 }

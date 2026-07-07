@@ -5,6 +5,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
+import { SsmSecretGrant } from '../constructs/ssm-secret-grant';
 
 /**
  * CDK Stack for kiro-governance F-04 Data & Persistence domain.
@@ -59,6 +60,10 @@ export class GovernanceStack extends cdk.Stack {
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       securityGroups: [dbSg],
       databaseName: 'kiro_governance',
+      // RDS MASTER username stays `kiro_mcp` (admin/migrations only). We do NOT rename the master —
+      // that forces replacement of this RETAIN + deletion-protected instance. The MCP RUNTIME
+      // authenticates as the dedicated non-master role `kiro_mcp_app` (created by migrations/V005;
+      // IAM auth below), NOT the master — iam-review Finding 2 / SEC-H1 collision fix.
       credentials: rds.Credentials.fromUsername('kiro_mcp'),
       allocatedStorage: 20,
       storageType: rds.StorageType.GP2,
@@ -79,27 +84,32 @@ export class GovernanceStack extends cdk.Stack {
       description: 'MCP Server EC2 instance role for governance data writes',
     });
 
-    // ALLOW: RDS IAM database authentication
+    // ALLOW: RDS IAM database authentication — connect ONLY as the non-master runtime role
+    // `kiro_mcp_app` (append-only writer). NOT the RDS master `kiro_mcp` (a superuser bypasses the
+    // append-only grants — iam-review Finding 2 / SEC-H1). GATE 2 repoints DB_USER + this ARN.
     this.mcpServerRole.addToPrincipalPolicy(
       new iam.PolicyStatement({
         sid: 'RDSIAMConnect',
         effect: iam.Effect.ALLOW,
         actions: ['rds-db:connect'],
-        resources: [`arn:aws:rds-db:${region}:${accountId}:dbuser:${this.dbInstance.instanceResourceId}/kiro_mcp`],
+        resources: [`arn:aws:rds-db:${region}:${accountId}:dbuser:${this.dbInstance.instanceResourceId}/kiro_mcp_app`],
       }),
     );
 
-    // ALLOW: SSM GetParameter on /kiro-governance/* paths
+    // ALLOW: SSM GetParameter on NON-SECRET config paths only (db-endpoint/port/name/user,
+    // region, mcp-api-key). Scoped to /config/* — deliberately NOT the broad /kiro-governance/*
+    // wildcard, so the MCP role cannot read the Slack provisioning-token or the GitHub read-token
+    // (CR-05 / CR-16 role↔secret-ARN matrix; runbook §5).
     this.mcpServerRole.addToPrincipalPolicy(
       new iam.PolicyStatement({
         sid: 'SSMReadConfig',
         effect: iam.Effect.ALLOW,
         actions: ['ssm:GetParameter'],
-        resources: [`arn:aws:ssm:${region}:${accountId}:parameter/kiro-governance/*`],
+        resources: [`arn:aws:ssm:${region}:${accountId}:parameter/kiro-governance/config/*`],
       }),
     );
 
-    // ALLOW: KMS Decrypt on AWS-managed SSM key
+    // ALLOW: KMS Decrypt on AWS-managed SSM key (config SecureStrings: mcp-api-key + bot-token).
     this.mcpServerRole.addToPrincipalPolicy(
       new iam.PolicyStatement({
         sid: 'KmsDecryptSsm',
@@ -113,6 +123,20 @@ export class GovernanceStack extends cdk.Stack {
         },
       }),
     );
+
+    // ALLOW: SSM GetParameter on the runtime Slack bot-token ONLY (chat:write, notify_slack).
+    // Single-ARN least-privilege — the MCP runtime never reads the provisioning-token or the
+    // GitHub read-token. KMS decrypt is already covered by KmsDecryptSsm above (grantKmsDecrypt:
+    // false avoids a redundant statement). Source: mcp-server slack.service BOT_TOKEN_SSM_PATH;
+    // runbook §4/§5; CR-05 two-token split.
+    new SsmSecretGrant(this, 'McpBotTokenGrant', {
+      role: this.mcpServerRole,
+      parameterName: '/kiro-governance/slack/bot-token',
+      region,
+      account: accountId,
+      grantKmsDecrypt: false,
+      sidPrefix: 'SlackBotToken',
+    });
 
     // ==================== Instance Profile ====================
     // Allows EC2 instances to assume the mcpServerRole
@@ -151,7 +175,7 @@ export class GovernanceStack extends cdk.Stack {
       'DB_ENDPOINT=localhost',
       'DB_PORT=5432',
       'DB_NAME=kiro_governance',
-      'DB_USER=kiro_mcp',
+      'DB_USER=kiro_mcp_app',
       'AWS_REGION=us-east-1',
       'MCP_API_KEY=REPLACE_WITH_REAL_KEY',
       'TLS_CERT_PATH=/opt/kiro-governance/cert.pem',
@@ -205,8 +229,8 @@ export class GovernanceStack extends cdk.Stack {
 
     new ssm.StringParameter(this, 'DbUserParam', {
       parameterName: '/kiro-governance/config/db-user',
-      stringValue: 'kiro_mcp',
-      description: 'PostgreSQL IAM user for MCP server',
+      stringValue: 'kiro_mcp_app',
+      description: 'PostgreSQL IAM user for MCP server runtime (non-master append-only role; NOT the RDS master kiro_mcp)',
     });
 
     // Parameter: Region (for SDK clients)
@@ -254,8 +278,8 @@ export class GovernanceStack extends cdk.Stack {
     });
 
     new cdk.CfnOutput(this, 'RdsUser', {
-      value: 'kiro_mcp',
-      description: 'RDS IAM database user',
+      value: 'kiro_mcp_app',
+      description: 'RDS IAM database user for the MCP runtime (non-master append-only role)',
     });
 
     new cdk.CfnOutput(this, 'McpServerRoleName', {

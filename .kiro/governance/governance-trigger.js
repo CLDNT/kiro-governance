@@ -68,8 +68,21 @@ const ACTOR = process.env.ACTOR;
 const SOURCE_REF = process.env.SOURCE_REF;
 const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY;
 
+// Event mode (v3 GitHub/Slack linkage CR):
+//   'micro' (DEFAULT) — CI/Kiro path emits MICRO events + micro-channel notify
+//                       (v3 §0.1). DeliverPro app owns MACRO — no double-notify.
+//   'macro'           — CLI-macro backward-compat path (D-v3-10 / §0.3) for pure
+//                       Kiro-CLI repos with no in-app approver: display-only macro
+//                       event + macro-channel notify.
+const EVENT_MODE = (process.env.GOVERNANCE_EVENT_MODE || 'micro').toLowerCase();
+
 if (!MCP_SERVER_URL || !MCP_API_KEY || !MCP_CERT_FINGERPRINT || !PROJECT_ID || !ACTOR || !SOURCE_REF) {
   console.error('Missing required environment variables: MCP_SERVER_URL, MCP_API_KEY, MCP_CERT_FINGERPRINT, PROJECT_ID, ACTOR, SOURCE_REF');
+  process.exit(1);
+}
+
+if (EVENT_MODE !== 'micro' && EVENT_MODE !== 'macro') {
+  console.error(`Invalid GOVERNANCE_EVENT_MODE: "${EVENT_MODE}". Expected "micro" (default) or "macro".`);
   process.exit(1);
 }
 
@@ -88,13 +101,19 @@ function extractAddedLines() {
   }
 }
 
+// Canonical-first, then aliases. Ordering matters: the `documentation approved`
+// alias is a substring of the canonical gate `Project documentation approved`, so
+// checking aliases first would bleed that line to `Runbooks approved`. Canonical-first
+// resolves the full gate correctly while bare alias phrases still fall through.
+// Mirrors packages/shared matchGateFromText (this template is intentionally
+// self-contained — no shared-package dependency — so the logic is inlined).
 function matchGate(line) {
   const lower = line.toLowerCase();
-  for (const [alias, canonical] of Object.entries(MACRO_GATE_ALIASES)) {
-    if (lower.includes(alias.toLowerCase())) return canonical;
-  }
   for (const gate of MACRO_GATES) {
     if (lower.includes(gate.toLowerCase())) return gate;
+  }
+  for (const [alias, canonical] of Object.entries(MACRO_GATE_ALIASES)) {
+    if (lower.includes(alias.toLowerCase())) return canonical;
   }
   return null;
 }
@@ -153,33 +172,58 @@ async function main() {
   const addedLines = extractAddedLines();
   if (addedLines.length === 0) { console.log('No new lines. Exiting cleanly.'); process.exit(0); }
 
-  console.log(`Found ${addedLines.length} added line(s).`);
+  console.log(`Found ${addedLines.length} added line(s). Event mode: "${EVENT_MODE}".`);
 
-  const macroEntries = addedLines.map(line => ({ line, gate: matchGate(line) })).filter(e => e.gate);
-  if (macroEntries.length === 0) { console.log('No macro-gate entries detected. Exiting cleanly.'); process.exit(0); }
+  // Gate name is used ONLY to build a human-readable label — under the MICRO path
+  // it does NOT imply type:'macro' (v3 §0.1).
+  const gateEntries = addedLines.map(line => ({ line, gate: matchGate(line) })).filter(e => e.gate);
+  if (gateEntries.length === 0) { console.log('No macro-gate entries detected. Exiting cleanly.'); process.exit(0); }
 
-  console.log(`Found ${macroEntries.length} macro-gate entries.`);
+  console.log(`Found ${gateEntries.length} gate entries.`);
+  const isMacroMode = EVENT_MODE === 'macro';
   let failures = 0;
 
-  for (const { line, gate } of macroEntries) {
+  for (const { line, gate } of gateEntries) {
     console.log(`Processing gate: "${gate}" from line: "${line}"`);
     try {
-      const recordResult = await callMcpTool('record_progress', {
-        project_id: PROJECT_ID,
-        update_text: line,
-        type: 'macro',
-        gate,
-        phase: GATE_PHASES[gate] || undefined,
-        phase_name: GATE_PHASE_NAMES[gate] || undefined,
-        source_ref: SOURCE_REF,
-        actor: ACTOR,
-      });
+      // MICRO (default): explicit type:'micro' + flag_override:true + non-gate
+      //   update_text (PLAN-H1). MACRO (CLI backward-compat, §0.3): display-only
+      //   macro event (does NOT set reached_at) + macro-channel notify.
+      const recordArgs = isMacroMode
+        ? {
+            project_id: PROJECT_ID,
+            update_text: line,
+            type: 'macro',
+            flag_override: true,
+            gate,
+            phase: GATE_PHASES[gate] || undefined,
+            phase_name: GATE_PHASE_NAMES[gate] || undefined,
+            source_ref: SOURCE_REF,
+            actor: ACTOR,
+          }
+        : {
+            project_id: PROJECT_ID,
+            update_text: 'Progress update: docs/project-progress.md changed',
+            type: 'micro',
+            flag_override: true,
+            gate,
+            source_ref: SOURCE_REF,
+            actor: ACTOR,
+          };
+
+      const recordResult = await callMcpTool('record_progress', recordArgs);
 
       const content = recordResult?.result?.content?.[0]?.text;
       const parsed = content ? JSON.parse(content) : {};
 
+      // No-orphan (v3 §0.2 / CR-08): unlinked repo → log and continue (non-blocking).
+      if (parsed.reason === 'no_matching_project') {
+        console.log(`  → Repo "${PROJECT_ID}" not linked to a project. Skipping (feature switch off).`);
+        continue;
+      }
+
       if (parsed.written === false) {
-        console.log(`  → Duplicate (already recorded). Skipping notify_slack.`);
+        console.log(`  → Not written (${parsed.reason || 'unknown'}). Skipping notify_slack.`);
         continue;
       }
 
@@ -189,18 +233,20 @@ async function main() {
         : null;
       const refPart = commitUrl ? `(<${commitUrl}|${shortSha}>)` : `(ref: ${shortSha})`;
 
+      // notify_slack channel is driven by event_type (dual-channel, CR-09).
       const notifyResult = await callMcpTool('notify_slack', {
         project_id: PROJECT_ID,
         message: `${gate} — committed by ${ACTOR} ${refPart}`,
-        event_type: 'macro',
+        event_type: isMacroMode ? 'macro' : 'micro',
       });
 
       const notifyContent = notifyResult?.result?.content?.[0]?.text;
       const notifyParsed = notifyContent ? JSON.parse(notifyContent) : {};
+      const channelLabel = isMacroMode ? 'macro' : 'micro';
       if (notifyParsed.notified) {
-        console.log(`  → Recorded and Slack notified.`);
+        console.log(`  → Recorded (${channelLabel}) and Slack notified (${channelLabel} channel).`);
       } else {
-        console.log(`  → Recorded. Slack skipped: ${notifyParsed.reason || 'unknown'}`);
+        console.log(`  → Recorded (${channelLabel}). Slack skipped: ${notifyParsed.reason || 'unknown'}`);
       }
     } catch (err) {
       console.error(`  → ERROR: ${err.message}`);
@@ -209,7 +255,7 @@ async function main() {
   }
 
   if (failures > 0) { console.error(`${failures} MCP call(s) failed.`); process.exit(1); }
-  console.log('All macro entries processed successfully.');
+  console.log('All gate entries processed successfully.');
 }
 
 main().catch(err => { console.error(`Unexpected error: ${err.message}`); process.exit(1); });

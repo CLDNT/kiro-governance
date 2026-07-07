@@ -4,8 +4,7 @@
  * POST /api/admin/config/items — create config item
  * PATCH /api/admin/config/items/{id} — update config item
  */
-import { APIGatewayProxyHandler } from 'aws-lambda';
-import { requireRole } from '@kiro-governance/shared/middleware/auth';
+import { withRoles } from '@kiro-governance/shared/middleware/rbac';
 import { ok, handleError } from '@kiro-governance/shared/middleware/error-handler';
 import { CreateConfigItemSchema, UpdateConfigItemSchema } from '../validation';
 import { getTemplate, createConfigItem, updateConfigItem } from '../services/config.service';
@@ -16,9 +15,9 @@ import { getTemplate, createConfigItem, updateConfigItem } from '../services/con
  * Auth: leadership/admin only
  * Source: docs/phase2/config-architecture.md §6.2
  */
-export const getConfigHandler: APIGatewayProxyHandler = async (event) => {
+export const getConfigHandler = withRoles(['leadership', 'admin'], async (event, context) => {
   try {
-    const auth = requireRole(['leadership', 'admin'], event);
+    const auth = context.auth;
 
     const projectType = event.queryStringParameters?.project_type || 'default';
 
@@ -68,7 +67,7 @@ export const getConfigHandler: APIGatewayProxyHandler = async (event) => {
   } catch (err) {
     return handleError(err);
   }
-};
+});
 
 /**
  * POST /api/admin/config/items
@@ -76,9 +75,9 @@ export const getConfigHandler: APIGatewayProxyHandler = async (event) => {
  * Auth: leadership/admin only
  * Source: docs/phase2/config-architecture.md §6.3
  */
-export const createConfigItemHandler: APIGatewayProxyHandler = async (event) => {
+export const createConfigItemHandler = withRoles(['leadership', 'admin'], async (event, context) => {
   try {
-    const auth = requireRole(['leadership', 'admin'], event);
+    const auth = context.auth;
 
     const projectType = event.queryStringParameters?.project_type || 'default';
     const input = JSON.parse(event.body || '{}');
@@ -86,13 +85,13 @@ export const createConfigItemHandler: APIGatewayProxyHandler = async (event) => 
     // Validate input
     CreateConfigItemSchema.parse(input);
 
-    const item = await createConfigItem(projectType, input, auth.email || auth.sub);
+    const item = await createConfigItem(projectType, input, auth.email || auth.userId);
 
     return ok({ item }, 201);
   } catch (err) {
     return handleError(err);
   }
-};
+});
 
 /**
  * PATCH /api/admin/config/items/{id}
@@ -100,9 +99,9 @@ export const createConfigItemHandler: APIGatewayProxyHandler = async (event) => 
  * Auth: leadership/admin only
  * Source: docs/phase2/config-architecture.md §6.4
  */
-export const updateConfigItemHandler: APIGatewayProxyHandler = async (event) => {
+export const updateConfigItemHandler = withRoles(['leadership', 'admin'], async (event, context) => {
   try {
-    const auth = requireRole(['leadership', 'admin'], event);
+    const auth = context.auth;
 
     const projectType = event.queryStringParameters?.project_type || 'default';
     const id = parseInt(event.pathParameters?.id || '0', 10);
@@ -115,10 +114,10 @@ export const updateConfigItemHandler: APIGatewayProxyHandler = async (event) => 
     // Validate input
     UpdateConfigItemSchema.parse(input);
 
-    const item = await updateConfigItem(projectType, id, input, auth.email || auth.sub);
+    const item = await updateConfigItem(projectType, id, input, auth.email || auth.userId);
 
     return ok({ item });
   } catch (err) {
     return handleError(err);
   }
-};
+});

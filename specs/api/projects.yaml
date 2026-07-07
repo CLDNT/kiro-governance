@@ -1,0 +1,569 @@
+openapi: 3.0.3
+info:
+  title: DeliverPro Projects API
+  version: 1.2.0
+  description: >
+    Project lifecycle management. CR-02 adds the GitHub ↔ dual-Slack linkage fields
+    (github_repo, github_url, slack_micro_channel_id, slack_macro_channel_id) plus the
+    read-only audit columns updated_by / updated_at. Linkage-field mutation is restricted
+    to admin/leadership (projects-architecture §12.1). CR-04 adds onboarding soft-capture:
+    completing the 'Set up Slack/Teams channel' item optionally carries the micro/macro
+    Slack channel ids, persisted via the same audited linkage path (soft — never blocks
+    completion; never accepts a secret).
+
+paths:
+  /api/projects/{projectId}:
+    get:
+      summary: Get project detail (includes linkage fields)
+      operationId: getProject
+      security:
+        - cognito: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Project detail
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Project' }
+        '404':
+          description: Project not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    patch:
+      summary: Update project metadata and/or linkage fields
+      operationId: updateProject
+      description: >
+        Roles pm/leadership/admin may edit non-linkage metadata (pm limited to owned
+        projects). Only admin/leadership may set/clear any linkage field (403 otherwise).
+        jira_key and project_type are immutable (422).
+      security:
+        - cognito: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateProjectInput' }
+      responses:
+        '200':
+          description: Updated project
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Project' }
+        '400':
+          description: Validation failed (details names the offending field)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: >
+            FORBIDDEN — non-admin/leadership attempted to set/clear a linkage field, or
+            a pm attempted to edit a project they do not own.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Project not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: DUPLICATE_GITHUB_REPO — github_repo already linked or collides with a project key
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '422':
+          description: IMMUTABLE_FIELD — body contained jira_key or attempted to change project_type
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /api/projects/{projectId}/checklist:
+    get:
+      summary: Get onboarding checklist items for a project
+      operationId: listChecklist
+      description: Roles pm/sa/engineer/leadership/admin may read the onboarding checklist.
+      security:
+        - cognito: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Onboarding checklist with completion counts
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ChecklistResponse' }
+        '404':
+          description: Project not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /api/projects/{projectId}/checklist/{itemId}:
+    patch:
+      summary: Mark/unmark an onboarding checklist item (soft-captures Slack channel ids)
+      operationId: updateChecklistItem
+      description: >
+        Roles pm/sa/leadership/admin may complete/uncomplete an onboarding item. When completing
+        the 'Set up Slack/Teams channel' item, the caller MAY optionally supply
+        slack_micro_channel_id and/or slack_macro_channel_id (CR-04). Capture is SOFT — completion
+        is never blocked when the ids are omitted. Supplying either id is a linkage mutation, so it
+        requires admin/leadership (403 otherwise) and is persisted to the project via the audited
+        linkage path (updated_by/updated_at + one project_link_audit row per changed field). Only
+        non-secret channel ids are accepted — a bot token or webhook URL fails the channel-id
+        format check (400). Channel ids on any other item, or with completed=false, are rejected
+        400. When all 9 items are completed the 'Onboarding Checklist' macro checkpoint is reached.
+      security:
+        - cognito: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: itemId
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateChecklistInput' }
+      responses:
+        '200':
+          description: Updated checklist item
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OnboardingChecklistItem' }
+        '400':
+          description: >
+            VALIDATION_ERROR — channel id failed the non-secret format check (bot token / webhook
+            URL rejected), or channel ids were supplied on a non-Slack item or with completed=false.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: FORBIDDEN — non-admin/leadership attempted to attach Slack channel ids
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: CHECKLIST_ITEM_NOT_FOUND — item does not exist or does not belong to project
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /api/projects/{projectId}/slack/provision:
+    post:
+      summary: Resolve-or-create the project's micro + macro Slack channels (CR-05, FR-P2-039)
+      operationId: provisionSlackChannels
+      description: >
+        Admin/leadership only. Resolves (conversations.list) or creates (conversations.create) the
+        project's micro and macro Slack channels using the SEPARATE provisioning credential
+        (channels:read + channels:manage — SEC-M1 two-token split), NOT the runtime chat:write bot
+        token. The resulting non-secret channel ids are persisted to
+        slack_micro_channel_id/slack_macro_channel_id via the CR-02 audited linkage path
+        (updated_by/updated_at + one project_link_audit row per changed field). Idempotent: a re-run
+        resolves the existing channels (no duplicate created); when the stored ids already match, no
+        write occurs (persisted=false) and no redundant audit row is written. The provisioning token
+        never appears in the response, a projects column, or a log. The provisioning trigger UI is CR-15.
+      security:
+        - cognito: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Resolved/created channel ids (non-secret)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProvisionSlackChannelsResponse' }
+        '403':
+          description: FORBIDDEN — caller is not admin/leadership
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: NOT_FOUND — project does not exist
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '502':
+          description: >
+            Upstream Slack error (INTERNAL_ERROR surfaced generically) — provisioning credential
+            missing/unauthorized, Slack API error, or timeout. No secret/SSM path is leaked.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /api/projects/{projectId}/sync-gates:
+    post:
+      summary: Sync macro gates from the linked repo's docs/project-progress.md (CR-16)
+      operationId: syncGates
+      description: >
+        Admin/leadership only. Fetches the project's linked GitHub repo docs/project-progress.md
+        via the READ-only GitHub token (SSM SecureString, Contents:Read), parses the RESOLVED
+        macro gates ([x] / "approved by" markers), maps them to CASDM macro_checkpoints, and
+        idempotently sets reached_at with reviewed_by='system:repo-sync' for gates not already
+        resolved. Own-repo-only: the repo is read from the project row, never request input. This
+        is the ONLY sanctioned auto-resolution path (the passive governance_events timeline join is
+        still display-only, FR-P2-041). A run that resolves ≥1 gate writes an append-only
+        project_link_audit row (actor + source owner/repo + resolved gates — CR16-H2). An unlinked
+        project returns all-zero. The GitHub token never appears in the response or a log.
+      security:
+        - cognito: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Sync summary (idempotent — resolved is 0 on re-sync)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SyncGatesResponse' }
+        '403':
+          description: FORBIDDEN — caller is not admin/leadership
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: NOT_FOUND — project does not exist
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '503':
+          description: >
+            REPO_SYNC_UNAVAILABLE — GitHub rate-limited / auth / network failure. Retriable and
+            secret-free (no token, owner, or URL leaked).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /api/projects/{projectId}/sync-artifacts:
+    post:
+      summary: Reconcile Level-2 micro-artifacts from repo micro governance events (CR-12)
+      operationId: syncArtifacts
+      description: >
+        Admin/leadership only (FR-P2-042). Maps the linked project's OWN-REPO micro
+        governance_events (by event_code) through the deterministic micro_artifact_mapping
+        (event_code, project_type, phase) lookup to the project's micro_artifacts and idempotently
+        sets status='complete', completed_at=event.created_at, completed_by='kiro:'||event.actor.
+        Runs under the Phase-2 app role (kiro_phase2) — the MCP runtime role stays append-only.
+        Deterministic (event_code only, never text), idempotent (completed=0 on re-run), reversible
+        + audited (append-only micro_artifact_audit), and own-repo-scoped (repo read from the
+        project row, never request input). No GitHub fetch — reads DB events only. An unlinked
+        project (github_repo IS NULL) returns all-zero. Rows with manual_override=true are never
+        touched.
+      security:
+        - cognito: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Reconcile summary (idempotent — completed is 0 on re-sync; all-zero if unlinked)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SyncArtifactsResponse' }
+        '403':
+          description: FORBIDDEN — caller is not admin/leadership
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: NOT_FOUND — project does not exist
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /api/projects:
+    post:
+      summary: Create a project (optionally already linked)
+      operationId: createProject
+      description: >
+        Roles pm/leadership/admin may create a project. Supplying any linkage field
+        requires admin/leadership (403 otherwise).
+      security:
+        - cognito: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateProjectInput' }
+      responses:
+        '201':
+          description: Created project with seed counts
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CreateProjectResponse' }
+        '400':
+          description: Validation failed (details names the offending field)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: FORBIDDEN — non-admin/leadership supplied a linkage field
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: DUPLICATE_GITHUB_REPO — github_repo already linked or collides with a project key
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '422':
+          description: NO_CASDM_TEMPLATE — no template for project_type or 'default'
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+components:
+  securitySchemes:
+    cognito:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Cognito JWT (API Gateway Cognito authorizer)
+  schemas:
+    Project:
+      type: object
+      properties:
+        id: { type: integer }
+        jira_key: { type: string }
+        jira_id: { type: string, nullable: true }
+        jira_link: { type: string, nullable: true }
+        title: { type: string }
+        description: { type: string, nullable: true }
+        project_type: { type: string, nullable: true }
+        status: { type: string, nullable: true }
+        account_executive: { type: string, nullable: true }
+        solution_architect: { type: string, nullable: true }
+        project_manager: { type: string, nullable: true }
+        engineers_assigned: { type: string, nullable: true }
+        planned_kickoff_date: { type: string, nullable: true }
+        expected_completion_date: { type: string, nullable: true }
+        resource_assignment_date: { type: string, nullable: true }
+        sow_hours: { type: number, nullable: true }
+        hours_consumed: { type: number }
+        sow_link: { type: string, nullable: true }
+        current_phase: { type: string }
+        created_at: { type: string, format: date-time }
+        github_repo: { type: string, nullable: true, pattern: '^[A-Za-z0-9._-]{1,100}$' }
+        github_url: { type: string, nullable: true, pattern: '^https://github\.com/[A-Za-z0-9._/-]{1,200}$' }
+        slack_micro_channel_id: { type: string, nullable: true, pattern: '^[A-Za-z0-9]{1,64}$' }
+        slack_macro_channel_id: { type: string, nullable: true, pattern: '^[A-Za-z0-9]{1,64}$' }
+        updated_by: { type: string, nullable: true, readOnly: true, description: 'Cognito sub of last linkage mutator' }
+        updated_at: { type: string, format: date-time, nullable: true, readOnly: true }
+    CreateProjectInput:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string, minLength: 1, maxLength: 255 }
+        project_type: { type: string, default: AppDev }
+        project_manager: { type: string }
+        solution_architect: { type: string }
+        account_executive: { type: string }
+        engineers_assigned: { type: string }
+        sow_hours: { type: number }
+        planned_kickoff_date: { type: string }
+        expected_completion_date: { type: string }
+        description: { type: string }
+        github_repo: { type: string, pattern: '^[A-Za-z0-9._-]{1,100}$' }
+        github_url: { type: string, pattern: '^https://github\.com/[A-Za-z0-9._/-]{1,200}$' }
+        slack_micro_channel_id: { type: string, pattern: '^[A-Za-z0-9]{1,64}$' }
+        slack_macro_channel_id: { type: string, pattern: '^[A-Za-z0-9]{1,64}$' }
+    UpdateProjectInput:
+      type: object
+      properties:
+        title: { type: string, minLength: 1, maxLength: 255 }
+        description: { type: string }
+        status: { type: string }
+        project_manager: { type: string }
+        solution_architect: { type: string }
+        account_executive: { type: string }
+        engineers_assigned: { type: string }
+        planned_kickoff_date: { type: string, nullable: true }
+        expected_completion_date: { type: string, nullable: true }
+        sow_hours: { type: number, nullable: true }
+        github_repo: { type: string, nullable: true, pattern: '^[A-Za-z0-9._-]{1,100}$' }
+        github_url: { type: string, nullable: true, pattern: '^https://github\.com/[A-Za-z0-9._/-]{1,200}$' }
+        slack_micro_channel_id: { type: string, nullable: true, pattern: '^[A-Za-z0-9]{1,64}$' }
+        slack_macro_channel_id: { type: string, nullable: true, pattern: '^[A-Za-z0-9]{1,64}$' }
+    CreateProjectResponse:
+      type: object
+      properties:
+        project: { $ref: '#/components/schemas/Project' }
+        seeded:
+          type: object
+          properties:
+            micro_artifacts: { type: integer }
+            macro_checkpoints: { type: integer }
+            onboarding_items: { type: integer }
+    ProvisionSlackChannelsResponse:
+      type: object
+      description: >
+        Result of resolving/creating a project's micro+macro Slack channels (CR-05). Carries only
+        non-secret channel ids — never the provisioning token. persisted is false on an idempotent
+        no-op re-run (stored ids already matched).
+      properties:
+        project_id: { type: string }
+        slack_micro_channel_id:
+          type: string
+          description: Non-secret Slack channel id for the micro channel.
+        slack_macro_channel_id:
+          type: string
+          description: Non-secret Slack channel id for the macro channel.
+        persisted:
+          type: boolean
+          description: true if the ids were written via the audited linkage path; false on a no-op re-run.
+        provisioned:
+          type: object
+          properties:
+            micro: { $ref: '#/components/schemas/ProvisionedChannel' }
+            macro: { $ref: '#/components/schemas/ProvisionedChannel' }
+    ProvisionedChannel:
+      type: object
+      properties:
+        channel_id: { type: string }
+        created:
+          type: boolean
+          description: true if this call created the channel; false if an existing one was resolved.
+    SyncGatesResponse:
+      type: object
+      description: >
+        Result of a CR-16 repo → macro-gate sync. Non-secret counts only.
+      properties:
+        project_id: { type: string }
+        matched:
+          type: integer
+          description: Resolved gates that map to a checkpoint AND have a row for the project.
+        resolved:
+          type: integer
+          description: Of matched, those newly completed by this run (0 on an idempotent re-sync).
+        skipped:
+          type: integer
+          description: Unmapped gates, mapped-but-missing rows, or already-resolved checkpoints.
+    SyncArtifactsResponse:
+      type: object
+      description: >
+        Result of a CR-12 Level-2 micro-artifact reconcile (event_code → micro_artifacts).
+        Non-secret counts only. See also record_progress `event_code` (MCP tool, CR-14): an
+        optional stable code (casdm.<phase>.<artifact>, ^[a-z0-9._]{1,64}$) persisted on
+        governance_events; unknown/absent codes still persist but are timeline-only (never
+        auto-complete an artifact — the allow-list is enforced at reconcile time via
+        micro_artifact_mapping.is_active).
+      properties:
+        project_id: { type: string }
+        matched:
+          type: integer
+          description: Mapping-resolved micro events that have a target micro_artifacts row.
+        completed:
+          type: integer
+          description: Of matched, those newly set complete by this run (0 on an idempotent re-sync).
+        skipped:
+          type: integer
+          description: Resolved candidates that did not complete (already complete | manual_override | no target row).
+    MicroArtifactDetail:
+      type: object
+      description: A CASDM micro artifact with Level-2 provenance.
+      properties:
+        id: { type: integer }
+        artifact_name: { type: string }
+        phase: { type: string }
+        phase_name: { type: string }
+        status: { type: string, enum: [pending, in_progress, complete] }
+        completed_at: { type: string, format: date-time, nullable: true }
+        completed_by:
+          type: string
+          nullable: true
+          description: >
+            'kiro:<actor>' when auto-completed by Level-2 reconcile (UI shows a 'kiro' badge);
+            a Cognito email when completed manually.
+        manual_override:
+          type: boolean
+          description: >
+            true when a human set the status via PATCH /artifacts — the reconciler will not
+            auto-complete or clobber this row until reset_to_auto clears it.
+    UpdateArtifactInput:
+      type: object
+      required: [status]
+      description: >
+        Manual override / reverse path for Level-2 auto-completion (CR-12). Any human status change
+        sets manual_override=true. reset_to_auto (admin/leadership only) clears manual_override so
+        the row becomes auto-eligible again.
+      properties:
+        status: { type: string, enum: [pending, in_progress, complete] }
+        reset_to_auto:
+          type: boolean
+          description: Admin/leadership only. Clears manual_override to re-enable Kiro auto-sync. Audited as 'reverse'.
+    UpdateChecklistInput:
+      type: object
+      required: [completed]
+      description: >
+        completed toggles the item. slack_micro_channel_id / slack_macro_channel_id are the
+        optional CR-04 soft-capture fields — accepted only when completing the
+        'Set up Slack/Teams channel' item, admin/leadership only, and must be non-secret channel
+        ids (never a bot token or webhook URL).
+      properties:
+        completed: { type: boolean }
+        slack_micro_channel_id:
+          type: string
+          pattern: '^[A-Za-z0-9]{1,64}$'
+          description: Non-secret Slack channel id (e.g. C0123ABCD). Never a token or webhook URL.
+        slack_macro_channel_id:
+          type: string
+          pattern: '^[A-Za-z0-9]{1,64}$'
+          description: Non-secret Slack channel id (e.g. C0123ABCD). Never a token or webhook URL.
+    OnboardingChecklistItem:
+      type: object
+      properties:
+        id: { type: integer }
+        project_id: { type: string }
+        item_name: { type: string }
+        completed: { type: boolean }
+        completed_by: { type: string, nullable: true }
+        completed_at: { type: string, format: date-time, nullable: true }
+        created_at: { type: string, format: date-time }
+    ChecklistResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/OnboardingChecklistItem' }
+        completed_count: { type: integer }
+        total_count: { type: integer }
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          description: >
+            Machine-readable code. CR-02 codes: VALIDATION_ERROR (400),
+            FORBIDDEN (403), DUPLICATE_GITHUB_REPO (409), IMMUTABLE_FIELD (422).
+        message: { type: string }
+        details:
+          type: object
+          nullable: true
+          description: >
+            For VALIDATION_ERROR, a map of field name → messages. For IMMUTABLE_FIELD,
+            { field: 'jira_key' }.
+          additionalProperties: true

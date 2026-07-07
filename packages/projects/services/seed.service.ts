@@ -4,7 +4,7 @@
  * from casdm_config template rows.
  */
 
-import { Pool, PoolClient } from 'pg';
+import { PoolClient } from 'pg';
 
 export const ONBOARDING_CHECKLIST_ITEMS = [
   'Set up Slack/Teams channel',
@@ -17,6 +17,14 @@ export const ONBOARDING_CHECKLIST_ITEMS = [
   'Send customer intro email — Figure out account access',
   'Send customer intro email — Confirm communication channels',
 ] as const;
+
+/**
+ * The single onboarding item whose completion soft-captures the micro/macro Slack
+ * channel ids (CR-04). Kept as a named export so the checklist handler and the seed
+ * list never drift. See projects-architecture §2.7, §3.4.
+ */
+export const SLACK_TEAMS_CHECKLIST_ITEM: (typeof ONBOARDING_CHECKLIST_ITEMS)[number] =
+  ONBOARDING_CHECKLIST_ITEMS[0];
 
 export interface SeedResult {
   micro_artifacts: number;

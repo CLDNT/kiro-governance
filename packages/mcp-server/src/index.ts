@@ -11,7 +11,6 @@ import { registerNotifySlack } from './tools/notify-slack.js';
  * Server configuration loaded from SSM and cached at startup.
  */
 interface ServerConfig extends Record<string, unknown> {
-  tableName: string;
   region: string;
   apiKey: string;
 }
@@ -47,7 +46,6 @@ async function bootstrap(): Promise<void> {
   const ssmClient = new SSMClient({ region: process.env.AWS_REGION });
   const config = await loadServerConfig(ssmClient);
   console.info('Loaded config from SSM', {
-    tableName: config.tableName,
     region: config.region,
   });
 
@@ -111,13 +109,7 @@ async function bootstrap(): Promise<void> {
  * Caches values in memory — no per-request fetches.
  */
 async function loadServerConfig(ssmClient: SSMClient): Promise<ServerConfig> {
-  const [tableNameParam, regionParam, apiKeyParam] = await Promise.all([
-    ssmClient.send(
-      new GetParameterCommand({
-        Name: '/kiro-governance/config/table-name',
-        WithDecryption: false,
-      }),
-    ),
+  const [regionParam, apiKeyParam] = await Promise.all([
     ssmClient.send(
       new GetParameterCommand({
         Name: '/kiro-governance/config/region',
@@ -133,7 +125,6 @@ async function loadServerConfig(ssmClient: SSMClient): Promise<ServerConfig> {
   ]);
 
   return {
-    tableName: tableNameParam.Parameter?.Value || '',
     region: regionParam.Parameter?.Value || '',
     apiKey: apiKeyParam.Parameter?.Value || '',
   };
