@@ -1,16 +1,16 @@
 {
   "version": "54.0.0",
   "files": {
-    "6058d2ee42f0c46b36c3c49f2debbfe35e9a17e9fa9aefcef5ca8608bd74852c": {
+    "ab3f145e3220a1d8b9b4038a08e81a863348aa83451046211108efc480b7054f": {
       "displayName": "KiroGovernanceStack Template",
       "source": {
         "path": "KiroGovernanceStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "713554442614-us-east-1-cb362d9b": {
+        "713554442614-us-east-1-5acd211e": {
           "bucketName": "cdk-hnb659fds-assets-713554442614-us-east-1",
-          "objectKey": "6058d2ee42f0c46b36c3c49f2debbfe35e9a17e9fa9aefcef5ca8608bd74852c.json",
+          "objectKey": "ab3f145e3220a1d8b9b4038a08e81a863348aa83451046211108efc480b7054f.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::713554442614:role/cdk-hnb659fds-file-publishing-role-713554442614-us-east-1"
         }

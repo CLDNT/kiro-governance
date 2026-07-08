@@ -1,5 +1,99 @@
 {
  "Description": "Kiro Governance — Phase 1 + Phase 2 Data & Persistence (RDS PostgreSQL + EC2 MCP Server)",
+ "Metadata": {
+  "cdk_nag": {
+   "rules_to_suppress": [
+    {
+     "reason": "MCP server is an internet-facing endpoint by design: Kiro CLI clients connect over HTTPS :443 from arbitrary developer IPs, and :22 is gated by the `adminCidr` context (defaults to a placeholder that MUST be narrowed per environment). Auth is enforced at the app layer (X-API-Key + pinned TLS cert fingerprint). POC accepts the open 443; prod should front it with a narrower CIDR / ALB + WAF.",
+     "id": "AwsSolutions-EC23"
+    },
+    {
+     "reason": "Detailed (1-minute) EC2 monitoring is not justified for a single t3.micro POC MCP host; basic 5-minute CloudWatch metrics + the app log group suffice. Revisit for prod.",
+     "id": "AwsSolutions-EC28"
+    },
+    {
+     "reason": "The MCP EC2 host is stateless (all state is in RDS + SSM) and fronted by a stable Elastic IP; it can be recreated without data loss, so instance termination protection is unnecessary for the POC.",
+     "id": "AwsSolutions-EC29"
+    },
+    {
+     "reason": "Rk9MTE9XLVVQICh0cmFja2VkKTogdGhlIHNoYXJlZCBSRFMgaW5zdGFuY2Ugd2FzIGNyZWF0ZWQgd2l0aG91dCBzdG9yYWdlIGVuY3J5cHRpb24uIEVuYWJsaW5nIGVuY3J5cHRpb24gb24gYW4gZXhpc3RpbmcgaW5zdGFuY2UgcmVxdWlyZXMgYSBzbmFwc2hvdC1yZXN0b3JlL3JlcGxhY2UsIHdoaWNoIGlzIGJsb2NrZWQgaGVyZSBieSBSRVRBSU4gKyBkZWxldGlvblByb3RlY3Rpb24uIEFjY2VwdGVkIGZvciB0aGUgUE9DIChpbnRlcm5hbC1lbXBsb3llZSBhdWRpdCBkYXRhIG9ubHksIG5vIGN1c3RvbWVyIFBJSSDigJQgc2VlIHVuaWZpZWQtZGF0YS1tb2RlbC5tZCDCpzYpOyBtdXN0IGJlIHJlbWVkaWF0ZWQgKGVuY3J5cHRlZCByZXBsYWNlbWVudCkgYmVmb3JlIGFueSByZWd1bGF0ZWQvcHJvZCB1c2Uu",
+     "id": "AwsSolutions-RDS2",
+     "is_reason_encoded": true
+    },
+    {
+     "reason": "Single-AZ is an accepted cost trade-off for the POC (t3.micro, 7-day automated backups). Multi-AZ is a prod hardening item.",
+     "id": "AwsSolutions-RDS3"
+    },
+    {
+     "reason": "Default PostgreSQL port 5432 is retained; the instance is only reachable from the MCP/Lambda security groups (no public port exposure), so port obfuscation adds no meaningful defense here.",
+     "id": "AwsSolutions-RDS11"
+    },
+    {
+     "reason": "VGhlIFJEUyBtYXN0ZXItdXNlciBzZWNyZXQgKGFuZCB0aGUgcGxhY2Vob2xkZXIgQXZvbWEgQVBJLWtleSBzZWNyZXQpIGFyZSBub3Qgb24gYXV0b21hdGljIHJvdGF0aW9uIGZvciB0aGUgUE9DLiBUaGUgTUNQL0xhbWJkYSBSVU5USU1FIGRvZXMgbm90IHVzZSB0aGUgbWFzdGVyIHNlY3JldCDigJQgaXQgYXV0aGVudGljYXRlcyB2aWEgc2hvcnQtbGl2ZWQgUkRTIElBTSB0b2tlbnMgYXMga2lyb19tY3BfYXBwL2tpcm9fcGhhc2UyLiBUaGUgbWFzdGVyIHNlY3JldCBpcyBhZG1pbi9icmVhay1nbGFzcyBvbmx5OyByb3RhdGlvbiBpcyBhIGRvY3VtZW50ZWQgbWFudWFsL29wcyB0YXNrLiBSZXZpc2l0IGZvciBwcm9kLg==",
+     "id": "AwsSolutions-SMG4",
+     "is_reason_encoded": true
+    },
+    {
+     "reason": "The only AWS-managed policy in use is AmazonAPIGatewayPushToCloudWatchLogs, attached to the API Gateway account CloudWatch role that CDK provisions automatically. It is the standard, least-privilege managed policy for that purpose.",
+     "id": "AwsSolutions-IAM4"
+    },
+    {
+     "reason": "UmVtYWluaW5nIHdpbGRjYXJkcyBhcmUgc2NvcGVkIHRvIHNlcnZpY2UtcmVxdWlyZWQgcGF0dGVybnMgdGhhdCBjYW5ub3QgYmUgZW51bWVyYXRlZCBhdCBzeW50aCB0aW1lOiBDbG91ZFdhdGNoIExvZ3Mgb24gYC9hd3MvbGFtYmRhLypgIChwZXItZnVuY3Rpb24gbG9nIGdyb3VwcyksIEVDMiBFTkkgYWN0aW9ucyBvbiBgKmAgKG1hbmRhdG9yeSBmb3IgTGFtYmRhLWluLVZQQyAvIFJEUyBJQU0gYXV0aCksIFNTTSBgR2V0UGFyYW1ldGVyYCBvbiB0aGUgbm9uLXNlY3JldCBgL2tpcm8tZ292ZXJuYW5jZS9jb25maWcvKmAgYW5kIGAvZGVsaXZlcnByby8qYCBjb25maWcgcHJlZml4ZXMsIEtNUyBgRGVjcnlwdGAgY29uZGl0aW9uZWQgb24gYGttczpWaWFTZXJ2aWNlID0gc3NtLjxyZWdpb24+LmFtYXpvbmF3cy5jb21gLCBhbmQgUzMgb24gdGhlIGBldmlkZW5jZS8qYCBvYmplY3QgcHJlZml4LiBFYWNoIHBlci1jcmVkZW50aWFsIFNTTSBzZWNyZXQgKFNsYWNrIGJvdC9wcm92aXNpb25pbmcgdG9rZW5zLCBHaXRIdWIgcmVhZC10b2tlbikgaXMgZ3JhbnRlZCBhcyBhIFNJTkdMRSBwYXJhbWV0ZXIgQVJOIHZpYSBTc21TZWNyZXRHcmFudCDigJQgdGhvc2UgYXJlIE5PVCB3aWxkY2FyZGVkLiBUaGUgUkRTIElBTSBgcmRzLWRiOmNvbm5lY3RgIEFSTnMgYXJlIHBpbm5lZCB0byB0aGUgZXhhY3QgZGJ1c2VyIChga2lyb19tY3BfYXBwYCAvIGBraXJvX3BoYXNlMmApLg==",
+     "id": "AwsSolutions-IAM5",
+     "is_reason_encoded": true
+    },
+    {
+     "reason": "API Gateway access logging is deferred for the POC; execution logging (INFO) is enabled on the stage and application-level audit logging is handled in the Lambda layer. Enable access logs for prod.",
+     "id": "AwsSolutions-APIG1"
+    },
+    {
+     "reason": "Request payloads are validated in-handler with Zod schemas at the domain boundary (backend-standards §9). API Gateway request-model validation is not used; validation correctness is covered by unit tests.",
+     "id": "AwsSolutions-APIG2"
+    },
+    {
+     "reason": "No WAFv2 web ACL on the REST API for the POC (cost). Access is Cognito-authenticated; WAF is a prod hardening item tracked alongside CFR2.",
+     "id": "AwsSolutions-APIG3"
+    },
+    {
+     "reason": "R2VvIHJlc3RyaWN0aW9uIGlzIG5vdCByZXF1aXJlZCDigJQgdGhlIGFwcCBzZXJ2ZXMgYW4gaW50ZXJuYWwsIGdlb2dyYXBoaWNhbGx5LXVucmVzdHJpY3RlZCBlbXBsb3llZSBhdWRpZW5jZS4=",
+     "id": "AwsSolutions-CFR1",
+     "is_reason_encoded": true
+    },
+    {
+     "reason": "AWS WAF integration on the CloudFront distribution is a prod hardening item (cost); the POC serves a static SPA behind Cognito-authenticated APIs.",
+     "id": "AwsSolutions-CFR2"
+    },
+    {
+     "reason": "CloudFront access logging is enabled only in prod (see `enableLogging: environment === \"prod\"`); disabled on dev to avoid log-bucket cost for the POC.",
+     "id": "AwsSolutions-CFR3"
+    },
+    {
+     "reason": "The distribution uses the default CloudFront certificate/viewer policy (no custom domain), which permits older TLS versions on the *.cloudfront.net domain. A custom domain + ACM cert with a TLSv1.2_2021 minimum-protocol policy is a prod item.",
+     "id": "AwsSolutions-CFR4"
+    },
+    {
+     "reason": "MFA is not enforced for the POC internal user pool. Enabling MFA (TOTP) is a documented prod hardening item (auth-architecture).",
+     "id": "AwsSolutions-COG2"
+    },
+    {
+     "reason": "The Cognito user pool uses the default (Lite) feature plan; the Plus tier advanced-security features are not warranted for the internal POC and are a prod cost/hardening decision.",
+     "id": "AwsSolutions-COG8"
+    },
+    {
+     "reason": "Server access logging is disabled on the frontend and evidence buckets for the POC (avoids a dedicated log bucket + its own S1 finding). Both buckets block public access; evidence access is app-authorized. Enable access logging for prod audit needs.",
+     "id": "AwsSolutions-S1"
+    },
+    {
+     "reason": "The CloudWatch-alarms SNS topic does not enforce an SSL-only publish policy. Publishers are AWS-internal (CloudWatch Alarms / Budgets) over the AWS network; no external publishers exist. Adding an aws:SecureTransport deny policy is a low-value prod hardening item.",
+     "id": "AwsSolutions-SNS3"
+    },
+    {
+     "reason": "Lambda runtime version is pinned intentionally for reproducible POC builds. Runtime currency is managed as a deliberate, tested upgrade (dependency-management standards) rather than always tracking \"latest\" automatically.",
+     "id": "AwsSolutions-L1"
+    }
+   ]
+  }
+ },
  "Resources": {
   "McpServerSg491ADA4C": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -238,7 +332,7 @@
             "DbiResourceId"
            ]
           },
-          "/kiro_mcp"
+          "/kiro_mcp_app"
          ]
         ]
        },
@@ -247,7 +341,7 @@
       {
        "Action": "ssm:GetParameter",
        "Effect": "Allow",
-       "Resource": "arn:aws:ssm:us-east-1:713554442614:parameter/kiro-governance/*",
+       "Resource": "arn:aws:ssm:us-east-1:713554442614:parameter/kiro-governance/config/*",
        "Sid": "SSMReadConfig"
       },
       {
@@ -260,6 +354,12 @@
        "Effect": "Allow",
        "Resource": "arn:aws:kms:us-east-1:713554442614:key/*",
        "Sid": "KmsDecryptSsm"
+      },
+      {
+       "Action": "ssm:GetParameter",
+       "Effect": "Allow",
+       "Resource": "arn:aws:ssm:us-east-1:713554442614:parameter/kiro-governance/slack/bot-token",
+       "Sid": "SlackBotTokenSsmGet"
       }
      ],
      "Version": "2012-10-17"
@@ -337,7 +437,7 @@
      }
     ],
     "UserData": {
-     "Fn::Base64": "#!/bin/bash\n#!/bin/bash\nset -euxo pipefail\ncurl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash\nexport NVM_DIR=\"/root/.nvm\"\n[ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\"\nnvm install 20\nnvm use 20\nnvm alias default 20\nmkdir -p /opt/kiro-governance\nif [ ! -f /opt/kiro-governance/cert.pem ]; then\n  openssl req -x509 -newkey rsa:4096 \\\n    -keyout /opt/kiro-governance/key.pem \\\n    -out /opt/kiro-governance/cert.pem \\\n    -days 365 -nodes \\\n    -subj \"/CN=kiro-governance\"\n  chmod 600 /opt/kiro-governance/key.pem\n  chmod 644 /opt/kiro-governance/cert.pem\nfi\ncat > /opt/kiro-governance/.env.example << 'EOF'\nDB_ENDPOINT=localhost\nDB_PORT=5432\nDB_NAME=kiro_governance\nDB_USER=kiro_mcp\nAWS_REGION=us-east-1\nMCP_API_KEY=REPLACE_WITH_REAL_KEY\nTLS_CERT_PATH=/opt/kiro-governance/cert.pem\nTLS_KEY_PATH=/opt/kiro-governance/key.pem\nPORT=443\nEOF"
+     "Fn::Base64": "#!/bin/bash\n#!/bin/bash\nset -euxo pipefail\ncurl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash\nexport NVM_DIR=\"/root/.nvm\"\n[ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\"\nnvm install 20\nnvm use 20\nnvm alias default 20\nmkdir -p /opt/kiro-governance\nif [ ! -f /opt/kiro-governance/cert.pem ]; then\n  openssl req -x509 -newkey rsa:4096 \\\n    -keyout /opt/kiro-governance/key.pem \\\n    -out /opt/kiro-governance/cert.pem \\\n    -days 365 -nodes \\\n    -subj \"/CN=kiro-governance\"\n  chmod 600 /opt/kiro-governance/key.pem\n  chmod 644 /opt/kiro-governance/cert.pem\nfi\ncat > /opt/kiro-governance/.env.example << 'EOF'\nDB_ENDPOINT=localhost\nDB_PORT=5432\nDB_NAME=kiro_governance\nDB_USER=kiro_mcp_app\nAWS_REGION=us-east-1\nMCP_API_KEY=REPLACE_WITH_REAL_KEY\nTLS_CERT_PATH=/opt/kiro-governance/cert.pem\nTLS_KEY_PATH=/opt/kiro-governance/key.pem\nPORT=443\nEOF"
     }
    },
    "DependsOn": [
@@ -423,10 +523,10 @@
   "DbUserParam081528B4": {
    "Type": "AWS::SSM::Parameter",
    "Properties": {
-    "Description": "PostgreSQL IAM user for MCP server",
+    "Description": "PostgreSQL IAM user for MCP server runtime (non-master append-only role; NOT the RDS master kiro_mcp)",
     "Name": "/kiro-governance/config/db-user",
     "Type": "String",
-    "Value": "kiro_mcp"
+    "Value": "kiro_mcp_app"
    },
    "Metadata": {
     "aws:cdk:path": "KiroGovernanceStack/DbUserParam/Resource"
@@ -507,8 +607,8 @@
    "Value": "kiro_governance"
   },
   "RdsUser": {
-   "Description": "RDS IAM database user",
-   "Value": "kiro_mcp"
+   "Description": "RDS IAM database user for the MCP runtime (non-master append-only role)",
+   "Value": "kiro_mcp_app"
   },
   "McpServerRoleName": {
    "Description": "IAM role for MCP server EC2 instance",

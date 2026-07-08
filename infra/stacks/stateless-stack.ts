@@ -78,6 +78,8 @@ export class StatelessStack extends cdk.NestedStack {
   public readonly projectsLinkageRole: iam.Role;
   /** Dedicated role for the Slack channel-provisioning Lambda — reads the Slack provisioning-token ONLY. */
   public readonly provisioningRole: iam.Role;
+  /** Dedicated role for the gates macro-notify Lambda — reads the MCP api-key (SecureString) ONLY. */
+  public readonly gatesNotifyRole: iam.Role;
 
   constructor(scope: Construct, id: string, props: StatelessStackProps) {
     super(scope, id, props);
@@ -223,8 +225,23 @@ export class StatelessStack extends cdk.NestedStack {
       description: 'DeliverPro Slack channel-provisioning role - Slack provisioning-token ONLY',
     });
 
-    // Common permissions applied to all three roles.
-    [this.lambdaBaseRole, this.projectsLinkageRole, this.provisioningRole].forEach((role) =>
+    // Gap B: the gates macro-notify Lambda (complete-checkpoint) needs the MCP API key at runtime to
+    // authenticate app→MCP notify_slack calls. The key is a SecureString and CANNOT be injected into
+    // a Lambda env var by CloudFormation, so this dedicated role reads it from SSM at runtime as a
+    // SINGLE ARN (CR-05/CR-16 matrix) — the same pattern as the github/slack tokens above.
+    this.gatesNotifyRole = new iam.Role(this, 'GatesNotifyRole', {
+      roleName: 'deliverpro-gates-notify-role',
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      description: 'DeliverPro gates macro-notify role - reads MCP api-key (SecureString) ONLY',
+    });
+
+    // Common permissions applied to all four roles.
+    [
+      this.lambdaBaseRole,
+      this.projectsLinkageRole,
+      this.provisioningRole,
+      this.gatesNotifyRole,
+    ].forEach((role) =>
       this.applyCommonLambdaPolicies(role, region, accountId, props.evidenceBucket),
     );
 
@@ -249,6 +266,26 @@ export class StatelessStack extends cdk.NestedStack {
       sidPrefix: 'SlackProvisioningToken',
     });
 
+    // Secret grant 3 — MCP API key → gates-notify role ONLY (single ARN, kms:ViaService=ssm).
+    // Read at RUNTIME by the gates macro-notify path (complete-checkpoint → macro-notify.service →
+    // mcp-client). A SecureString cannot be a Lambda env var, so only the parameter PATH is injected
+    // (MCP_API_KEY_SSM_PARAM) and the value is fetched via this scoped SSM read.
+    new SsmSecretGrant(this, 'McpApiKeyGrant', {
+      role: this.gatesNotifyRole,
+      parameterName: '/kiro-governance/config/mcp-api-key',
+      region,
+      account: accountId,
+      sidPrefix: 'McpApiKey',
+    });
+
+    // MCP self-signed cert fingerprint — a NON-secret String param. Resolved at synth (lookup) and
+    // injected as a plain env var so the app pins the TLS connection (mcp-client compares it against
+    // cert.fingerprint256). Non-secret, so baking the literal into the template is acceptable.
+    const mcpCertFingerprint = ssm.StringParameter.valueFromLookup(
+      this,
+      '/kiro-governance/config/mcp-cert-fingerprint',
+    );
+
     // ==================== SSM Parameter Exports (DP-01) ====================
     // Per DP-01 spec §3
     new ssm.StringParameter(this, 'ApiGatewayUrlParam', {
@@ -271,6 +308,7 @@ export class StatelessStack extends cdk.NestedStack {
       lambdaBaseRole: this.lambdaBaseRole,
       projectsLinkageRole: this.projectsLinkageRole,
       provisioningRole: this.provisioningRole,
+      gatesNotifyRole: this.gatesNotifyRole,
       dbEndpoint: props.dbEndpoint,
       dbName: props.dbName,
       dbUser: props.dbUser,
@@ -279,6 +317,10 @@ export class StatelessStack extends cdk.NestedStack {
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
       lambdaSecurityGroup: props.lambdaSecurityGroup,
+      // Gap B — MCP wiring for the app-owned MACRO Slack notify (in-VPC MCP server, private IP).
+      mcpServerUrl: 'https://172.31.7.210:443',
+      mcpApiKeySsmParam: '/kiro-governance/config/mcp-api-key',
+      mcpCertFingerprint,
     });
 
     // ==================== Stack Tags ====================

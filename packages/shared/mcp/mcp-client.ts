@@ -13,6 +13,7 @@
  */
 
 import * as https from 'node:https';
+import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
 
 /** Connection + auth config for the MCP server. */
 export interface McpClientConfig {
@@ -59,6 +60,68 @@ export interface NotifySlackParams {
 export function resolveMcpConfigFromEnv(): McpClientConfig | null {
   const serverUrl = process.env.MCP_SERVER_URL;
   const apiKey = process.env.MCP_API_KEY;
+  if (!serverUrl || !apiKey) {
+    return null;
+  }
+  return {
+    serverUrl,
+    apiKey,
+    certFingerprint: process.env.MCP_CERT_FINGERPRINT,
+  };
+}
+
+// In-memory API-key cache — reused across warm Lambda invocations (execution-environment reuse).
+let cachedSsmApiKey: string | undefined;
+let ssmClient: SSMClient | undefined;
+
+/**
+ * Resolve the MCP API key, in priority order:
+ *   1. `MCP_API_KEY` env var — the CI workflow and dev-agent path (value supplied directly).
+ *   2. `MCP_API_KEY_SSM_PARAM` env var — read that SecureString from SSM at runtime (decrypted),
+ *      then cache it for the life of the execution environment.
+ *
+ * Why the SSM path exists: a SecureString CANNOT be injected into a Lambda environment variable by
+ * CloudFormation, so the DeliverPro app Lambdas receive only the parameter PATH in env and read the
+ * decrypted value at runtime on a single-ARN-scoped IAM role — the same secret-handling pattern the
+ * repo already uses for the GitHub read-token and Slack provisioning-token.
+ */
+export async function resolveMcpApiKey(): Promise<string | undefined> {
+  const direct = process.env.MCP_API_KEY;
+  if (direct) {
+    return direct;
+  }
+  if (cachedSsmApiKey) {
+    return cachedSsmApiKey;
+  }
+  const paramName = process.env.MCP_API_KEY_SSM_PARAM;
+  if (!paramName) {
+    return undefined;
+  }
+  ssmClient ??= new SSMClient({});
+  const res = await ssmClient.send(
+    new GetParameterCommand({ Name: paramName, WithDecryption: true }),
+  );
+  const value = res.Parameter?.Value;
+  if (value) {
+    cachedSsmApiKey = value;
+  }
+  return value;
+}
+
+/**
+ * Resolve the full MCP client config, supporting BOTH the env-only path (CI / dev agent) and the
+ * env + SSM-SecureString path (DeliverPro app Lambdas). Returns null when the server URL or API key
+ * cannot be resolved (caller treats this as "not configured" and skips gracefully — a missing MCP
+ * endpoint must never break the primary operation).
+ *
+ * Env:
+ * - MCP_SERVER_URL         (required)
+ * - MCP_API_KEY            (or MCP_API_KEY_SSM_PARAM → runtime SSM read)
+ * - MCP_CERT_FINGERPRINT   (optional; required in practice for the self-signed MCP cert)
+ */
+export async function resolveMcpConfig(): Promise<McpClientConfig | null> {
+  const serverUrl = process.env.MCP_SERVER_URL;
+  const apiKey = await resolveMcpApiKey();
   if (!serverUrl || !apiKey) {
     return null;
   }
@@ -165,7 +228,7 @@ export async function notifySlack(
   params: NotifySlackParams,
   config?: McpClientConfig | null,
 ): Promise<NotifySlackResult> {
-  const cfg = config ?? resolveMcpConfigFromEnv();
+  const cfg = config ?? (await resolveMcpConfig());
   if (!cfg) {
     // MCP endpoint not configured for this environment — treat as a graceful no-op.
     return { notified: false, reason: 'mcp_not_configured' };

@@ -32,6 +32,8 @@ export interface DeliverProLambdasStackProps {
   projectsLinkageRole: iam.IRole;
   /** Dedicated role for the Slack channel-provisioning Lambda — provisioning-token only. */
   provisioningRole: iam.IRole;
+  /** Dedicated role for the gates macro-notify Lambda — reads the MCP api-key SecureString ONLY. */
+  gatesNotifyRole: iam.IRole;
   dbEndpoint: string;
   dbName: string;
   dbUser: string;
@@ -44,6 +46,12 @@ export interface DeliverProLambdasStackProps {
   githubDefaultOwner?: string;
   /** CR-16: comma-separated approved GitHub owners (H1 allowlist). Optional. */
   githubAllowedOwners?: string;
+  /** Gap B: MCP server endpoint (in-VPC private IP) for the app-owned MACRO notify_slack call. */
+  mcpServerUrl: string;
+  /** Gap B: SSM parameter PATH holding the MCP API key SecureString (read at runtime, never in env). */
+  mcpApiKeySsmParam: string;
+  /** Gap B: MCP self-signed cert SHA-256 fingerprint (non-secret; injected as an env var for TLS pinning). */
+  mcpCertFingerprint: string;
 }
 
 export class DeliverProLambdasStack extends Construct {
@@ -243,7 +251,16 @@ export class DeliverProLambdasStack extends Construct {
     const gatesCompleteFn = createLambda(
       'GatesComplete',
       path.join(__dirname, '../../packages/gates/handlers/complete-checkpoint.ts'),
+      undefined,
+      props.gatesNotifyRole, // Gap B: dedicated role that may read the MCP api-key SecureString ONLY
     );
+    // Gap B: inject MCP env so the app-owned MACRO notify (complete-checkpoint → macro-notify.service
+    // → mcp-client) reaches the in-VPC MCP server instead of no-op'ing with `mcp_not_configured`.
+    // The API key is a SecureString read at RUNTIME from SSM (path below) on gatesNotifyRole — it is
+    // deliberately NOT placed in an env var. See stateless-stack "Secret grant 3".
+    gatesCompleteFn.addEnvironment('MCP_SERVER_URL', props.mcpServerUrl);
+    gatesCompleteFn.addEnvironment('MCP_CERT_FINGERPRINT', props.mcpCertFingerprint);
+    gatesCompleteFn.addEnvironment('MCP_API_KEY_SSM_PARAM', props.mcpApiKeySsmParam);
     const gatesEvidenceListFn = createLambda(
       'GatesEvidenceList',
       path.join(__dirname, '../../packages/gates/handlers/list-evidence.ts'),

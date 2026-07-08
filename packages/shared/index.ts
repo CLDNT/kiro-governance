@@ -35,6 +35,8 @@ export {
   callMcpTool,
   notifySlack,
   resolveMcpConfigFromEnv,
+  resolveMcpConfig,
+  resolveMcpApiKey,
 } from './mcp/mcp-client';
 export type {
   McpClientConfig,

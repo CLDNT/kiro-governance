@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -17,8 +17,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new Instance2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:164:22)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:188:22)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals..."
       ]
     }
@@ -31,8 +31,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:179:17)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:203:17)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -45,8 +45,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:180:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:204:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -59,8 +59,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:239:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:263:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -73,8 +73,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:245:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:269:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -87,8 +87,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:251:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:275:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -101,8 +101,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:256:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:280:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -115,8 +115,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:261:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:285:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -129,8 +129,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:267:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:291:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -143,8 +143,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:272:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:296:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -157,8 +157,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:278:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:302:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -171,8 +171,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:284:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:308:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -185,8 +185,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:289:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:313:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -226,8 +226,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new SecurityGroup2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:32:16)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:33:16)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -241,8 +241,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new SecurityGroup2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:43:18)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:44:18)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -256,8 +256,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...WrappedClass.<anonymous> in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:51:10)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:52:10)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -271,8 +271,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new DatabaseInstance2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:55:23)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:56:23)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -286,8 +286,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new Role2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:76:26)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:81:26)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -301,8 +301,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new InstanceProfile2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:119:29)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:143:29)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -316,8 +316,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new Instance2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:164:22)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:188:22)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -331,8 +331,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new Instance2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:164:22)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:188:22)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -346,8 +346,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new StringParameter2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:188:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:212:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -361,8 +361,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new StringParameter2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:194:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:218:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -376,8 +376,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new StringParameter2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:200:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:224:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -391,8 +391,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new StringParameter2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:206:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:230:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -406,8 +406,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new StringParameter2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:213:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:237:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -421,8 +421,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new LogGroup2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:232:5)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:256:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -436,7 +436,7 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...App.synth in aws-cdk-lib...",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:26:5)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:37:5)",
         "...node internals..."
       ]
     }
@@ -450,8 +450,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new DatabaseInstance2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:55:23)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:56:23)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node..."
       ]
     }
@@ -465,8 +465,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new DatabaseInstance2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:55:23)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)"
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:56:23)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)"
       ]
     }
   ],
@@ -479,8 +479,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...WrappedClass.<anonymous> in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:83:24)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:90:24)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node..."
       ]
     }
@@ -494,8 +494,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new DatabaseInstance2 in aws-cdk-lib...",
-        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:55:23)",
-        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:8:1)",
+        "new GovernanceStack (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/stacks/governance-stack.ts:56:23)",
+        "<anonymous> (/Users/ce-it-faraz/Desktop/CODE/kiro-governance/infra/bin/app.ts:11:25)",
         "...node internals, ts-node..."
       ]
     }

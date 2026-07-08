@@ -270,5 +270,6 @@
         ]
       }
     ]
-  }
+  },
+  "ssm:account=713554442614:parameterName=/kiro-governance/config/mcp-cert-fingerprint:region=us-east-1": "43:4D:25:06:93:4B:F3:00:63:99:F4:6B:26:C4:1D:B1:71:30:9A:7A:07:74:A6:72:EE:08:04:8F:B1:A1:11:18"
 }

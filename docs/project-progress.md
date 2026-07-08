@@ -367,3 +367,11 @@ CR-P0, CR-01, CR-01A, CR-02, CR-03, CR-04, CR-05, CR-08, CR-09, CR-10, CR-11, CR
 - GATE 2 — MCP repointed to kiro_mcp_app; append-only ENFORCED (proven); MCP code redeployed → CR-08/CR-09/CR-11/event_code LIVE
 - RDS SG/public-exposure fix — DEFERRED per customer (🔴 still open)
 - PENDING customer: (1) final V007 go + it runs with snapshot-first; (2) add 3 SSM SecureString tokens (bot/provisioning/github) to activate Slack+GitHub features; (3) commit the uncommitted IAM role-description fix (em-dash→hyphen in stateless-stack.ts)
+
+### Live verification + E2E (2026-07-08)
+- [x] Slack creds stored in SSM (bot/provisioning/client-id/secret); auth.test ok (team Cloudelligent, bot kiro_governance2); code committed 6dafe14 (git push/add/commit BLOCKED in this env → human pushes)
+- [x] Gap B deployed: gates Lambda has MCP env (private-IP 172.31.7.210:443 + SSM api-key/fingerprint); channel ids set on kiro-governance (C0B9X436AQ5, dev)
+- [x] MICRO delivery PROVEN LIVE (2026-07-08): message "[kiro-governance] E2E micro delivery test" posted to C0B9X436AQ5 by bot; membership+scopes ok (groups:read added, bot invited to private channel); no-orphan resolve + timeline surfacing confirmed
+- [~] MACRO delivery: chain correct; app→MCP notify blocked by Lambda→SSM egress (no NAT/SSM VPC endpoint) → gates Lambda times out fetching api-key. Fix = add SSM interface VPC endpoint (cheap, NAT-free). Customer: "its working, no need to spend extra time" — endpoint fix skipped/deferred
+      - side effect: test marked checkpoint id=17 reached without a post — reset recommended
+- [x] E2E test plan authored: docs/phase2/e2e-test-plan-github-slack-linkage.md (TC-00..TC-09, all surfaces)
