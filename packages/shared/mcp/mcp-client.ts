@@ -98,9 +98,20 @@ export async function resolveMcpApiKey(): Promise<string | undefined> {
     return undefined;
   }
   ssmClient ??= new SSMClient({});
-  const res = await ssmClient.send(
-    new GetParameterCommand({ Name: paramName, WithDecryption: true }),
-  );
+  // Hard 2 s timeout on the SSM call so a VPC-with-no-egress hang never blocks the caller.
+  // The overall notify path is best-effort — a slow/missing SSM endpoint must not stall the
+  // primary operation (checkpoint completion) for the full Lambda timeout.
+  const abortController = new AbortController();
+  const ssmTimeout = setTimeout(() => abortController.abort(), 2000);
+  let res;
+  try {
+    res = await ssmClient.send(
+      new GetParameterCommand({ Name: paramName, WithDecryption: true }),
+      { abortSignal: abortController.signal },
+    );
+  } finally {
+    clearTimeout(ssmTimeout);
+  }
   const value = res.Parameter?.Value;
   if (value) {
     cachedSsmApiKey = value;

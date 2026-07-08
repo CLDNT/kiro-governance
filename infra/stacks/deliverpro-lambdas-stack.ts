@@ -261,6 +261,16 @@ export class DeliverProLambdasStack extends Construct {
     gatesCompleteFn.addEnvironment('MCP_SERVER_URL', props.mcpServerUrl);
     gatesCompleteFn.addEnvironment('MCP_CERT_FINGERPRINT', props.mcpCertFingerprint);
     gatesCompleteFn.addEnvironment('MCP_API_KEY_SSM_PARAM', props.mcpApiKeySsmParam);
+    // Option C: inject the MCP API key DIRECTLY as a plaintext env var (customer-confirmed the key
+    // is stable and will not rotate). resolveMcpApiKey() checks process.env.MCP_API_KEY FIRST, so
+    // when this is present the runtime SSM GetParameter read — and its 2 s abort path that was
+    // stalling the notify — is skipped entirely. The value is supplied at deploy time via CDK
+    // context (`-c mcpApiKey=...`) and is NEVER hardcoded in source. MCP_API_KEY_SSM_PARAM is kept
+    // in place as a non-breaking fallback for environments deployed without the context value.
+    const mcpApiKeyContext = this.node.tryGetContext('mcpApiKey');
+    if (mcpApiKeyContext) {
+      gatesCompleteFn.addEnvironment('MCP_API_KEY', mcpApiKeyContext);
+    }
     const gatesEvidenceListFn = createLambda(
       'GatesEvidenceList',
       path.join(__dirname, '../../packages/gates/handlers/list-evidence.ts'),
