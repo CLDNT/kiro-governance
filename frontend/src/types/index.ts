@@ -117,6 +117,40 @@ export interface MacroCheckpoint {
   reached_at: string | null;
   evidence_count: number;
   notes_count: number;
+  // --- transcript_analysis checkpoints (Phase 2 analysis domain) ---
+  // NOTE: get-gates returns analysis_result + analysis_run_at but NOT transcript_url,
+  // so the "transcript fetched" state is tracked in component state after a fetch.
+  // transcript_url is kept optional here for forward-compatibility if the gate view adds it.
+  transcript_url?: string | null;
+  analysis_result?: TranscriptAnalysisResult | null;
+  analysis_run_at?: string | null;
+}
+
+/**
+ * Structured result of a transcript analysis run.
+ * Source: packages/analysis/types.ts (backend contract), analysis-architecture.md §6.
+ */
+export interface TranscriptAnalysisResult {
+  topics_covered: string[];
+  topics_missing: string[];
+  key_points: string[];
+  disagreements: string[];
+  passed: boolean;
+  confidence: number; // 0.0 – 1.0
+}
+
+/** Response for POST /api/projects/{projectId}/checkpoints/{checkpointId}/fetch-transcript */
+export interface FetchTranscriptResponse {
+  transcript_url: string;
+  char_count: number;
+}
+
+/** Response for POST /api/projects/{projectId}/checkpoints/{checkpointId}/analyze */
+export interface AnalysisResponse {
+  analysis_result: TranscriptAnalysisResult;
+  analysis_run_at: string; // ISO 8601
+  result_detail: string; // human-readable summary
+  transcript_s3_key: string;
 }
 
 export interface MicroArtifact {
@@ -260,4 +294,18 @@ export interface ReportingSummaryResponse {
   stalled_projects: StalledProject[];
   gate_completion_rates: GateCompletionRate[];
   generated_at: string;
+}
+
+// ─── Users Domain ────────────────────────────────────────────────────────
+
+/** A selectable user in the reviewer directory. `email` is the stable unique identifier. */
+export interface UserSummary {
+  email: string;
+  name: string;
+  role?: string;
+}
+
+/** Response for GET /api/users — the directory used to populate reviewer selection. */
+export interface UsersListResponse {
+  users: UserSummary[];
 }

@@ -8,6 +8,15 @@ interface ApiErrorBody {
   message?: string;
 }
 
+// Allow callers to opt out of the global error toast for best-effort requests that
+// degrade gracefully in the UI (e.g. the reviewer directory fetch). Module augmentation
+// keeps this type-safe wherever an AxiosRequestConfig is accepted.
+declare module 'axios' {
+  export interface AxiosRequestConfig {
+    _suppressErrorToast?: boolean;
+  }
+}
+
 // Extend Axios config to track retry state — prevents infinite retry loops
 interface RetryableConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
@@ -72,9 +81,17 @@ function createAxiosInstance(): AxiosInstance {
         return Promise.reject(error);
       }
 
+      // Callers may opt out of the global error toast (best-effort fetches that degrade
+      // gracefully in the UI) by setting `_suppressErrorToast` on the request config.
+      const suppressErrorToast = config?._suppressErrorToast === true;
+
       // Network / no-response errors (timeouts, DNS, offline).
       if (!error.response) {
-        toast.error('Network error. Check your connection.');
+        if (!suppressErrorToast) toast.error('Network error. Check your connection.');
+        return Promise.reject(error);
+      }
+
+      if (suppressErrorToast) {
         return Promise.reject(error);
       }
 

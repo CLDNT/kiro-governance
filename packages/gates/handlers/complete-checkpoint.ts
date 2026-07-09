@@ -5,6 +5,7 @@
 
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { withRoles } from '@kiro-governance/shared/middleware/rbac';
+import { extractAuthContextFromEvent } from '@kiro-governance/shared/middleware/auth';
 import { ok, handleError, AppError, NotFoundError, ConflictError, ValidationError } from '@kiro-governance/shared/middleware/error-handler';
 import { withLogging, log } from '@kiro-governance/shared/middleware/logger';
 import { queryOne, queryMany } from '@kiro-governance/shared/db/pool';
@@ -63,13 +64,19 @@ export const handler: APIGatewayProxyHandler = withRoles(
       const cognitoActor = claims?.email || claims?.name || claims?.sub || 'system';
       let completionActor = cognitoActor;
 
+      // Role extraction mirrors withRoles/rbac.ts: extractAuthContextFromEvent parses
+      // cognito:groups whether API Gateway delivers it as an array OR a comma-separated
+      // string, then maps it to the role enum. Never index cognito:groups directly —
+      // for a string claim, [0] returns the first character, not the first group.
+      const auth = extractAuthContextFromEvent(event);
+
       if (checkpoint.checkpoint_type === 'checklist') {
         throw new ValidationError('Checklist checkpoints are auto-completed when all child items are done.');
       }
 
       // human_review: role-based access + reviewed_by field
       if (checkpoint.checkpoint_type === 'human_review') {
-        if (!['sa', 'leadership', 'admin'].includes(event.requestContext?.authorizer?.claims?.['cognito:groups']?.[0] || 'pm')) {
+        if (!auth || !['sa', 'leadership', 'admin'].includes(auth.role)) {
           throw new AppError('FORBIDDEN', 'Only SA, Leadership, or Admin can complete human_review checkpoints', 403);
         }
 

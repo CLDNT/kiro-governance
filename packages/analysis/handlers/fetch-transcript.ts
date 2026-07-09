@@ -52,26 +52,31 @@ export const handler: APIGatewayProxyHandler = withRoles(
         );
       }
 
-      // Fetch API key from Secrets Manager
+      // Fetch API key — direct env var takes priority (Option C, no VPC egress needed),
+      // falls back to Secrets Manager for environments where the var is not injected.
       let apiKey: string;
-      try {
-        const secretResponse = await secretsClient.send(
-          new GetSecretValueCommand({
-            SecretId: process.env.AVOMA_SECRET_ARN || '/deliverpro/avoma-api-key',
-          })
-        );
-
-        apiKey = secretResponse.SecretString || '';
-        if (!apiKey) {
-          throw new Error('Secret value is empty');
+      const directKey = process.env.AVOMA_API_KEY;
+      if (directKey) {
+        apiKey = directKey.trim();
+      } else {
+        try {
+          const secretResponse = await secretsClient.send(
+            new GetSecretValueCommand({
+              SecretId: process.env.AVOMA_SECRET_ARN || '/deliverpro/avoma-api-key',
+            })
+          );
+          apiKey = secretResponse.SecretString || '';
+          if (!apiKey) {
+            throw new Error('Secret value is empty');
+          }
+        } catch (err) {
+          log('error', 'SECRETS_ERROR', { error: String(err) });
+          throw new AppError(
+            'AVOMA_UNAVAILABLE',
+            'Failed to retrieve Avoma API credentials',
+            502
+          );
         }
-      } catch (err) {
-        log('error', 'SECRETS_ERROR', { error: String(err) });
-        throw new AppError(
-          'AVOMA_UNAVAILABLE',
-          'Failed to retrieve Avoma API credentials',
-          502
-        );
       }
 
       // Fetch transcript from Avoma
@@ -88,6 +93,7 @@ export const handler: APIGatewayProxyHandler = withRoles(
             Key: s3Key,
             Body: transcript.transcript_text,
             ContentType: 'text/plain',
+            ServerSideEncryption: 'AES256',   // required by the bucket's SSE deny policy
           })
         );
 

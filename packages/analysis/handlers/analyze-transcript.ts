@@ -130,40 +130,48 @@ export const handler: APIGatewayProxyHandler = withRoles(
       // Resolve prompt
       const prompt = await resolvePrompt(checkpoint.checkpoint_name);
 
-      // Fetch agent configuration from SSM
-      let agentId: string;
-      let agentAliasId: string;
+      // Fetch agent configuration. Option C: prefer the AGENT_ID / AGENT_ALIAS_ID env vars injected
+      // at deploy time (zero-SSM-call fast path). This Lambda runs IN the VPC with no NAT and no SSM
+      // interface endpoint, so a runtime SSM GetParameter would hang until timeout. The env vars are
+      // the authoritative in-VPC path; SSM is kept only as a fallback for environments where the vars
+      // are not injected.
+      let agentId = process.env.AGENT_ID?.trim() || '';
+      let agentAliasId = process.env.AGENT_ALIAS_ID?.trim() || '';
 
-      try {
-        const agentIdParam = await ssmClient.send(
-          new GetParameterCommand({
-            Name: '/deliverpro/config/agent-id',
-          })
-        );
+      if (!agentId || !agentAliasId) {
+        try {
+          const agentIdParam = await ssmClient.send(
+            new GetParameterCommand({
+              Name: '/deliverpro/config/agent-id',
+            })
+          );
 
-        const agentAliasIdParam = await ssmClient.send(
-          new GetParameterCommand({
-            Name: '/deliverpro/config/agent-alias-id',
-          })
-        );
+          const agentAliasIdParam = await ssmClient.send(
+            new GetParameterCommand({
+              Name: '/deliverpro/config/agent-alias-id',
+            })
+          );
 
-        agentId = agentIdParam.Parameter?.Value || '';
-        agentAliasId = agentAliasIdParam.Parameter?.Value || '';
+          agentId = agentIdParam.Parameter?.Value || '';
+          agentAliasId = agentAliasIdParam.Parameter?.Value || '';
 
-        if (!agentId || !agentAliasId) {
-          throw new Error('Empty SSM parameter values');
+          if (!agentId || !agentAliasId) {
+            throw new Error('Empty SSM parameter values');
+          }
+        } catch (err) {
+          log('error', 'SSM_PARAMETER_ERROR', { error: String(err) });
+          throw new AppError(
+            'AGENT_UNAVAILABLE',
+            'Failed to retrieve Bedrock agent configuration',
+            502
+          );
         }
-      } catch (err) {
-        log('error', 'SSM_PARAMETER_ERROR', { error: String(err) });
-        throw new AppError(
-          'AGENT_UNAVAILABLE',
-          'Failed to retrieve Bedrock agent configuration',
-          502
-        );
       }
 
-      // Invoke analysis agent
-      const sessionId = `${projectId}#${checkpointId}`;
+      // Invoke analysis agent. Bedrock AgentCore sessionId must match [0-9a-zA-Z._:-]+ — the '#'
+      // separator (and any other out-of-pattern char in projectId/checkpointId) is illegal, so use
+      // an allowed separator and sanitize the composed value.
+      const sessionId = `${projectId}-${checkpointId}`.replace(/[^0-9a-zA-Z._:-]/g, '-');
       const analysisResult = await invokeAnalysisAgent(
         transcriptText,
         prompt,

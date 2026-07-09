@@ -103,13 +103,18 @@ export class DeliverProLambdasStack extends Construct {
       handlerPath: string,
       timeout?: number,
       role?: iam.IRole,
+      noVpc?: boolean,
     ): lambda_nodejs.NodejsFunction => {
       const func = new lambda_nodejs.NodejsFunction(this, id, {
         ...lambdaConfig,
         entry: handlerPath,
         role: role ?? props.lambdaBaseRole,
         timeout: timeout ? cdk.Duration.seconds(timeout) : lambdaConfig.timeout,
-        ...(props.vpc && {
+        // Option C: `noVpc` Lambdas run OUTSIDE the VPC. They get a Lambda-service-managed ENI with
+        // internet egress — required to reach public third-party APIs (e.g. api.avoma.com) since this
+        // VPC has NO NAT gateway. They still reach RDS via its public endpoint. Every other Lambda
+        // stays in-VPC for the private RDS path.
+        ...(props.vpc && !noVpc && {
           vpc: props.vpc,
           vpcSubnets: props.vpcSubnets ?? { subnetType: ec2.SubnetType.PUBLIC },
           securityGroups: props.lambdaSecurityGroup ? [props.lambdaSecurityGroup] : [],
@@ -219,6 +224,12 @@ export class DeliverProLambdasStack extends Construct {
       path.join(__dirname, '../../packages/projects/handlers/sync-gates.ts'),
       undefined,
       props.projectsLinkageRole, // reads the GitHub read-token (single-ARN grant on this role)
+      // Option C: run OUTSIDE the VPC (noVpc=true), mirroring the analysis Lambdas. sync-gates must
+      // reach SSM (GitHub read-token at /kiro-governance/github/read-token) and api.github.com over
+      // the public internet; this VPC has NO NAT gateway, so in-VPC it times out. Outside the VPC it
+      // gets a Lambda-managed ENI with internet egress and still reaches RDS via its public endpoint
+      // (IAM auth + SSL) — same path the analysis Lambdas already use, so no RDS/SG change is needed.
+      true,
     );
     const syncGatesResource = projectIdResource.addResource('sync-gates');
     addRoute(syncGatesResource, 'POST', projectsSyncGatesFn);
@@ -308,6 +319,10 @@ export class DeliverProLambdasStack extends Construct {
     const checkpointsResource = projectIdResource.addResource('checkpoints');
     const checkpointIdResource = checkpointsResource.addResource('{checkpointId}');
     addRoute(checkpointIdResource, 'PATCH', gatesCompleteFn);
+
+    // Note: /checkpoints/{checkpointId}/fetch-transcript and .../analyze routes are wired in the
+    // ANALYSIS DOMAIN section below, after the analysis Lambdas are declared (they reuse the
+    // checkpointIdResource created here).
 
     // Routes: /api/projects/{projectId}/checkpoints/{checkpointId}/evidence
     const evidenceResource = checkpointIdResource.addResource('evidence');
@@ -487,27 +502,94 @@ export class DeliverProLambdasStack extends Construct {
 
     // ==================== 6. ANALYSIS DOMAIN (2 handlers) ====================
     // Note: Analysis Lambdas have 90s timeout (vs 30s standard)
+    // Option C: AnalysisFetchTranscript runs OUTSIDE the VPC (noVpc=true) so it can reach
+    // api.avoma.com on the public internet (this VPC has no NAT gateway). It still reads/writes
+    // macro_checkpoints via the RDS PUBLIC endpoint (IAM auth + SSL), so no RDS SG change is needed.
     const analysisFetchTranscriptFn = createLambda(
       'AnalysisFetchTranscript',
       path.join(__dirname, '../../packages/analysis/handlers/fetch-transcript.ts'),
       90,
+      undefined,
+      true,
     );
     const analysisAnalyzeTranscriptFn = createLambda(
       'AnalysisAnalyzeTranscript',
       path.join(__dirname, '../../packages/analysis/handlers/analyze-transcript.ts'),
       90,
+      undefined,
+      // Converse fix: run OUTSIDE the VPC (noVpc=true), mirroring AnalysisFetchTranscript. The
+      // analyze Lambda now calls bedrock-runtime ConverseCommand, and this VPC has NO NAT gateway
+      // and NO bedrock-runtime interface endpoint (only bedrock-agent-runtime exists for the old
+      // InvokeAgent path). Outside the VPC it reaches Bedrock over the public internet and still
+      // reads/writes macro_checkpoints via the RDS PUBLIC endpoint (IAM auth + SSL) — same path the
+      // fetch Lambda already uses successfully, so no RDS/SG change is required.
+      true,
     );
 
-    // Routes: /api/analysis/{projectId}/{checkpointId}/fetch-transcript
-    const analysisResource = apiResource.addResource('analysis');
-    const analysisProjectIdResource = analysisResource.addResource('{projectId}');
-    const analysisCheckpointIdResource = analysisProjectIdResource.addResource('{checkpointId}');
-    const fetchTranscriptResource = analysisCheckpointIdResource.addResource('fetch-transcript');
-    addRoute(fetchTranscriptResource, 'POST', analysisFetchTranscriptFn);
+    // fetch-transcript.ts reads process.env.AVOMA_SECRET_ARN to locate the Avoma API key in
+    // Secrets Manager (it already falls back to this same name when the var is absent). We inject
+    // the stable secret NAME '/deliverpro/avoma-api-key' rather than a full ARN because:
+    //   (a) the intended source param /deliverpro/config/avoma-secret-arn does not exist, and
+    //   (b) Secrets Manager ARNs carry a random 6-char suffix that is not known at synth time.
+    // GetSecretValue accepts a bare secret name, and the base Lambda role's SecretsManager grant
+    // already covers arn:aws:secretsmanager:*:*:secret:/deliverpro/* (see stateless-stack
+    // applyCommonLambdaPolicies), so no IAM change is required.
+    const AVOMA_SECRET_NAME = '/deliverpro/avoma-api-key';
+    analysisFetchTranscriptFn.addEnvironment('AVOMA_SECRET_ARN', AVOMA_SECRET_NAME);
+    analysisAnalyzeTranscriptFn.addEnvironment('AVOMA_SECRET_ARN', AVOMA_SECRET_NAME);
 
-    // Routes: /api/analysis/{projectId}/{checkpointId}/analyze
-    const analyzeResource = analysisCheckpointIdResource.addResource('analyze');
-    addRoute(analyzeResource, 'POST', analysisAnalyzeTranscriptFn);
+    // Option C: inject the Avoma API key DIRECTLY as a plaintext env var so the analysis Lambdas
+    // skip the Secrets Manager GetSecretValue call entirely. The VPC has no egress/endpoint to
+    // Secrets Manager, so that call was stalling until timeout and surfacing as AVOMA_UNAVAILABLE.
+    // fetch-transcript.ts checks process.env.AVOMA_API_KEY FIRST and only falls back to Secrets
+    // Manager (AVOMA_SECRET_ARN) when the var is absent, so this is a non-breaking addition. The
+    // value is supplied at deploy time via CDK context (`-c avomaApiKey=...`) and is NEVER hardcoded
+    // in source. Mirrors the MCP_API_KEY Option C pattern used on gatesCompleteFn above.
+    const avomaApiKeyContext = this.node.tryGetContext('avomaApiKey');
+    if (avomaApiKeyContext) {
+      analysisFetchTranscriptFn.addEnvironment('AVOMA_API_KEY', avomaApiKeyContext);
+      analysisAnalyzeTranscriptFn.addEnvironment('AVOMA_API_KEY', avomaApiKeyContext);
+    }
+
+    // Converse fix: agent.service.ts now calls bedrock-runtime ConverseCommand directly (NOT
+    // InvokeAgent). The model ID is context-driven. NOTE: the originally-specified default
+    // `anthropic.claude-3-5-sonnet-20241022-v2:0` is now EOL and rejected by Bedrock ("model version
+    // has reached the end of its life"), and this account has no on-demand access to modern Claude
+    // models — they must be invoked via a cross-region inference profile. Default is therefore the
+    // active `us.anthropic.claude-sonnet-4-5-20250929-v1:0` profile (covered by the `inference-profile/*`
+    // IAM grant). Override at deploy time with `-c bedrockModelId=...`.
+    const bedrockModelId =
+      (this.node.tryGetContext('bedrockModelId') as string | undefined) ??
+      'us.anthropic.claude-sonnet-4-5-20250929-v1:0';
+    analysisAnalyzeTranscriptFn.addEnvironment('BEDROCK_MODEL_ID', bedrockModelId);
+
+    // The analyze Lambda invokes the Bedrock AgentCore analysis agent (bedrock-agent-runtime
+    // InvokeAgent). This grant was documented in the IAM5 nag suppression but never attached to a
+    // role — add it here, scoped to this account/region. InvokeAgent authorizes against the
+    // agent-alias resource; agent/* is included to match the documented intent. The concrete
+    // agent/alias IDs are resolved at runtime from SSM (/deliverpro/config/agent-*), so they are
+    // not known at synth — these are the tightest static patterns available (covered by IAM5).
+    analysisAnalyzeTranscriptFn.addToRolePolicy(
+      new iam.PolicyStatement({
+        sid: 'BedrockInvokeAnalysisAgent',
+        effect: iam.Effect.ALLOW,
+        actions: ['bedrock:InvokeAgent'],
+        resources: [
+          `arn:aws:bedrock:${cdk.Stack.of(this).region}:${accountId}:agent-alias/*`,
+          `arn:aws:bedrock:${cdk.Stack.of(this).region}:${accountId}:agent/*`,
+        ],
+      }),
+    );
+
+    // Routes: /api/projects/{projectId}/checkpoints/{checkpointId}/fetch-transcript (POST)
+    // and .../analyze (POST). Wired here (after the analysis Lambdas are declared) rather than in
+    // the gates checkpoints section — they reuse the checkpointIdResource created there. This
+    // replaces the former /api/analysis/{projectId}/{checkpointId}/... routes to match the paths
+    // the frontend calls.
+    const fetchTranscriptResource2 = checkpointIdResource.addResource('fetch-transcript');
+    addRoute(fetchTranscriptResource2, 'POST', analysisFetchTranscriptFn);
+    const analyzeResource2 = checkpointIdResource.addResource('analyze');
+    addRoute(analyzeResource2, 'POST', analysisAnalyzeTranscriptFn);
 
     // ==================== 7. REPORTING DOMAIN (2 handlers) ====================
     const reportingSummaryFn = createLambda(

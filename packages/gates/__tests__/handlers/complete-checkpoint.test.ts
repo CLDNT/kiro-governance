@@ -77,6 +77,25 @@ function event(role: string, body: Record<string, unknown>): APIGatewayProxyEven
   } as unknown as APIGatewayProxyEvent;
 }
 
+/**
+ * Event whose cognito:groups is a comma-separated STRING — exactly how API Gateway
+ * delivers the claim (the array form in `event()` above masked the original bug).
+ */
+function eventWithGroupsString(groups: string, body: Record<string, unknown>): APIGatewayProxyEvent {
+  const primary = groups.split(',')[0]!.trim();
+  return {
+    httpMethod: 'PATCH',
+    path: '/api/projects/DP-001/checkpoints/10',
+    pathParameters: { projectId: 'DP-001', checkpointId: '10' },
+    body: JSON.stringify(body),
+    requestContext: {
+      authorizer: {
+        claims: { sub: `sub-${primary}`, email: `${primary}@example.com`, name: primary, 'cognito:groups': groups },
+      },
+    },
+  } as unknown as APIGatewayProxyEvent;
+}
+
 const ctx = {} as never;
 
 beforeEach(() => jest.clearAllMocks());
@@ -119,6 +138,48 @@ describe('PATCH checkpoint — app-owned MACRO notify (CR-10)', () => {
 
     const res = await handler(event('sa', {}), ctx, () => {});
     expect(res!.statusCode).toBe(200);
+    expect(mockNotifyMacroGateApproved).not.toHaveBeenCalled();
+  });
+});
+
+describe('PATCH checkpoint — human_review role parsing (cognito:groups as STRING)', () => {
+  it('allows completion when cognito:groups is a plain string role (e.g. "sa")', async () => {
+    mockCompletionDb();
+    mockNotifyMacroGateApproved.mockResolvedValue(undefined);
+
+    const res = await handler(eventWithGroupsString('sa', { reviewed_by: 'sa@example.com' }), ctx, () => {});
+
+    // Before the fix this returned 403: "sa"[0] === "s", which is not an allowed role.
+    expect(res!.statusCode).toBe(200);
+    expect(mockNotifyMacroGateApproved).toHaveBeenCalledTimes(1);
+  });
+
+  it('allows completion when cognito:groups is a comma-separated string (e.g. "admin,pm")', async () => {
+    mockCompletionDb();
+    mockNotifyMacroGateApproved.mockResolvedValue(undefined);
+
+    const res = await handler(eventWithGroupsString('admin,pm', { reviewed_by: 'admin@example.com' }), ctx, () => {});
+
+    expect(res!.statusCode).toBe(200);
+    expect(mockNotifyMacroGateApproved).toHaveBeenCalledTimes(1);
+  });
+
+  it('allows leadership via string claim', async () => {
+    mockCompletionDb();
+    mockNotifyMacroGateApproved.mockResolvedValue(undefined);
+
+    const res = await handler(eventWithGroupsString('leadership', { reviewed_by: 'lead@example.com' }), ctx, () => {});
+
+    expect(res!.statusCode).toBe(200);
+  });
+
+  it('forbids a non-privileged role (pm) from completing a human_review checkpoint', async () => {
+    mockCompletionDb();
+
+    const res = await handler(eventWithGroupsString('pm', { reviewed_by: 'pm@example.com' }), ctx, () => {});
+
+    expect(res!.statusCode).toBe(403);
+    expect(JSON.parse(res!.body).code).toBe('FORBIDDEN');
     expect(mockNotifyMacroGateApproved).not.toHaveBeenCalled();
   });
 });

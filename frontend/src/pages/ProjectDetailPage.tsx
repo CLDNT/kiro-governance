@@ -32,6 +32,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { canManageArtifactAuto } from '@/lib/artifacts';
 import MicroArtifactItem from '@/components/gates/MicroArtifactItem';
+import TranscriptAnalysisPanel from '@/components/gates/TranscriptAnalysisPanel';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -320,6 +321,10 @@ function CompleteCheckpointSheet({
           </div>
         )}
 
+        {checkpoint.checkpoint_type === 'transcript_analysis' && (
+          <TranscriptAnalysisPanel checkpoint={checkpoint} projectId={projectId} />
+        )}
+
         <div className="space-y-1.5">
           <Label htmlFor="result-detail">Result / notes (optional)</Label>
           <Textarea
@@ -332,10 +337,12 @@ function CompleteCheckpointSheet({
         </div>
 
         <SheetFooter className="mt-auto gap-2 sm:flex-col">
-          <Button type="submit" className="w-full" disabled={mutation.isPending}>
-            {mutation.isPending && <Loader2 className="animate-spin" />}
-            Save checkpoint
-          </Button>
+          {checkpoint.checkpoint_type !== 'transcript_analysis' && (
+            <Button type="submit" className="w-full" disabled={mutation.isPending}>
+              {mutation.isPending && <Loader2 className="animate-spin" />}
+              Save checkpoint
+            </Button>
+          )}
           <Button type="button" variant="ghost" className="w-full" onClick={onClose}>
             Cancel
           </Button>

@@ -7,6 +7,7 @@ import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as cloudwatch_actions from 'aws-cdk-lib/aws-cloudwatch-actions';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as budgets from 'aws-cdk-lib/aws-budgets';
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import { Construct } from 'constructs';
 import { StatefulStack } from './stateful-stack';
 import { StatelessStack } from './stateless-stack';
@@ -59,6 +60,45 @@ export class DeliverProStack extends cdk.Stack {
       this, 'LambdaSg', 'sg-0c28319229f5bd5e0',
     );
 
+    // ==================== VPC Endpoints (Option C — no NAT) ====================
+    // The in-VPC analysis Lambda (AnalysisAnalyzeTranscript) has NO NAT gateway and no public ENI,
+    // so it can only reach AWS services through VPC endpoints. Its egress needs are:
+    //   • S3 GetObject (read the stored transcript)   → free Gateway endpoint
+    //   • Bedrock Agent Runtime InvokeAgent            → Interface endpoint (this change)
+    // Agent IDs are read from injected env vars (no SSM call), and RDS is reached over the in-VPC
+    // private path (the Lambda SG is already allowed on the RDS SG), so no SSM/RDS endpoints needed.
+
+    // S3 Gateway endpoint — no hourly cost. Required for the analyze Lambda's transcript GetObject.
+    vpc.addGatewayEndpoint('S3GatewayEndpoint', {
+      service: ec2.GatewayVpcEndpointAwsService.S3,
+    });
+
+    // Security group for the Bedrock interface endpoint — allow 443 from the Lambda SG only.
+    const bedrockEndpointSg = new ec2.SecurityGroup(this, 'BedrockEndpointSg', {
+      vpc,
+      description: 'Allow 443 from DeliverPro Lambdas to the Bedrock Agent Runtime VPC endpoint',
+      allowAllOutbound: true,
+    });
+    bedrockEndpointSg.addIngressRule(
+      lambdaSg,
+      ec2.Port.tcp(443),
+      'HTTPS from DeliverPro Lambda SG to Bedrock Agent Runtime endpoint',
+    );
+
+    // Bedrock Agent Runtime interface endpoint — lets the in-VPC analyze Lambda call InvokeAgent
+    // without a NAT gateway. Limited to 2 AZs to control interface-endpoint hourly cost; private DNS
+    // keeps it reachable from Lambdas in every AZ via cross-AZ traffic.
+    const bedrockEndpointSubnets = vpc
+      .selectSubnets({ subnetType: ec2.SubnetType.PUBLIC })
+      .subnets.slice(0, 2);
+    new ec2.InterfaceVpcEndpoint(this, 'BedrockAgentRuntimeEndpoint', {
+      vpc,
+      service: ec2.InterfaceVpcEndpointAwsService.BEDROCK_AGENT_RUNTIME,
+      securityGroups: [bedrockEndpointSg],
+      subnets: { subnets: bedrockEndpointSubnets },
+      privateDnsEnabled: true,
+    });
+
     // ==================== StatelessStack (API Gateway, CloudFront, Lambda role, all Lambdas) ====================
     // Pass outputs from StatefulStack to StatelessStack
     this.statelessStack = new StatelessStack(this, 'StatelessStack', {
@@ -91,12 +131,38 @@ export class DeliverProStack extends cdk.Stack {
       }),
     );
 
-    // ==================== DP-35: Bedrock AgentCore Agent ====================
-    // Per docs/phase2/analysis-architecture.md §2.2
-    // Foundation model: Claude Sonnet 4.5 via US cross-region inference (PD-14 resolved)
-    // Note: Agent creation via CDK CfnAgent is complex. For now, we set up IAM and SSM parameters.
-    // The Bedrock agent will be created manually or via separate Terraform/CLI.
-    
+    // Converse fix (DP-35): the analysis Lambda now calls bedrock-runtime ConverseCommand directly
+    // instead of InvokeAgent, so the Lambda base role needs bedrock:InvokeModel. Scoped to Bedrock
+    // foundation-models (all regions — cross-region inference profiles fan out) and inference-profiles
+    // in this account, matching the agent-role grant. Concrete model IDs are context-driven and only
+    // known at deploy time, so these are the tightest static patterns available (covered by IAM5).
+    this.statelessStack.lambdaBaseRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        sid: 'BedrockInvokeModel',
+        effect: iam.Effect.ALLOW,
+        actions: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
+        resources: [
+          'arn:aws:bedrock:*::foundation-model/*',
+          `arn:aws:bedrock:*:${accountId}:inference-profile/*`,
+        ],
+      }),
+    );
+
+    // ==================== DP-35: Bedrock AgentCore Agent (declarative, CDK-managed) ====================
+    // Per docs/phase2/analysis-architecture.md §2.2, §5.
+    //
+    // Foundation model is CONTEXT-DRIVEN so this stack deploys end-to-end today and switches to the
+    // real model the moment access is granted — no code change needed:
+    //   • Default (no context)  → Claude 3.5 Sonnet v2 (`anthropic.claude-3-5-sonnet-20241022-v2:0`),
+    //     which IS enabled in this account, so a single `cdk deploy` completes the whole feature now.
+    //   • Once Sonnet 4.5 access is granted, override at deploy time:
+    //       cdk deploy DeliverProStack -c bedrockModelId=us.anthropic.claude-sonnet-4-5-20241022-v1:0
+    // Context resolves at any node in the tree, so `this.node.tryGetContext` is equivalent to reading
+    // it off the app root.
+    const bedrockModelId =
+      (this.node.tryGetContext('bedrockModelId') as string | undefined) ??
+      'anthropic.claude-3-5-sonnet-20241022-v2:0';
+
     const bedrockAgentRole = new iam.Role(this, 'BedrockAgentRole', {
       assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
       description: 'Role for Bedrock AgentCore transcript analyzer',
@@ -114,6 +180,60 @@ export class DeliverProStack extends cdk.Stack {
       }),
     );
 
+    // The agent service role must be able to invoke the foundation model it runs on. Scoped to
+    // Bedrock foundation-models (all regions — required because cross-region inference profiles fan
+    // out to multiple regions) and inference-profiles in this account. This is what lets the agent
+    // PREPARE at deploy time (autoPrepare) and invoke the model at runtime. Covers BOTH the 3.5 v2
+    // fallback (a plain foundation-model ARN) and the real 4.5 cross-region inference-profile ID.
+    bedrockAgentRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        sid: 'BedrockInvokeFoundationModel',
+        effect: iam.Effect.ALLOW,
+        actions: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
+        resources: [
+          'arn:aws:bedrock:*::foundation-model/*',
+          `arn:aws:bedrock:*:${accountId}:inference-profile/*`,
+        ],
+      }),
+    );
+
+    // The structured-JSON analyst instruction (base agent instruction). The checkpoint-specific
+    // prompt is injected per-invocation via inputText (analysis-architecture.md §2.1, §5.1); this
+    // instruction fixes the analyst persona and the exact output contract (result shape = §6.1).
+    const agentInstruction = [
+      'You are a meeting transcript analyst for professional services delivery.',
+      'You are given a checkpoint-specific prompt followed by a meeting transcript delimited by',
+      '---TRANSCRIPT BEGIN--- and ---TRANSCRIPT END---.',
+      'Determine whether the discussion topics required by the prompt were genuinely covered',
+      '(not merely mentioned in passing).',
+      'Respond with a SINGLE valid JSON object and nothing else — no prose, no markdown code fences.',
+      'The JSON object must contain exactly these keys:',
+      '"topics_covered" (array of strings), "topics_missing" (array of strings),',
+      '"key_points" (array of strings), "disagreements" (array of strings),',
+      '"passed" (boolean — true only when every mandatory topic was covered), and',
+      '"confidence" (number between 0 and 1 reflecting how clearly the topics were discussed).',
+    ].join(' ');
+
+    // CfnAgent (L1) — creates the agent declaratively. autoPrepare so a `cdk deploy` yields an agent
+    // in PREPARED state that the alias below can point at without a manual "Prepare" step.
+    const transcriptAnalyzerAgent = new bedrock.CfnAgent(this, 'TranscriptAnalyzerAgent', {
+      agentName: 'deliverpro-transcript-analyzer',
+      foundationModel: bedrockModelId,
+      agentResourceRoleArn: bedrockAgentRole.roleArn,
+      instruction: agentInstruction,
+      description: 'DeliverPro transcript analyzer — analyzes meeting transcripts for checkpoint topic coverage.',
+      autoPrepare: true,
+      idleSessionTtlInSeconds: 600,
+    });
+
+    // CfnAgentAlias (L1) — a stable alias the Lambda invokes. With no explicit routingConfiguration,
+    // Bedrock auto-publishes a new agent version and points this alias at it on each prepare.
+    const transcriptAnalyzerAgentAlias = new bedrock.CfnAgentAlias(this, 'TranscriptAnalyzerAgentAlias', {
+      agentId: transcriptAnalyzerAgent.attrAgentId,
+      agentAliasName: 'live',
+      description: 'Live alias for the DeliverPro transcript analyzer agent.',
+    });
+
     // Store agent role ARN in SSM for reference
     new ssm.StringParameter(this, 'BedrockAgentRoleParam', {
       parameterName: '/deliverpro/config/bedrock-agent-role-arn',
@@ -121,12 +241,36 @@ export class DeliverProStack extends cdk.Stack {
       description: 'IAM role ARN for Bedrock AgentCore agent',
     });
 
-    // Store Bedrock model ID in SSM
+    // Store Bedrock model ID in SSM (context-driven — see bedrockModelId above)
     new ssm.StringParameter(this, 'BedrockModelIdParam', {
       parameterName: '/deliverpro/config/bedrock-model-id',
-      stringValue: 'us.anthropic.claude-sonnet-4-5-20241022-v1:0',
-      description: 'Bedrock model ID (Claude Sonnet 4.5 cross-region)',
+      stringValue: bedrockModelId,
+      description: 'Bedrock foundation model ID for the transcript analyzer agent (context-overridable)',
     });
+
+    // Store agent ID + alias ID in SSM — these are the parameters analyze-transcript.ts reads at
+    // RUNTIME (`/deliverpro/config/agent-id`, `/deliverpro/config/agent-alias-id`). Sourced directly
+    // from the CfnAgent / CfnAgentAlias attributes so they are always in sync with the deployed agent.
+    new ssm.StringParameter(this, 'BedrockAgentIdParam', {
+      parameterName: '/deliverpro/config/agent-id',
+      stringValue: transcriptAnalyzerAgent.attrAgentId,
+      description: 'Bedrock AgentCore agent ID (read by analyze-transcript.ts at runtime)',
+    });
+
+    new ssm.StringParameter(this, 'BedrockAgentAliasIdParam', {
+      parameterName: '/deliverpro/config/agent-alias-id',
+      stringValue: transcriptAnalyzerAgentAlias.attrAgentAliasId,
+      description: 'Bedrock AgentCore agent alias ID (read by analyze-transcript.ts at runtime)',
+    });
+
+    // Also inject AGENT_ID / AGENT_ALIAS_ID as env vars on the analyze Lambda, sourced DIRECTLY from
+    // the CfnAgent / CfnAgentAlias attributes. The handler currently reads the two SSM params above at
+    // runtime (which is the authoritative wire); these env vars are a zero-SSM-call fast path and keep
+    // the agent identifiers attached to the function that invokes it. The analyze Lambda lives in the
+    // StatelessStack nested stack, so CDK threads these parent-stack values in as nested-stack params.
+    const analyzeTranscriptFn = this.statelessStack.lambdas.handlers['AnalysisAnalyzeTranscript'];
+    analyzeTranscriptFn.addEnvironment('AGENT_ID', transcriptAnalyzerAgent.attrAgentId);
+    analyzeTranscriptFn.addEnvironment('AGENT_ALIAS_ID', transcriptAnalyzerAgentAlias.attrAgentAliasId);
 
     // Create placeholder Secrets Manager entry for Avoma API key (DP-35)
     // Value is empty — Faraz will populate via AWS Console

@@ -28,7 +28,7 @@ Return ONLY the JSON object, no additional text.`;
 export async function resolvePrompt(checkpointName: string): Promise<string> {
   try {
     const result = await queryOne<PromptRow>(
-      'SELECT prompt_text FROM analysis_prompts WHERE checkpoint_name = $1 AND is_active = true',
+      'SELECT prompt_text FROM analysis_prompts WHERE checkpoint_name = $1',
       [checkpointName]
     );
 

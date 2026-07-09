@@ -26,10 +26,10 @@ export interface FetchTranscriptResponse {
 
 export interface AvomaTranscriptResponse {
   transcript_text: string;
-  meeting_title: string;
-  meeting_date: string;
-  duration_minutes: number;
-  participants: string[];
+  meeting_title?: string;
+  meeting_date?: string;
+  duration_minutes?: number;
+  participants?: string[];
 }
 
 export interface LinkMetadata {

@@ -10,6 +10,7 @@ import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 import { DeliverProLambdasStack } from './deliverpro-lambdas-stack';
 import { SsmSecretGrant } from '../constructs/ssm-secret-grant';
+import { getEnvConfig } from '../config';
 
 /**
  * Stateless stack for DeliverPro Phase 2.
@@ -80,6 +81,8 @@ export class StatelessStack extends cdk.NestedStack {
   public readonly provisioningRole: iam.Role;
   /** Dedicated role for the gates macro-notify Lambda — reads the MCP api-key (SecureString) ONLY. */
   public readonly gatesNotifyRole: iam.Role;
+  /** All domain Lambdas + routes (exposed so the parent stack can wire post-creation env vars, e.g. Bedrock agent IDs). */
+  public readonly lambdas: DeliverProLambdasStack;
 
   constructor(scope: Construct, id: string, props: StatelessStackProps) {
     super(scope, id, props);
@@ -88,6 +91,10 @@ export class StatelessStack extends cdk.NestedStack {
     const region = this.region;
     const environment = props.environment ?? 'dev';
     const removalPolicy = environment === 'dev' ? cdk.RemovalPolicy.DESTROY : cdk.RemovalPolicy.RETAIN;
+
+    // Non-secret per-environment config (e.g. CR-16 GitHub owner allowlist). Sourced from
+    // infra/config/{dev,prod}.ts — never hardcoded in the stack.
+    const envConfig = getEnvConfig(environment);
 
     // ==================== API Gateway REST API ====================
     // Per auth-architecture.md §6, DP-01 spec §1.5
@@ -302,7 +309,7 @@ export class StatelessStack extends cdk.NestedStack {
 
     // ==================== Lambda Functions & API Routes ====================
     // All domain Lambdas live here (same nested stack as API Gateway) to avoid circular deps
-    new DeliverProLambdasStack(this, 'Lambdas', {
+    this.lambdas = new DeliverProLambdasStack(this, 'Lambdas', {
       restApi: this.restApi,
       cognitoAuthorizer: this.cognitoAuthorizer,
       lambdaBaseRole: this.lambdaBaseRole,
@@ -317,6 +324,10 @@ export class StatelessStack extends cdk.NestedStack {
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
       lambdaSecurityGroup: props.lambdaSecurityGroup,
+      // CR-16 gate-sync owner config (non-secret) — sourced from infra/config, injected as
+      // GITHUB_DEFAULT_OWNER / GITHUB_ALLOWED_OWNERS on the projects-linkage Lambdas (H1 fail-closed).
+      githubDefaultOwner: envConfig.githubDefaultOwner,
+      githubAllowedOwners: envConfig.githubAllowedOwners,
       // Gap B — MCP wiring for the app-owned MACRO Slack notify (in-VPC MCP server, private IP).
       mcpServerUrl: 'https://172.31.7.210:443',
       mcpApiKeySsmParam: '/kiro-governance/config/mcp-api-key',
@@ -356,7 +367,10 @@ export class StatelessStack extends cdk.NestedStack {
         sid: 'S3EvidenceBucket',
         effect: iam.Effect.ALLOW,
         actions: ['s3:PutObject', 's3:GetObject'],
-        resources: [evidenceBucket.arnForObjects('evidence/*')],
+        resources: [
+          evidenceBucket.arnForObjects('evidence/*'),
+          evidenceBucket.arnForObjects('transcripts/*'),  // analysis domain stores here
+        ],
       }),
     );
 

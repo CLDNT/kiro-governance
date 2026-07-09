@@ -2,6 +2,8 @@ import { FormEvent, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useApiClient } from '@/lib/api';
 import { MacroCheckpoint } from '@/types';
+import ReviewerCombobox from './ReviewerCombobox';
+import TranscriptAnalysisPanel from './TranscriptAnalysisPanel';
 
 interface CheckpointModalProps {
   checkpoint: MacroCheckpoint;
@@ -85,16 +87,18 @@ function CheckpointModal({ checkpoint, projectId, onClose }: CheckpointModalProp
 
           {checkpoint.checkpoint_type === 'human_review' && (
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">Reviewed By</label>
-              <input
-                type="text"
+              <label
+                htmlFor="reviewed_by"
+                className="block text-sm font-medium text-neutral-700 mb-2"
+              >
+                Reviewed By
+              </label>
+              <ReviewerCombobox
+                id="reviewed_by"
                 value={formData.reviewed_by}
-                onChange={(e) =>
-                  setFormData({ ...formData, reviewed_by: e.target.value })
+                onChange={(reviewedBy) =>
+                  setFormData({ ...formData, reviewed_by: reviewedBy })
                 }
-                placeholder="Reviewer name or email"
-                required
-                className="w-full"
               />
             </div>
           )}
@@ -148,6 +152,10 @@ function CheckpointModal({ checkpoint, projectId, onClose }: CheckpointModalProp
             </>
           )}
 
+          {checkpoint.checkpoint_type === 'transcript_analysis' && (
+            <TranscriptAnalysisPanel checkpoint={checkpoint} projectId={projectId} />
+          )}
+
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
               Result / Notes (Optional)
@@ -166,7 +174,10 @@ function CheckpointModal({ checkpoint, projectId, onClose }: CheckpointModalProp
           <div className="flex gap-3 pt-4 border-t border-neutral-200">
             <button
               type="submit"
-              disabled={loading}
+              disabled={
+                loading ||
+                (checkpoint.checkpoint_type === 'human_review' && !formData.reviewed_by)
+              }
               className="flex-1 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 text-white font-medium py-2 px-4 rounded-lg transition-colors"
             >
               {loading ? 'Saving...' : 'Save'}
