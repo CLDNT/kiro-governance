@@ -1,0 +1,656 @@
+Muhammad Faraz
+Call, internal call before this, and he was not on it. Okay. Yeah, and plus, Chris will also be not joining because he has two interviews scheduled. So it's just. I think so. Qasim, you, Nayab, and Aroosa. Okay.
+
+Nausheen Fazlur Rahman
+Alright. I hope Qasim comes.
+
+Muhammad Faraz
+Yeah. We we all hope for that because none of these meetings has been joined by Qasim so far. Okay. So that's appropriate. How's, like.
+
+Nausheen Fazlur Rahman
+How's the overall demo? Like, just.
+
+Muhammad Faraz
+I think so. It's fine. Like, Chris really liked it, and Oh, you showed it to him? Yeah. I already showed it to him because he was getting, you know, like, he just saw that for the first time, really. Okay. Like, it was his idea, but, yeah, he never got the time to see it. But this was the first time of, like, him actually seeing this in place, working. So he was quite happy with it, but I think so Qasim will have some opinions of otherwise. Okay.
+
+Nausheen Fazlur Rahman
+Yeah.
+
+Muhammad Faraz
+Everyone.
+
+Muhammad Faraz
+Is late other than you.
+
+Nausheen Fazlur Rahman
+No. But with with with Qasim, it's very understandable because, you know, he's he has, like like, so many meetings scheduled at the same time. Exactly.
+
+Muhammad Faraz
+Exactly. Right now, he's he's in another call, and plus, there was no response of him of joining.
+
+Nausheen Fazlur Rahman
+Yeah. So I guess let's wait for a few minutes. For sure. Sure. Let me actually, let me ping Pansim as well.
+
+Muhammad Faraz
+That would be great. Just give me a moment. I'll be back. Yeah. Sure.
+
+Muhammad Faraz
+Hey, guys.
+
+Nayab Waseem
+Hey, Nayab. How are you?
+
+Nausheen Fazlur Rahman
+I'm good. How are you guys?
+
+Nayab Waseem
+Doing good.
+
+Nayab Waseem
+Alright. So, Chris, I think we're not be joining the meeting because he is having some interviews right now. Yeah. So.
+
+Nausheen Fazlur Rahman
+And.
+
+Muhammad Faraz
+And Nausheen is trying to find a way to tag Qasim to join.
+
+Nayab Waseem
+Alright. This is my calendar. This is Christmas calendar.
+
+Nayab Waseem
+Alright. For us, will 12 to one Friday CST works for you?
+
+Muhammad Faraz
+Give me one second. 12 to one, that is, like, 10 to.
+
+Muhammad Faraz
+Yeah, 11. My math is really bad. So, yeah, let me check before saying, of course. This always happens. I said, like, I love to say, of course, and it never works out. So you said 10 to 11? 12:12 to one CST. Yeah. In Pakistan time, that's 10 to 11. Yeah. It's free.
+
+Nayab Waseem
+Okay. Alright. 11 to 12, Friday.
+
+Muhammad Faraz
+Yep. I don't think Qasim is joining. This is gonna be another miss.
+
+Nayab Waseem
+Chris and Aroosa are basically busy with their. Dallas, I think, next week or.
+
+Qasim Akhtar
+Yeah.
+
+Nayab Waseem
+This summer next week. So.
+
+Muhammad Faraz
+Hey, Qasim.
+
+Nausheen Fazlur Rahman
+Hey. How's it going? Hey, Qasim.
+
+Muhammad Faraz
+Hey.
+
+Qasim Akhtar
+Started churning?
+
+Muhammad Faraz
+No. He's alright. He's out of office today. I have till.
+
+Qasim Akhtar
+3. I'm just in the back to back. I gotta jump off of that, so let's try to keep it, like, 30 minutes, if possible.
+
+Qasim Akhtar
+But, Ross, good to see you after a long time.
+
+Muhammad Faraz
+Yeah. Same here, I guess. Yeah. You too. It's been a while.
+
+Nayab Waseem
+Yeah. Chris is keeping you busy? Yeah. I mean, the whole team is keeping me busy. There are a lot of things going on, and I'm, like, working on 4 4 urgent things at one time. So.
+
+Qasim Akhtar
+I know. I know. Well, yeah, I know you're gonna do you're gonna be able to do this. Right. Awesome. So, you are a copilot today? So you can go ahead.
+
+Muhammad Faraz
+Yeah. So let me get started with the basic vision and stuff, like what we are delivering today. So this is just a deliver pro one. I I know there was your like, this was your idea at the start, but this has a different vision now, Yeah. We just hijacked the idea and gave it a different vision. So I'm so sorry on that part. So moving on, like, this is gonna this is gonna be just a vision. Right now, it's not gonna be a complete application where I'm gonna be like, hey. Let's onboard the users tomorrow. So moving on, this project is basically gonna be the AI governance piece that we have. Right? So every project that is gonna be done, well, like, Q and A is gonna have some artifacts inside of it.
+
+Muhammad Faraz
+It's gonna have some micro and macro gates inside of it, and I am pretty sure that you already know about them, and maybe, like, of course, even better than me. Right? So it's gonna have those pieces, and those pieces are very difficult to track when we are talking about project managers learning Github and Git commands, actually, just to update all of those things inside of, you know, Qiro and doing some git commands like commit and everything like that. Maybe maybe they are, you know, committing to a wrong branch, and just to avoid all of those things, we have created this platform to observe and actually add governance piece directly from this platform. No Github involved. So that was the core idea behind this application. So So.
+
+Qasim Akhtar
+You said no Github no Github involved. What else is not part of this right now?
+
+Muhammad Faraz
+So no Github for project manager is involved. Like, Github is involved because Github is the part where all of the tracking happens. Right? So it is involved. But project managers are gonna use this application instead of Github because this is a very simple graphical user interface that they can interact with instead of, you know, just writing on down all the commands like git git add dot, git commit, and then git push and pushing it to the wrong branch. So they do not have to do it. Right? So this is the piece where it gets easier for them. So how.
+
+Qasim Akhtar
+It's gonna What's the mental what's the mental model of this? Like, the the outcome is that this this takes care of the initial packaging of of of of your projects, or okay.
+
+Muhammad Faraz
+Yeah. It it actually like, it is a overseeing, like, application. Like, it overs it sees what's happening inside of a project, which phase it is currently on, what is happening in the Qiro, and it tracks all of those things. Just to understand, like, like, I I don't have to tell Qasim that I am currently on phase two. I am currently on am making the SRS. This project tracks it automatically out of, you know, Github. Perfect. So that is what it is. Like, currently, you are using a GR board to track all of the things where the project is currently, which phase it's on, what's happening inside of it. Everything happens in this project instead of JARA. So how does it work?
+
+Qasim Akhtar
+Yeah. It.
+
+Muhammad Faraz
+It has two small integrations. One is your Github account in which you are having a repo, and that repo has a progress MD file. That is your first integration. You have to attach your Github. URL in order for this to work, and the second piece is your Slack channel ID. This is very easy to get, and anyone can get it from Slack. It's not nothing someone, like, with admin permission can get. It's something that anyone can get from Slack. So it's super easy to get, and this is used for notifying. Slack users that something happened. Some phase got transitioned. Some, you know, artifact got into this application, something like that. So this piece, this Slack micro channel piece or macro channel piece is responsible for notifying users that something happened. You can add this easily from the projects. So, like, this is the, like, the best way to do it. Just write it down. So that's how easy how it gets. So till now, any questions?
+
+Qasim Akhtar
+No. No questions so far.
+
+Muhammad Faraz
+Okay. So, like, this is the basic two things that you need to startup a project and all of the other details, like, what's the project name. That is very simple things to have. But what this project will do is something that's gonna come up right now. So when we're talking about phases, we have.
+
+Qasim Akhtar
+So we can you go back to so when we are creating a new project when we're creating a new project, how much how much information it already has versus how much information it already it it requires statically?
+
+Muhammad Faraz
+Well, the information that it requires statically is very limited. Like, just the title, project type, manager who's gonna work on it, solution architect, and how many hours are provisioned in the project. All of this thing, these are very easy to get. The Github URL, every project has a Github. Right?
+
+Qasim Akhtar
+Github.
+
+Muhammad Faraz
+You just add the URL over here. Slack ID, very simple to get. Let me get one for product tags, and here is your ID. I just clicked on the name, and I just got the ID. It's written right over here. So just this information and the project is already on. Already on the.
+
+Qasim Akhtar
+Go. Got it. Now why not connect it to Jira as well?
+
+Muhammad Faraz
+Well, that is a good thing. Like, why not connect it to Jira as well? That is another integration piece. But since Chris just told me he's not trying to make another Jira, he's just trying to make a, you know, a piece where he can you like, the piece that he can use instead of Jira. That's why we skipped the Jira integration because we have to move it all, like.
+
+Qasim Akhtar
+So there are two parts to Jira, by the way. What what what he means by. Jira is we don't wanna use customer tracking system, which is built on Jira service management. But then there's a core Jira product, which is where where we actually run our projects and we run our backlog and and scrum and everything else. That context may not be important right now, but could be a future thing because this is this is this is a delivery governance platform. Right? So delivery delivery governance platform, you have two places where well, 3 places majority of where the work is happening. Number one, it's your. Github. Number two huh. It's your it's Kiro. Number 3, which is your IDE and along with the LLM, and then number 3, it's going to be your project management tool where the work is stuff that's happening, then there are secondary stuff, which is Blockify and Slack and everything else. Right? Those are more context building integrations. But I'll I'll this will come in the future as part of the con as we talk through, but but okay. We're we're good. We're good for now. So please go ahead with the with the demo.
+
+Muhammad Faraz
+For sure. So that's, like, that those are the pieces that were particularly particularly discussed by Chris, and they were as a part of our future enhancement. But for now, what he actually wanted was to actually analyze which phase this project is on, like the key governance piece, where are we following the right methodology? Are we keeping track of this stuff? Is actually what is defined is happening like a IPR meeting. Right? So which actually happens, like, over here, implementation plan review. Did this meeting happen, and what was the like, what was inside of this meeting? Like, this is a, actual piece where it it does the transcript analysis and tells you, like, whether these topics were discussed or not. So it says these topics were missing. So this is having a zero confidence. So according to this checkpoint, this is a failed one. So this is easily analyzed. Like, this meeting never happened.
+
+Qasim Akhtar
+Let let's take a few steps back. I think I kinda lost me into.
+
+Muhammad Faraz
+So Yeah. Like, this was just a transcription. What was Yeah. So.
+
+Qasim Akhtar
+Go through, like, maybe phase approach. So phase zero, this is where now. These are microgates. Preliminary SRS. Okay. How do I how do I tell if this was done or not done?
+
+Muhammad Faraz
+Okay. For microgates, it's very simple. You just have to hit this button, sync gates from repo. It's gonna go into your repo, which is over here. Oh, let me move this one. Which is over here. It's gonna read this file, project progress dot. D, and it's gonna identify what are the what are the things that were actually done. So SRS was created, and SRS was approved. Two things.
+
+Qasim Akhtar
+So reading an m d file?
+
+Muhammad Faraz
+Yeah. That is What file.
+
+Qasim Akhtar
+Is not create what if that's not created? What if that structure is not followed? Okay. So what if, and your governance breaks.
+
+Muhammad Faraz
+This is this does not break. It just says cannot do the linking between Github because this piece was missing. So it works with the microgates then Like, the microgates, they are omitted. Right? At that point, we are not gonna check the microgates anymore because in some projects, I do understand the microgates are not followed. Some projects that are done by CURE GUI. So in those projects, we are not following the microgates. So at that point, microgates are, totally omitted. We are focusing on the microgates then.
+
+Qasim Akhtar
+Not following you to with micro and macro gates, but let's let's go back to the to let's go back to the platform.
+
+Muhammad Faraz
+Sure. I'm back over here.
+
+Qasim Akhtar
+You you wanna have a preliminary SRS, and this is the SRS that gets in place before you do the discovery because there's another SRS that comes in, which is so let me ask you this. Yeah. How is that s how is that preliminary SRS being generated?
+
+Muhammad Faraz
+It's being generated by Qiro.
+
+Qasim Akhtar
+Okay. Well, is it what inputs does does Qiro take to create preliminary SRS?
+
+Muhammad Faraz
+Presales calls and all of those other calls that had been happened and maybe discovery calls as well. So, basically.
+
+Qasim Akhtar
+The the calls.
+
+Nausheen Fazlur Rahman
+And the SOW.
+
+Qasim Akhtar
+And the SOW. Okay.
+
+Muhammad Faraz
+Yeah.
+
+Qasim Akhtar
+We have that information already in in our hands. When I say in our hands, that means, like, delivery, sales, we all have that information ahead of time. My point is.
+
+Qasim Akhtar
+Instead of just the instead of just the governance angle to it, why not why not have that baked into this motion where you're actually generating those those primary SRS and creating the repo and and putting those SRS in place and checking them off as well.
+
+Muhammad Faraz
+From this application?
+
+Qasim Akhtar
+From this app. Because because here's the thing. Right? You have a context of Oscar. Right? Yeah. S o SOW is already in place. It's probably sitting in somewhere in s 3. Presales context brief is already there, I think, and and the and all the calls are in Avoma for for presales itself. That's already there. Why have someone else into the delivery go fetch all those manually, write that information, plug them in QUIRO, create an SRS?
+
+Muhammad Faraz
+I think.
+
+Qasim Akhtar
+What we care about is what we care about is a sync meeting to have AAAA handoff to have to to basically have that in place. The handoff stuff we have in place. The prep work, right? We need to shift a lot more left when it comes to the prep work, especially if you if you already control the inputs and the parameters. Right? Like, why wait for another person into this whole equation to come in and generate, not add any creativity, not add any new prompt, just use the 3 things you already have to be able to generate a preliminary stuff that is gonna be standardized already. Right, and and and and wait for that to happen and then do the governance on it.
+
+Qasim Akhtar
+When you can shift left, provide all of that, and you're automatically in governance as timely. But you still wanna make sure that the the the call the the handoff call happens between presales and and and delivery. That is more important. So take take this as a feedback, share with Chris, see what he thinks about that. But True.
+
+Qasim Akhtar
+No. Because I do. Yep. As part of the standardization, if your inputs are already there, your parameters are already there, let's make it easier for everyone. Let's not ask people to go robotic on one, two, 3, and just run one command in Kiro to initialize. I think they should initialize to get the they should use this to initialize the Kiro to get the context window built up within within Kiro. That's perfectly fine. But when you can place this and this the the, you know, follow on feedback to this is.
+
+Muhammad Faraz
+So at this step, even the progress MD is made by this system, so it always exists.
+
+Qasim Akhtar
+Yeah. It always exists. So so so the other part of this is I mean, this is where I want you guys to think from, like, shift left perspective is, like, today, you're adding a Github repo ID here. Right?
+
+Muhammad Faraz
+Yeah. Why.
+
+Qasim Akhtar
+And and this whole motion is around Chris wants to get out of customer tracking, customer status tracking, and if you if you dissect what happens under customer status tracking is is people assignment piece that happens there. K? It's the people assignment piece. It's creating the the projects that we are and then it's also putting some stuff some information around there, which is, like, Github links and whatnot. Right, and Jira Github links and Jira links. Where in this approach that you're sharing with me from experience perspective, we're just shifting the same activity, manual activity, and bringing it over here when it comes to project creation. Because what you can do is you can launch the project, which automatically creates the Github repo, generates your preliminary SRS, stores that into the structure that we want it to be stored so that way the teams who are getting to ramp up, they are kind of, like, structured with all of the context, and they're ready to go with their discovery.
+
+Qasim Akhtar
+So do a lot of the prep work early on as well. Like, create Github repo as part of the creation of the project. Why wait for the like, basically, what we're saying is, like, go create the Github repo, plug that link over here. Like, it's always, like, governance coming in second and third motion instead of governance from, like, start. Does that make sense?
+
+Muhammad Faraz
+Yeah. But that would add few steps to it. Yeah, I I do like the idea. In fact, I love it. It's making all of the progress automatic and making sure it's always there.
+
+Qasim Akhtar
+It's always there, and then don't I mean, look. We don't have to create Slack channels today. That could be a later on thing. But but if you if you like, linking creating Jira projects and linking back, creating Github repos, linking back, Like, that stuff that sort of stuff of, like, mundane, like, manual stuff is always gonna keep us, like, behind off the go, and so I think that that's the stuff that I that I'm not a big fan of. If if we have to if if if it's not a lot of headache and we can get those through perfectly fine, if it's gonna take hundreds and hundreds of hours of the robot, which I highly doubt, then then we could push it off. But just giving you my reaction and my mental model when I see things from, like, creation and mapping into the second day and then getting the governance a third day.
+
+Muhammad Faraz
+I gotcha. So everything in single day with a single create button?
+
+Qasim Akhtar
+Well, resource have to be assigned day one. Project gets created. Resource get assigned. Get a group gets created. Your s r your preliminary SRS stuff is already in place. Now after that, you're kind of, like, watching the team from there, and they need to have conversations from there. Right? The the the the the presales to delivery set needs to happen after that. Right? They need to create a bunch of stuff now. You know, they need to hash out discovery meeting agenda, your high level project plan. We can keep those people oriented so that way they can figure that out, and we can put some kind of, like, governance on top of that. But but having this manual checks of people coming back in the third day and manually checking is gonna fall to the face with face first on the floor because people are not gonna click off that.
+
+Qasim Akhtar
+They're gonna forget. They're gonna lose up they're gonna lose the whole rhythm about the, oh, what when when do I click that and which phase is that, then you're always gonna have those kind of, like, conundrums starting. So that's my only concern. It's because of them, you're it's just a it's just a delivery governance with the way it's a it's an Excel sheet with a fancy good delivery governance UI with them because someone has to go and click through everything. Right? So for example, in discovery meetings and and and agenda and question, like, how do I know this happened?
+
+Muhammad Faraz
+Yeah. I got III got your idea.
+
+Qasim Akhtar
+If the answer is someone comes in and hits complete or in progress. No. Then.
+
+Muhammad Faraz
+The answer is very simple. It gets feeds to QURO. Right? QURO writes up. It gets committed, then it has this way of actually syncing from the repo, then this happened. Right now, I did a manual override. So I know there was a manual override. So this is halfway automatic, what you are provisioning.
+
+Qasim Akhtar
+Yeah. So okay. So, basically, this is not you're basically waiting on the activity take place. Someone to run that in Quiro. No. Someone to take that from Avoma, put that in put that in Quiro, run new meeting notes. So that way, the delivery deliver pro can go back into the Github and scan that and say, yep. This is not.
+
+Muhammad Faraz
+Yeah. For for for for the micro gates, it's 100% that when it gets committed to the Github because it's always the same. Like, there is no difference at starting of the project. It's always the same. Someone just takes up the SRS, takes it up client, to does the meeting, comes back with agenda and questions to answers. Right, and at that point, that specific tick happens. Which tick I'm talking about is exactly this one, whereas this architect, you know, review rounds and all of these things. What.
+
+Qasim Akhtar
+About are we mandating folder structures to expect certain documentations within that?
+
+Muhammad Faraz
+We are. This. By enforcing it. Yeah. This is this is enforced. Like, dot slash docs, it's always gonna be in there. As soon as you run the Keyro CLI, it's gonna end up you do the first prompt. Hey. Start the, you know, SDM, service delivery methodology. It's gonna create this docs by itself. It's nothing that a human creates. It's there.
+
+Qasim Akhtar
+There should be a folder structure of delivery governance where you should have certain things replicated. True. You don't you don't so, look, today, you don't have a folder structure that where you are mandating, and if you if you're not mandating that, right, if you're not putting that in the structure, look. I know how engineers use Kiro today. Right? There is no standardization. You're hoping and making a big fat assumption that everyone is gonna have the same folder structure and everyone's gonna have that file, and with that assumption, this delivery pro works deliver pro works because you're hoping that those files are there.
+
+Muhammad Faraz
+Well, this changes this changes with your first observation. When when you said this process needs to be automatic, when this process is automatic, this gets created no matter what. Like, this /docs/progress, projectprogress.md. If it gets automated like the way you said, like, this gets provisioned via Deliverpro, this gets created. This is always gonna be there. Now each time Qiro gets used, the same agent gets used, it gets populated, and we automatically know using this platform if someone is you doing the things right or are they doing it wrong.
+
+Qasim Akhtar
+I think so. So so there are two parts to this for us. What I shared earlier is take that as a launch band, the motion, which is you're you're you're launching these projects with these preliminary stuff. What keeps the same motion from the, you know, post launch until the the sign off of the project are not gonna be the same iterations and the same things. Think about, like, an go back to a typical developer, Devops engineer kind of, like, approach or AI engineer approach. We we tend to do things in in a go back to the Copilot white coding way into building that structure. So what I'm asking is, like, not I'm not worried about after that after after we plug that into the motion, which is the Launchpad.
+
+Qasim Akhtar
+I'm not worried about Frost Sprint anymore. I'm not worried about the first set of artifacts. I'm concerned about the the next iteration. Is the next 30 iterations or 20 iterations of of of of the projects before it gets wrapped up. How do we make sure that that enforcement is there when it comes to the folder structure and those iterations are filling those up in this methodology?
+
+Muhammad Faraz
+Okay. I have a good assumption over here. Like, let's say we are again, this is a governance piece. This is not actually a deliver pro right now. This is a governance piece as you mentioned earlier. I understand that.
+
+Qasim Akhtar
+Yeah. Right?
+
+Muhammad Faraz
+So if the person is not following standards, it's gonna be here. Like, Github is linked. It's gonna be here. The person is not following standards. Now whoever the SA on this that project or the service, you know, the technical lead is on the project, he is the person responsible for this, and now he gets caught. Simple as that. That's the basic rule of enforcement. Okay.
+
+Qasim Akhtar
+Got it. Where is this expectation written out? Well, two things. Right? What does SRS means? I've heard it 100 times. I don't I haven't I haven't seen, like, the structured format of it yet. I think it's a policy. It's a prompt. Right? But I my feedback would be in deliver pro itself. I think if we can make it if we can make it visual so that way we can we can orchestrate things in the future as well. Because SRS might be followed by app dev, app mod. SRS may not be followed by migration. They may have different approach to it when it comes to methodology. So so I think keep that flexibility of the method applied methodology in into this equation.
+
+Qasim Akhtar
+Because whether it's SRS or RS. I shouldn't say RS. That sounds racist. But whether it's SRS or or or or QRS, at the end of the day, what matters is the artifacts because that's tied to the governance. Would you agree? True. So the outcomes or the artifacts needs to be, number one.
+
+Qasim Akhtar
+Structured, obviously. I I gave you the feedback on the folder structure and stuff. Number two, they need to be consistent and incremental. What I mean by consistent and incremental is sprint 4 mean you wipe out the previous stuff because your governance is gonna stay green across 4 weeks. It's gonna store it's gonna share the red to the fifth week because agent brand came through that. So the consistent now incremental is important because of your next as you go through from phase one to phase two, the artifacts more artifacts are required, and your governance is gonna creep up. Right? So how do you keep that consistent and incremental at the same time? I know the structure standard is not there yet because you're hoping that you're making the assumption that everyone is gonna follow the SRS, and everyone is gonna come pull through that, and the pull structure is not there right now. But when you put the pull forward structure in, we we update that methodology. But how do we make sure that the consistency is there, and as you go through spend by spend, the incremental workloads are also following the same motion.
+
+Muhammad Faraz
+Well, I do have, you know, a second thought about this, that whenever someone is gonna use the CLI and the agents that were created, right, so we have 3, simple agent types. Right? There is app mod. There is AIML, and there is app dev. Right? So, like, 3 different, you know, AI agents created by Derek, and each time anyone creates a Github repo, they can make a template out of it and use them. Now once they're using those agents and they go to Cloudelligent Oscars Orchestrator, right, this Orchestrator has, you know, a defined folder structure, which it's gonna use to work on that. Right?
+
+Qasim Akhtar
+It doesn't can you show me what those defined folder structure? Okay.
+
+Muhammad Faraz
+Yeah. For sure. For sure. So the defined folder structure is very simple. These are the first things, the key piece. It has knowledge, agent, governance, prompts. Governance is set up by me, by the way. Prompts and settings and all of the other things, even the skills. Now when I'm I'm gonna come into a agent, and let me go to a specific one, which is. I really wish was on this call because, again, he has the most idea of what he did where. Now this has the complete introduction to what it's gonna do, how it's gonna make something. Right? Whenever you say you type anything, even if I told this, you know, agent today, it's it's like the today thing that happened.
+
+Muhammad Faraz
+I told him, don't do any checks. Just deploy it for me. It didn't do it. It didn't deploy anything until I said, for sure, it is safe to deploy. So there was a a, you know, governance piece over there. It didn't go by whenever even I said don't do it, it still did it. It still applied those governance things. I can show you right now what it did.
+
+Muhammad Faraz
+So, like, there are rules. There are this folder structure When knows I have to make documentation out of everything, there is gonna be phase one, which has architecture change request, diagrams, SRS reviews, and this SRS reviews is gonna have different review, you know, versions that it's gonna create, and it's gonna be there always. You can go into any report that was created with the QED AI DLC, and it's gonna have that. I learned that the hard way, but, yes, it does create that.
+
+Qasim Akhtar
+So so whatever that so, again, I'm I'm trying to rush into things a little. Whatever those common denominators are that you are betting on, you need to have a status of green or red to make sure that we understand if it's there or not. Does that make sense? I'll I'll repeat that. So if you're embedding on that SRS, that document that has the delegation rules and whatever whatever that is called, that deliver pro or or this platform should be able to tell you that his status is green or at any given point once it's launched because that becomes the mechanism of your source of truth. If that's not there, the rest of the gates and everything else falls. Would you agree?
+
+Muhammad Faraz
+I do 100% agree. I am gonna implement, Github OIDC over here just to make sure no one can, you know, manually just go and check into things just to, you know, fool the system. So a 100%, I agree with you. It's gonna be the single source of truth. Okay.
+
+Qasim Akhtar
+So so so what I'm understanding is if you go back to the platform, all the governance gates that you have built are built around file being there, file not being there. Yeah. Is that true? Okay.
+
+Muhammad Faraz
+The give the microgates the microgates are built on top of that the macrogates.
+
+Qasim Akhtar
+Okay. What are the macro and the micro? Can you define macro and micro? So microgates Fifth grader.
+
+Muhammad Faraz
+Very simple terms. Microgates, something that Qiero created. Macrogates, something that is a part of the AIDLC, but is checked it needs a human reference to it, like human verification to it. Okay. So that's the core difference over here. So let me just quickly give you a small example. So everything over here is created by, you know, a QO. Like, baseline Jira backlog, that is created by QO. Right? So the deck content, that is created by the QO. Right? But if you talk about the 5 outputs reviewed by SA, that is not done by QO. That is done by a human, and whenever a human does it, he has to add evidence that he did it. So it might be evidence is? It might be.
+
+Qasim Akhtar
+A it.
+
+Muhammad Faraz
+Might be a file. He has to upload the files, or it might be as simple as the results. Like, he did it. He took he takes the ownership into the system to make sure he cannot fool anyone. Got it. Got it. Okay.
+
+Qasim Akhtar
+Not a big fan. So okay. Here's hear me out.
+
+Qasim Akhtar
+Yeah. It's it's not a bad first version to this. Okay. So I'm gonna stick to pretty pretty straightforward, like, feedback. So it's, like, one and zero, and and and you can you can review this machine and yeah, with with with Tariq and Chris so that way they understand as well where I'm coming from. 100%. Today, this deliver flow or pro or this governance platform is built well, it's expecting bunch of legwork to be done, right, in the beginning with not a lot of structure. But then you have these standardized assumptions that you guys are making, which is around SRS and all the all the all the structures to be in place, are not enforced right now, right, in any given way.
+
+Qasim Akhtar
+That means I can go create a structure, another structure as I'm going through. So that means my structure in sprint one could change in sprint 5 or 6, and that consistency will will will will drop. But there's no enforcement mechanism there, and the third last but not least is well, sorry. There are two more. So the third one is it's a lot more of show me the file. As long as the file is there, the governance passes.
+
+Qasim Akhtar
+Yeah. I can I can I can gamify I can by the way, I can put the same title, put put put. Chinese or Hindi into the the rest of the document, and it'll check off?
+
+Nausheen Fazlur Rahman
+Okay. You wanna go through the content of the artifact.
+
+Muhammad Faraz
+Itself?
+
+Qasim Akhtar
+That's that's a real later on point. I'm I'm basically, what I'm trying to say here is today, your gates are today, our gates are binary around the file system. It's it's just a binary mechanism of a file system. That's what that's what governance is today in this in this version, which is showing the file as long as the file is there. I'll say it's if it's good or not. Right, and I'm not a big fan of hero generated, human generated. That that throws away the principles that we have when it comes to leveraging AI. It doesn't matter who generates. At the end of the day, the ownership is people. Right? So we shouldn't bring in this micro versus macro.
+
+Qasim Akhtar
+At the end of day, the governance the ownership is not shifted away from people. So there should not be a distinguished distinction between artificial artifacts and key artifacts. Because what you're doing there is you're splitting the person ownership and and responsibility and saying, well, you can you're you're giving basically a blanket excuse to everyone who will say, well, I don't know for us. My Qiro never generated that at that time. Now you have to go and prove to that person why it didn't generate and what could have happened and what didn't happen. You can never put a governance on top of that on top of people, right, owning a project when you're throwing that under the blanket of just care. So take that as now last but not least, not a big fan of come and show me the evidence in in in in this developer platform from Governance platform. Because.
+
+Qasim Akhtar
+We we leveraged a mechanism within Oscar. Let me give you a little bit of a story before before I kinda jump into this. Jump out of this topic. We had this problem where in Oscar where where essays where SOWs were thrown around here and there because we expected them to bring those links of SOWs and plug them into into into our products. Never happened. Never happened before. It's not gonna happen now. Let's not fool ourselves. Right? Because this evidence and links shared with me so I can give you a thumbs up mechanism never works, and then eventually, what we had to do is we we we plugged in.
+
+Qasim Akhtar
+Teams or Sharepoint on the backend with Oscar, and we drove the moment SOW generated. It was a live link, and it kept that live link through and through. SA had the same copy. Account executive had the same copy. Everyone had the same copy, and it did the work. What you guys are doing right now is you're you're you're shying away from bringing in a document management system and putting a governance on top of that. There should be a folder structure within Teams, conference or Teams, probably Teams in this equation, that says, here goes your implementation plan review, obviously reviewed by you. Not key I don't care about kilo generation. It has to be human people generated and placed over there.
+
+Qasim Akhtar
+Here goes your timeline and everything that we're gonna review in during our Wednesday call and all the placements in those folders, and your deliver pro provides the governance governance layer on top of that to be able to see if that was generated, that bucket is there, and it has the documents or it doesn't have the document. So you go to the source with the governance. You never come up with this. Well, it's governance, but then you share the links and you upload your evidence. You put your picture in the you know, you you open up the camera and take a picture, and we'll say, yes. You you're done, sir. That's not governance. That's a, you know, that's.
+
+Qasim Akhtar
+I don't know what's gonna arrange there. That's that's a that's a mechanic walking the, you know, walking, going the inspection last inspection before the before the flight takes off, of, like, checking off things. Right? You you know, it's like a it's like a such a reactive kind of, like, a check off that I don't I don't I don't consider that as a governance, especially with AI now. So there are lessons learned from Oscar. There are lessons learned from, like, not having that clicky insert information because that's what's going on right now in Jira. In Jira, what are the what is the problem right now? We set up a standard. We ask people to put in their information.
+
+Qasim Akhtar
+It never happens. It never happens since they sent me. It happens the first two weeks, and then Chris forgets, and I forget that I remember, and I I remind everyone, and everyone's remember you know, everyone is on to that from from that point, and it drops 3 weeks later. So let's not bring the same the crap that never worked is not the crap that's gonna work in future.
+
+Muhammad Faraz
+So I have a quick question around this part. This whole microgate microgate was around one thing. These artifacts got generated by Qiro. Right, and the assay reviewed them. Right? I understand the other one, which is transcript analysis, like, the call happened or not. That is something we can easily get automatically from. Avoma and not ever asking the person, hey. Did you do the call? That's that's acceptable. I am getting your point where everything has to be automated. Otherwise, no one's gonna do it. No one's gonna take ownership of it, and they're gonna forget, and it's gonna be exactly the same as Jira. So what my understanding over here is, like, 5 outputs reviewed by SA. This is something of a ownership type. It's like my job that I'm doing. Like, did I write the code? So for an essay, did he review those documents? Are we gonna capture that?
+
+Qasim Akhtar
+What I'm saying is it's the lens. Right? Don't call it a review by well, why are you specifically calling it these outputs to be reviewed by essays and not those outputs from QA reviewed by assay. Does that make sense? It's the it's it's it's the presentation of of that gate is what I have problem with. Okay. You don't you don't treat one artifact different than the other. They all have their their value in the value chain of artifacts and and and moving the project forward. Would you agree?
+
+Muhammad Faraz
+I agree, and and then.
+
+Qasim Akhtar
+Then all these artifacts should be validated in principle with by by by by people who have the ownership to it. So project manager owns baselining backlog, Jira backlog. Project manager owns the timeline and and and and and the implementation plan and whatever that might be. Right? Essays own bunch of the artifacts. So there's ownership attached to these artifacts, but let's not treat artifacts differently as as if there are two different subclasses. Right? Which is, like, one is hero generated. Other one is output of essays reviewed by essay. Let's not create a distinction of it. From my perspective and from leadership perspective, every artifact is important. Every artifact is reviewed by a human or the owner, and every artifact has a governance on it.
+
+Qasim Akhtar
+There's no different one word artifact versus the other. Yes. You can say, well, one set of artifacts lives in Github. The other set of artifact lives in. Teams. But the governance has to be at source, not show me where are you today so I can tell you so I can give you a thumbs up on the governance.
+
+Muhammad Faraz
+Gotcha. So your plan is not. I got alright. Makes sense. Makes sense.
+
+Qasim Akhtar
+I mean, if you have to come and tell me if you have if I have to click an evidence button there to to for you to come and tell me that you did it, then I mean, are we are we creating a checklist, a form, or are we do we really have a delivery governance platform? Because the governance platform always is hooked into the into the source. You bring in the intelligence of of of AI to be able to say the qualitative part of it. Right? It's so so that's the that's that's the that's the other piece that that we can we can table that for now. We can talk about it. So first, like, you know, I don't I'm not a big believer of just one and zero.
+
+Qasim Akhtar
+Do you have it? Do you not have it? I think you can bring in AI and say, was it good? Was it bad? Based on your source, which is your SOW or preliminary or the overall SRS. Right? To be able to kind of, like, provide that extra help. But, again, that could be tabled for for the future. Let's go let's go back into swiftly, let's go into phase one. I wanna see what's there.
+
+Muhammad Faraz
+So contact. Got it. Got it.
+
+Qasim Akhtar
+So so you see the same thing. Right? SRS? Right? Yeah. You gotta enforce that structure, that folder structure and everything, and you gotta have that signal of do is it on or is it off? Right? Do you have that or you don't have that? Because that's you're you're leaning on SRS as your backbone of everything. But my feedback over there is is there is what if tomorrow we move away from SRS and something else? Do you have that flexibility in your platform, or if the practice if if if migration practice says, I am not gonna follow SRS, we're gonna call ourselves MAP, migration accelerator program, or machine comes back and says, well, we don't need SRS in in a quick 5 by 5 by 5. So does that mean my governance falls to on this phase, or does that mean it's still continuous?
+
+Nausheen Fazlur Rahman
+Comment. So I've been working on different practices, and like, in phase one, for example, it's completely different. You know? Like, for example, in data and AI, you know, Steven helped me out with, like, 3 other artifacts that we need at this stage. So, and and you know, the the naming is different. The number of artifacts generated at each phase will be different according to each practice, basically. So we do need a bit of flexibility over here.
+
+Qasim Akhtar
+100%. I think Yeah. I think that's what I'm saying. Like, focus on the outcomes. But the problem is when you focus on specific file names and binary one and zero, and and and and your your your governance is gonna is gonna is gonna fall apart.
+
+Muhammad Faraz
+Yeah. So let me add add up to that point. So I was, you know, like, directed by Chris to add up different, you know, types or different methodologies for each of the practice. So this one is for app dev. Right? It's gonna be a different one for app mode. Since this is just a vision presented in front of you, yeah, I do get a lot of beautiful pointers from you, what should be in the actual app, which is not currently in the vision. But this part where it has different artifacts for different practice, that is already in queue.
+
+Qasim Akhtar
+Iii understand that. What I'm saying is, like, look.
+
+Qasim Akhtar
+We need to tell Deliverpro what is that structure that we're following so that we can have the flexibility of what to look for based on the practice as well. I'm just saying, like, we gotta have that flexibility so that way you're not stuck on this fine file and the binary one and zero. Number two, there's this inform enforcement mechanism that we have to validate on the QO side of things for when it comes to consistency of the structure and and incremental file creation as well. Okay. That's that those two things, keep that as a feedback and then figure that out in the in the next conference before the next conversation. I've already given you my feedback on these checkpoints of give me tell me you've done working SRS review by SA.
+
+Qasim Akhtar
+You see how again. So first, we have working SRS, and now we're saying working SRS review by SA. I mean, this is exactly the the the the the principle I was telling you about. Why have two gates, governance gates? Well, you you're you're driving towards two two governance gates because you're creating a split between generation and review and ownership.
+
+Muhammad Faraz
+Yeah. We don't wanna do that. Okay. So it's all almost gonna be.
+
+Qasim Akhtar
+Yeah. The governance is what? On the governance is on the governance is not on AI and Deliverpro. The governance is on our people who own that. AI doesn't have any ownership into the system. So and I want you to make sure you understand that piece because this is a quick example of what that what that would mean. What you will have is a working SRS, and now you're waiting for the SA to overtake the ownership that they have previewed it, and it's such a day two, day 3, day 10, day 15 motion that you know? I guess me and Chris will just gonna be, like, clicking refresh or refresh just to see when that essay comes in and actually reviews it, and so we can actually get a thumbs up, and that's what's gonna happen here.
+
+Qasim Akhtar
+Right? Okay. Kick off call. Give me the update. Give me the updates. Give me the evidence that happened. Not a big fan. I think I think there could be. I think I think there could be. I think there could be an Aroosa metadata that we can add to once we have won the customer that we add to it. Like, today in Oskar, we have this deal ID. I think there could be a project ID that we can tag the customer with so that way your deliver pro automatically picks that up from there and tells you if it was done or not done. Yes. Now you wanna you wanna you may wanna have an option of.
+
+Qasim Akhtar
+You may wanna have an option of.
+
+Qasim Akhtar
+Well, the customer said no vomit, but we didn't have anything. Right? What do we do there? So I think I think I'm not I'm not sure if we're ready yet to put kickoff calls and different calls kind of, like, attributed to it. But if you work if you want to bring that into your platform, into the governance platform, the only way I see it is we we engineer a metadata on that customer name or the contact or the company name, and any meeting going forward, you have a deal ID and you have a project ID, and you're always pulling project ID from Deliverpro while you pull the deal ID from Oscar. Okay. That's that's that's for your the kickoff, and then we get out of this evidence collection.
+
+Qasim Akhtar
+Review SRS with internal team. I I just don't know if we need to get into these microgovernances yet. I think this is more of, like, the phase two, phase 3 part. Right? Today, our problem is not micromanagement. This is this is making me feel like as if we're in a micromanagement of, like, of, like, of the meetings itself. We should care more about the outcomes, not the meetings when it comes to the governance.
+
+Muhammad Faraz
+This that means these point checkpoints are gonna be changed. They're not gonna be this.
+
+Qasim Akhtar
+Let me let me share another thought process around it. Do I care want to share your screen. Do I do I do no. No. No. While you're here, think about the outcome basis. Right? Do I care about the kick no. Kickoff call? What am I how do I know the team is ready for a kickoff call? Because the idea is wait. Why would I wanna have a kickoff call meeting integrated? Think of it from leadership perspective. Why is that?
+
+Muhammad Faraz
+So, again, the point Chris gave me on this kickoff call and all of these things that are happening is something that he knows that this happened already. So not while asking people, just coming into the system and getting the idea of it. Now there is a point that this could be automatic very easily via Avoma in setting up a standard between the meeting names. Right?
+
+Qasim Akhtar
+Let me let me so so there's one is the automation part. Yes. 100%. I already shared that with you. My second part of that is is the outcome that matters. Right? So what matters for us is how did the call go? So I think, yes, if if by automation, what I mean by that is, yes, we can pick that up from a formal, but the second part of that is what we care about is a kickoff deck. If that is prepared, well prepared, or not, and then and making sure that that was done consistently. That's one of the problems that we have today is, like, people not preparing to talk text or in a standardized way or whatever.
+
+Qasim Akhtar
+Right? Here comes back to this document management system, your teams, right, in a structured format. If we have an idea, the expectation is set on those folder structures that these are the documents that needs to be here needs to be there, your governance will automatically come on top of that. Right? A review SRS with internal team. Again, when you look at the governance from, like, meetings, we care more, at least at this point right now, if the external we care more about the external meetings because that's where the impact is the highest. The internal meetings, if it happened, it didn't happen, we should care more about the outcomes rather than the activity. Okay. What comes after the what happens when you have a review from the SRS with the internal team? Is there another artifact? Is there something that that comes as an outcome? Is it just a conversation?
+
+Muhammad Faraz
+Yeah. This is just a conversation between open ended questions.
+
+Qasim Akhtar
+Okay, then then I don't see a point of having that and into the governance at least for now. Because this is just because what's gonna happen? You're gonna have a robot that that didn't join internal meeting, or we kicked it out, or I forgot, or you're gonna have a bunch of those. Right, and and I don't wanna walk in with 100 clicks. I I wanna walk in with 10 gigs that really matter from customer impact and project impact, and then we keep adding more to it. I don't wanna walk in with 100 files based. Just it's it's wild. Right? So so let's let's go to phase two.
+
+Muhammad Faraz
+Alright. Design interview. So now we have a lot of artifacts, and then we have some checkpoints to check. Spec.
+
+Qasim Akhtar
+Spec. Data readiness solution architect. There's TCO. What we got, please, workstream decomposition. But workstream decomposition, I don't know if it's gonna be okay. That's a domain decomposition.
+
+Muhammad Faraz
+That's a proper.
+
+Qasim Akhtar
+But is it a but the is this applicable to migration? Is it applicable to well architected solution?
+
+Muhammad Faraz
+Well, this is more like something that happens when you are following the AITLC properly, that is developed over there. So this is the Go back to we get. Let me quickly show you.
+
+Muhammad Faraz
+Where is the domain decomposition document? So there is actually a piece over here that is from the domain decomposition.
+
+Nausheen Fazlur Rahman
+And from that specs are generated.
+
+Muhammad Faraz
+Yeah. Right. Don't say don't say I forgot where it is because I am not so familiar with this one. So.
+
+Qasim Akhtar
+Go go back to go back to sorry. I'm gonna rush you for the last two minutes. But.
+
+Qasim Akhtar
+Okay. These are there's a I think these are these are practice specific and solution specific. I don't think you I don't think you would need I don't think you need a data readiness for migration. So I think I think we, again, take a higher level approach. So Okay. You you you guys are too too too deep into things that too wide and too deep for a for a new governance mechanism to be rolled out. Like, I don't wanna have 100 files to be to be built. So there are two problems there. Right? I don't wanna have 100 files like I mentioned earlier to put on this governance of file there, file not there, one and zero, and I don't wanna have those files being so micro into, like, just one specific specialty and practice and solution? Because, again, let me ask you this, Nausheen. You're the program manager on 5 by 5. Right? Yes.
+
+Qasim Akhtar
+Do you need a workstream decomposition? Do you need a spec strategy per workstream?
+
+Nausheen Fazlur Rahman
+For 5 zero 5, none of these.
+
+Qasim Akhtar
+Okay. See the problem for us? Before you even started, this just fell to the face. Right? So so you went you went.
+
+Qasim Akhtar
+I'll tell you, you made a miss like, not a mistake. You took a approach of a developer, right, into building this, and you guys have to zoom out, and you have to wear a different hat, more strategic hat, and I don't know if Chris has provided this this feedback or not. I would be surprised if he didn't, or Tarek, even Tarek, but this is too wide, too deep, and across a lot of things. This is not gonna help. This is not gonna scale. Okay. What else is there? Let's let's wrap up with the last phase. You already have my feedback on the checkpoints and the self validation elevations. What's phase 3? What's phase 4? Because that's where your implementation comes in.
+
+Muhammad Faraz
+This is a phase 4, which is the meetings with the clients and retrospective that happens, what went for, what went good, what went bad. All of the things are being done by AI, Bedrock Agent Core, and gives you an output on that. So that's your transcript analysis.
+
+Qasim Akhtar
+What what what is what is phase two? Phase two is end of design. Is that correct?
+
+Muhammad Faraz
+Yeah. End of design.
+
+Qasim Akhtar
+Okay. Where is implementation plan review? I've Yeah.
+
+Muhammad Faraz
+It's over here. It's Macrobid implementation plan review.
+
+Qasim Akhtar
+Think think about it. Right? It's it's a it's a call that happens every Wednesday. We expect certain artifacts to be in place just so we can review them. But after that call, we're we're we're asking them to go and upload it over here as an evidence?
+
+Muhammad Faraz
+No. Actually, the evidence for this one is your meeting link. Oh.
+
+Qasim Akhtar
+Interesting Yeah. Yeah. Yeah. So so no. We we we it's our internal meeting. Do you see my point? It's our internal meeting. We have the structure. We have everything controllable over here, and we still are asking the end user to come and upload something.
+
+Muhammad Faraz
+So how does this platform know which. Wednesday was it when you had your IVR done? Good question.
+
+Qasim Akhtar
+Really good question.
+
+Qasim Akhtar
+Does it know does it have the knowledge or context of what IPR is and which what how is it labeled as a as a meeting and where those artifacts are gonna be dropped. If the answer is yes, yes, and yes, then you have the intelligence, then this this platform has the intelligent structure to be able to take care of the self evidence.
+
+Muhammad Faraz
+Well, I would be, you know, very easy on this fact to say this. Like, it it this project, all the details that are submitted till now, it will have the information about the project itself. Now submitting the IPR meeting link to it, currently, it's the submit thing. Right? So submitting the link to it, it will actually check.
+
+Qasim Akhtar
+Who I want in this list or not. Yeah. But I I don't wanna hire another person just to basically keep uploading links to deliver pro deliver pro to, I mean, think about think about I'm trying to get you your attention into the comp. I wish we had, like, Chris and and and Darling into this conversation as well because we Yeah. The this is not the principle of of of what we wanna lead in the governance side. My point to you is implementation plan review is a well structured program that we rolled out that happens every week, Wednesday. We expect certain things, artifacts already to be in Teams by certain time. We know what those are, and and I don't wanna have this.
+
+Qasim Akhtar
+I don't wanna have this brainless come and tell me and share your links with me so I can give you a check of governance. Does that make sense? Like, let's get out of that. I mean, I've shared this, like, 3, 4 times. It's like it's getting it's getting repetitive, and it's gonna get ridiculous for for for someone or a project manager just to go through a long list of just finding links and just adding links. Can you imagine how many times our project managers are gonna put wrong links in there? Like I have 100%. I will I by the way, Nausheen, I will take the same Avoma link and paste it everywhere, and it's gonna say green to everything. This is how mindless governance it will be.
+
+Nausheen Fazlur Rahman
+There's no way to validate 100%. Whether it's relevant. I mean.
+
+Qasim Akhtar
+The the whole approach to this governance is completely off, and it's not imprintable, or at least the prioritization part of it, to be honest. Right? So so let's let's go further into this phase 3.
+
+Muhammad Faraz
+Yeah. For sure. So, again, it's gonna be repetitive on every case Yeah. Where I understood your part. That's per story ID.
+
+Qasim Akhtar
+What is code? What does code means?
+
+Muhammad Faraz
+Yeah. That is your implementation, the whole implementation that was that is happening. So, basically.
+
+Qasim Akhtar
+It's gonna see, do you have lines of codes written, and as long as they're gonna say, you're done, you're good?
+
+Muhammad Faraz
+No. No. No. No. No. Actually, on this, this specific part, this the part that you highlighted, we actually since this was just a vision, this specific part, had to sit with Nayab and fix this because it needs to have proper artifacts inside of it. So on this specific part. Since that is the problem from a diagram.
+
+Qasim Akhtar
+So it's not ready yet?
+
+Muhammad Faraz
+Yeah. This code part no. No. No. That that that that is just. Okay. Some dump that came in. Got it.
+
+Qasim Akhtar
+Got it. Now, look, UAT report and implementation plan review, scope block, a bunch of these artifacts that are eventually, we have to share that with the customer as well. That means it needs to be in Teams folder or Sharepoint folder somewhere, and it needs to be stored with Cloudelligent branding and whatnot. You can put your governance at source over there. Just the same feedback I gave you in IPR, same feedback I gave you about, like, the kickoff deck and whatever, like, the same key feedback hold over here. But but each phase, there is this important artifacts that we care about for now, call them 10 different points that we need to actually look into. UAT or forward will be one of those. Right? But it can't be no. UAT report, you're probably looking into Qiro, right, in this one? Yeah. How would it know if that's there or not? It's gonna search for UAT, or is it gonna search is it gonna do, like, a, like, a text search?
+
+Muhammad Faraz
+Nope. The MMD file, the source of truth of Q.
+
+Qasim Akhtar
+Md file? But there's a lot of MD files. How would it know which MD file?
+
+Muhammad Faraz
+Progress project progress dot. D.
+
+Qasim Akhtar
+It's gonna search it's gonna look for project progress. D.
+
+Muhammad Faraz
+Yeah, and all these does for all the artifacts.
+
+Qasim Akhtar
+And and if I'm running the project or if I'm if I'm if I'm Abheen or if I'm Walid and if I'm running the project and if I don't have that project folder? Again.
+
+Muhammad Faraz
+This is the part of the governance piece where if it doesn't exist, it's the IT portal.
+
+Qasim Akhtar
+Force me to make sure that I have project progress update folder structure.
+
+Muhammad Faraz
+If I answer yes, that would be the automatic piece, what you just said in the beginning of the call.
+
+Qasim Akhtar
+That would but it's not there right now.
+
+Muhammad Faraz
+It's what right now is. Okay.
+
+Qasim Akhtar
+Yeah. So so so it doesn't have the consistency of that. So the consistency and then the incremental part. Right? So, again, not bad for first, but it's it's a it's a d. It's not an f. It's a d in my books. Okay. So so and then I gave you a pretty detailed reasons of what and I think it's not the design. It's not the development. Don't take it on yourself. This is the concept and the principles of governance is missing. The essence of governance is missing out of this. So you need to take all of this feedback, Nausheen, Nayab, that I gave. Read it out with with with Chris and Derek with in there. So that way, you guys can completely understand. I mean, we we need to we need to be on one page when it comes to, like, our mental model and our methodology and this governance. We can't be in know?
+
+Qasim Akhtar
+So Chris needs to give you a new direction into this. But then you need to review this feedback with them and and and really come to a better conclusion of of what that direction is, and my concern is this is gonna add a lot of lag based on where we are right now.
+
+Qasim Akhtar
+Understood.
+
+Muhammad Faraz
+Okay.
+
+Qasim Akhtar
+Alright. Thanks all. I know we spend more than needed, and I wanted to get off 30 minutes early. But, you know, I would have done the the the service to you guys because I saw there was, like, a big gap, so I had to stay longer to get this stuff done. But I'll talk to you guys whenever we're ready next time. Okay. Hopefully, alright. Bye. Perfect. Thank you. Alright. Bye bye. Thank you. Bye.
+
+Muhammad Faraz
+Bye, everyone. Bye bye.

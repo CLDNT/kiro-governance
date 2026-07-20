@@ -1,0 +1,265 @@
+"Story ID","Epic","Sprint","Story Title","Story Type","Story Points","Priority","Status","Dependencies","Source","Acceptance Criteria","Notes"
+"REM-01","Remove","Sprint 1","Remove binary yes/no checkpoint UI","Frontend","2","High","Backlog","","Impact Report — REMOVE","AC:
+- All checkbox / yes/no toggle controls removed from macro checkpoint cards
+- Checkpoint cards display name, type badge, reached_at, and evidence count only
+- No regression on checkpoint completion flow (completion still works via existing PATCH endpoint)
+- UI passes lint and type-check","Quick credibility win with Qasim. No backend change."
+"REM-02","Remove","Sprint 1","Remove manual evidence upload flow","Frontend + Backend","3","High","Backlog","REM-01","Impact Report — REMOVE","AC:
+- Evidence attachment modal removed from the project detail UI
+- POST /api/projects/{id}/checkpoints/{id}/evidence endpoint disabled (returns 410 Gone)
+- gate_evidence rows are written only by automated paths (AI analysis, Avoma fetch, system events)
+- Existing evidence rows are retained in DB — not deleted
+- All related frontend components (EvidenceModal, FileUpload, UploadProgressBar) removed from bundle","Pairs with governance-as-layer model change. Do together."
+"REM-03","Remove","Sprint 1","Hide micro gates from project detail UI","Frontend","2","High","Backlog","","Impact Report — REMOVE","AC:
+- micro_artifacts section no longer rendered on project detail page
+- Micro artifact data still returned by GET /api/projects/{id}/gates (backend unchanged)
+- Phase progression visual still shows phase_complete correctly
+- No micro artifact rows are deleted from DB
+- Audit trail / timeline still surfaces micro events","Data stays, UI hides it. Audit trail unaffected."
+"REM-04","Remove","Sprint 1","Remove micro/macro ownership split from data model and UI labels","Backend + Frontend","2","High","Backlog","REM-03","Impact Report — REMOVE","AC:
+- 'Micro gate' and 'Macro gate' labels removed from all UI text, tooltips, and badge copy
+- casdm_config config_type values unified — no UI or API surfaces the micro/macro split as a distinct class
+- API responses no longer include a top-level micro_artifacts vs macro_checkpoints split in the gate status response; all items returned as a flat checkpoints[] array sorted by phase + item_order
+- Existing config_type column retained in DB for internal routing only","Single ownership model. Backend routing preserved internally."
+"CHG-01","Core","Sprint 1","V005 — Batched schema migration (project fields + weekly_status_logs fields)","Backend","4","High","Backlog","","Future Features Report — Section 1","AC:
+- V005__phase3_additions.sql applies cleanly on top of V004 schema
+- projects table gains nullable columns: health_status TEXT CHECK IN ('red','amber','green'), actual_kickoff_date DATE, actual_customer_kickoff_date DATE, implementation_lead TEXT, reporter TEXT, assignee TEXT, priority TEXT CHECK IN ('low','medium','high','critical'), resolution TEXT CHECK IN ('unresolved','resolved','cancelled'), request_type TEXT
+- weekly_status_logs table gains: completed_this_week TEXT, planned_next_week TEXT
+- All new columns are nullable with no DEFAULT to avoid breaking existing rows
+- New indexes: idx_projects_health_status, idx_projects_priority
+- Migration is idempotent (IF NOT EXISTS / DO $$ guards where applicable)
+- Migration runs cleanly on a copy of production schema before merging","Foundational. All Phase 3 features depend on these columns existing."
+"CHG-02","Core","Sprint 1","V005b — project_decisions table","Backend","3","High","Backlog","CHG-01","Future Features Report — Section 2","AC:
+- New table project_decisions: id UUID PK DEFAULT gen_random_uuid(), project_id UUID NOT NULL FK projects(id) ON DELETE CASCADE, title TEXT NOT NULL, description TEXT, decision_url TEXT, raised_by TEXT NOT NULL, raised_at TIMESTAMPTZ NOT NULL DEFAULT now(), approver TEXT, approved_at TIMESTAMPTZ, status TEXT NOT NULL CHECK IN ('open','approved','rejected') DEFAULT 'open', resolution_notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+- Index: idx_project_decisions_project_id ON project_decisions(project_id)
+- Index: idx_project_decisions_status ON project_decisions(status)
+- kiro_phase2 runtime role granted INSERT, SELECT, UPDATE on project_decisions and its sequence
+- Migration idempotent","Decisions table. No foreign key to users — store names as TEXT consistent with existing pattern."
+"CHG-03","Core","Sprint 2","Governance data model — replace artifact storage with source references + scores","Backend","5","High","Backlog","CHG-01","Impact Report — CHANGE","AC:
+- gate_evidence table: file_content, file_blob, and any raw transcript TEXT columns dropped from schema (V005c migration)
+- gate_evidence retains: id, checkpoint_id, evidence_type, value (URL/S3 key/reference), label, link_metadata JSONB, score NUMERIC(4,2), score_detail JSONB, uploaded_by, created_at
+- score and score_detail columns added to gate_evidence if not present
+- No Lambda reads raw content from gate_evidence — only reference values
+- All existing gate_evidence rows migrated: any raw content moved to S3 reference; DB row updated with s3_key
+- Unit tests confirm no handler imports or writes blob content","Foundation for quality scoring. Pairs with CHG-04."
+"CHG-04","Core","Sprint 2","Quality scoring chain — Bedrock scores gates; low-confidence gates blocked","Backend","6","High","Backlog","CHG-03,DP-35","Impact Report — CHANGE ⚠️ Watch item","AC:
+- POST /api/analysis/{projectId}/{checkpointId}/score triggers Bedrock scoring for a checkpoint
+- Reads transcript/document reference from gate_evidence (S3 key or Avoma URL)
+- Reads prompt from analysis_prompts for the checkpoint_name; falls back to generic if none
+- Invokes Bedrock AgentCore; parses response: {topics_covered[], topics_missing[], passed: boolean, confidence: number 0-1}
+- Writes score and score_detail to gate_evidence row
+- If confidence < 0.6 AND passed=false: macro_checkpoints.reached_at is NOT set; returns {blocked: true, reason: 'Low confidence score', score}
+- If confidence >= 0.6 OR passed=true: checkpoint completion proceeds normally
+- Threshold configurable via SSM parameter /deliverpro/config/score-threshold
+- Returns 502 AGENT_UNAVAILABLE on AgentCore failure; gate is NOT blocked on infra failure (fail-open)","Strict order: CHG-03 (data model) → this story → CHG-05 (enforcement)."
+"CHG-05","Core","Sprint 2","Gate enforcement — phase transition blocked until mandatory checkpoints pass scoring","Backend","4","High","Backlog","CHG-04","Impact Report — CHANGE ⚠️ Watch item","AC:
+- GET /api/projects/{id}/gates response includes per-checkpoint: blocked_reason TEXT when a gate has score but confidence < threshold
+- POST /api/projects/{id}/advance-phase returns 400 {code: 'PHASE_BLOCKED', missing: string[], blocked: string[]} if any mandatory checkpoint in current phase has reached_at IS NULL or blocked_reason IS NOT NULL
+- Frontend phase progression visual shows a lock icon on any checkpoint with blocked_reason
+- Leadership/admin role can override a blocked gate via PATCH /api/projects/{id}/checkpoints/{id}/override with required {override_reason: string}
+- Override writes to gate_evidence with evidence_type='override' and the reason
+- All override events emitted to governance_events table","Leadership override keeps the platform usable without bypassing accountability."
+"CHG-06","Core","Sprint 2","Automated project init — provision Slack channels on project creation","Backend","4","High","Backlog","CR-05,CHG-01","Impact Report — CHANGE ⚠️ Watch item (Slack portion)","AC:
+- On POST /api/projects, after DB row created, Lambda invokes Slack provisioning step
+- Uses provisioning credential (channels:read + channels:manage) from SSM
+- Calls conversations.list to check if channels named {jira_key}-micro and {jira_key}-macro already exist
+- If not found: calls conversations.create to create both channels
+- Stores resulting channel IDs in projects.slack_micro_channel_id and slack_macro_channel_id
+- If Slack API fails: project creation succeeds anyway; channels marked as pending in a new projects.slack_provisioning_status TEXT column ('pending'/'provisioned'/'failed')
+- Retry endpoint: POST /api/projects/{id}/provision-slack for manual retry by admin
+- Bot token used only for chat:write at runtime — provisioning token never stored in DB","Provisioning is best-effort; project creation never blocked by Slack failure."
+"CHG-07","Core","Sprint 2","Append-only audit history — deny UPDATE/DELETE on governance_events","Backend","2","High","Backlog","CR-01A","Impact Report — ADD","AC:
+- PostgreSQL row-level trigger on governance_events BEFORE UPDATE OR DELETE raises exception 'governance_events is append-only'
+- Trigger function created in V005d migration and attached to table
+- kiro_mcp role: UPDATE and DELETE privileges revoked on governance_events (verified post-migration)
+- kiro_phase2 role: UPDATE and DELETE privileges revoked on governance_events
+- Unit test: attempt to UPDATE a governance_events row via the application DB pool raises DB error
+- Existing governance_events rows unaffected","Append-only enforcement at DB level — cannot be bypassed by application code."
+"CHG-08","Projects","Sprint 3","Projects API — expose new V005 fields (health_status, actual dates, implementation_lead, etc.)","Backend","4","High","Backlog","CHG-01","Future Features Report — Section 1","AC:
+- GET /api/projects returns health_status, actual_kickoff_date, actual_customer_kickoff_date, implementation_lead, reporter, assignee, priority, resolution, request_type in ProjectListItem and ProjectDetail responses
+- PATCH /api/projects/{id} accepts and validates all new fields: health_status CHECK enum, priority CHECK enum, resolution CHECK enum, dates as ISO strings
+- Zod schema updated for all new fields
+- specs/api/projects.yaml updated with new fields and enums
+- Returns 400 VALIDATION_ERROR with field name for invalid enum values
+- Shared TypeScript types in packages/shared/types/projects.ts updated","Expose the V005 columns through the API layer."
+"CHG-09","Projects","Sprint 3","Actual-date auto-stamp on checklist completion events","Backend","3","High","Backlog","CHG-01,DP-08","Future Features Report — Section 2","AC:
+- When onboarding checklist item named 'Internal Kickoff' is completed: projects.actual_kickoff_date stamped with completed_at (idempotent — only sets if currently NULL)
+- When onboarding checklist item named 'Customer Kickoff' is completed: projects.actual_customer_kickoff_date stamped with completed_at (idempotent)
+- Stamping is done inside the same transaction as checklist item completion
+- If the project already has a non-NULL actual_kickoff_date, the stamp is skipped (no overwrite)
+- Governance event emitted: {update_text: 'actual_kickoff_date auto-stamped', type: 'micro'}
+- Unit tests cover: first stamp succeeds, second stamp is skipped","Event-driven, no manual entry needed."
+"CHG-10","Weekly Status","Sprint 3","Weekly status log — expose completed_this_week + planned_next_week fields","Backend","2","High","Backlog","CHG-01,DP-14","Future Features Report — Section 1","AC:
+- POST /api/projects/{id}/status-logs accepts completed_this_week TEXT (max 4000 chars) and planned_next_week TEXT (max 4000 chars) in request body
+- Both fields optional; existing required fields unchanged
+- GET /api/projects/{id}/status-logs response includes completed_this_week and planned_next_week per log entry
+- Zod schema updated; specs/api/meetings.yaml updated
+- Returns 400 VALIDATION_ERROR if either field exceeds 4000 chars","Low-effort extension of existing endpoint."
+"ADD-01","Decisions","Sprint 3","Decision ticket workflow — backend (create, approve/reject, list)","Backend","4","High","Backlog","CHG-02","Future Features Report — Section 2","AC:
+- POST /api/projects/{id}/decisions creates a decision per project_decisions schema
+- Accepts: {title, description, decision_url?, raised_by} — raised_by defaults to current user email
+- Returns 201 with created decision; status defaults to 'open'
+- PATCH /api/projects/{id}/decisions/{decisionId}/approve sets status='approved', approver=current user, approved_at=now()
+- PATCH /api/projects/{id}/decisions/{decisionId}/reject accepts {resolution_notes} and sets status='rejected'
+- Auth: all roles can create; leadership/admin only can approve/reject
+- Returns 403 FORBIDDEN for role mismatch on approve/reject
+- Returns 409 ALREADY_RESOLVED if decision status is not 'open'
+- GET /api/projects/{id}/decisions returns all decisions sorted by raised_at DESC; supports filter: status
+- On approve or reject: notify_slack called with macro channel, message: '[jira_key] Decision [title] [approved/rejected] by [actor]'","Replaces the current Jira decision-ticket workflow."
+"ADD-02","Health","Sprint 3","RAG health status — backend PATCH + leadership dashboard surface","Backend","3","High","Backlog","CHG-01,CHG-08","Future Features Report — Section 2","AC:
+- PATCH /api/projects/{id}/health accepts {health_status: 'red'|'amber'|'green', health_notes?: string}
+- Auth: pm, leadership, admin
+- Writes health_status to projects table
+- health_notes stored in weekly_status_logs as a new log entry with topics_covered='Health update: [health_notes]' when provided
+- GET /api/reporting/summary response includes projects_by_health: {red: number, amber: number, green: number}
+- Governance event emitted: {update_text: 'health_status updated to [value]', type: 'micro'}
+- Returns 400 for invalid enum value","Distinct from burn rate. PM-owned signal."
+"ADD-03","Automation","Sprint 3","Friday status reminder — EventBridge cron + Slack notify","Backend","3","High","Backlog","CR-09","Future Features Report — Section 2","AC:
+- EventBridge rule triggers Lambda every Friday at 12:00 UTC
+- Lambda queries projects where status='Active' and no weekly_status_logs entry exists for current ISO week (week number + year)
+- For each such project: calls notify_slack with macro channel and message: '⚠️ [jira_key] — weekly status log missing for this week. Please update before end of day.'
+- If project has no slack_macro_channel_id: skips silently, logs warning
+- Maximum 50 projects processed per invocation; paginates if more
+- Lambda execution logged to CloudWatch with count of reminded projects
+- CloudWatch alarm: Lambda error rate > 0 on this function","Replaces Nayab's manual Friday chase."
+"ADD-04","Automation","Sprint 3","Resource-assignment notify — trigger on resource_assignment_date set","Backend","2","High","Backlog","CR-09,CHG-08","Future Features Report — Section 2","AC:
+- When PATCH /api/projects/{id} sets resource_assignment_date for the first time (currently NULL → non-NULL): Slack macro channel notified: '📋 [jira_key] — resources assigned. Phase 0 onboarding checklist is now active.'
+- If slack_macro_channel_id is NULL at time of notify: skip silently, log warning
+- Notification is idempotent — only fires once (first time resource_assignment_date is set from NULL)
+- Governance event emitted: {update_text: 'resource_assignment_date set', type: 'micro'}","Single-fire event. Idempotent by NULL→non-NULL check."
+"ADD-05","Decisions","Sprint 4","Decision ticket workflow — frontend (decisions tab, raise, approve/reject UI)","Frontend","4","High","Backlog","ADD-01,DP-15","Future Features Report — Section 2","AC:
+- Decisions tab added to project detail page navigation
+- Decisions list shows all decisions for the project: title, status badge, raised_by, raised_at, approver (if approved/rejected), decision_url (clickable link)
+- 'Raise Decision' button opens modal with: title (required), description (textarea), decision_url (optional URL), raised_by (pre-filled with current user)
+- On submit calls POST /api/projects/{id}/decisions
+- Leadership/admin users see 'Approve' and 'Reject' buttons on open decisions
+- Reject action opens inline textarea for resolution_notes before confirming
+- On approve/reject calls appropriate PATCH endpoint
+- Approved decisions show green badge; rejected show grey with resolution notes; open show amber
+- Empty state: 'No decisions raised for this project'","Replaces Jira decision ticket workflow."
+"ADD-06","Health","Sprint 4","RAG health status — frontend (project cards + detail + leadership dashboard)","Frontend","3","High","Backlog","ADD-02,DP-16,DP-17,DP-30","Future Features Report — Section 2","AC:
+- Project list cards show a RAG dot (red/amber/green) next to the project title; grey if null
+- Clicking the RAG dot on the project detail header opens an inline popover: current status, optional health_notes textarea, Save button
+- Save calls PATCH /api/projects/{id}/health
+- Leadership dashboard /dashboard shows projects_by_health as three count badges (red/amber/green counts)
+- Stalled projects list on dashboard also shows their health_status dot
+- CASL: pm, leadership, admin can change health; engineer/sa see it read-only","Visual health signal on every project."
+"ADD-07","Weekly Status","Sprint 4","Weekly status log UI — add completed_this_week + planned_next_week fields","Frontend","2","High","Backlog","CHG-10,DP-20","Future Features Report — Section 1","AC:
+- 'Log Status Call' form adds two new textareas: 'What we completed this week' (mapped to completed_this_week) and 'What's planned next week' (mapped to planned_next_week)
+- Both fields optional, max 4000 chars with character counter
+- Existing status log list cards show completed_this_week and planned_next_week sections when non-null
+- Collapsed by default if empty; expanded if content present","Low-effort extension of existing form."
+"ADD-08","IPR","Sprint 4","IPR checkpoint type — config-driven gate with Ramesh-approval block","Backend","4","High","Backlog","DP-32","Future Features Report — Section 2","AC:
+- casdm_config gains a new config_type value 'ipr_checkpoint' (added to CHECK constraint in V005e)
+- IPR checkpoint seeded in Phase 2 (Design & Review) for all project types
+- Completing an IPR checkpoint requires: occurred=true AND approver field set (Ramesh or equivalent)
+- PATCH /api/projects/{id}/checkpoints/{id} for ipr_checkpoint type: accepts {occurred: boolean, approver: string, meeting_date: string, result_detail?: string}
+- phase_complete for Phase 2 returns false if the IPR checkpoint has reached_at IS NULL, regardless of other checkpoints
+- Returns 400 APPROVER_REQUIRED if approver is empty on IPR completion attempt
+- Seed data: one IPR checkpoint row in casdm_config for each project_type","Models the real 'cannot proceed to Build without Ramesh sign-off' rule."
+"ADD-09","Avoma","Sprint 5","Avoma report reference store — fetch metadata + auto-match by project key (extends DP-37)","Backend","4","High","Backlog","DP-37,CHG-03","Future Features Report — Section 3 ⚠️ HIPAA","AC:
+- Extends the DP-37 Avoma fetch Lambda to also call GET /api/v1/meetings/{id}/report (Avoma report endpoint)
+- Stores in gate_evidence: meeting_id (Avoma internal ID), report_url (canonical Avoma link), title, date, duration_minutes, ai_summary TEXT (max 2000 chars — summary only, not full transcript)
+- Raw transcript content NEVER written to RDS; if S3 storage needed, key stored only
+- Auto-match: if meeting title contains the project's jira_key (case-insensitive), system auto-associates the meeting to the project without manual input
+- Auto-match runs as a background Lambda on Avoma webhook (new Avoma event subscription) or on-demand via POST /api/projects/{id}/avoma/sync
+- ⚠️ HIPAA guard: if project.project_type contains 'health' or 'hipaa' flag (new projects.is_hipaa BOOLEAN column), Avoma summary is stored to S3 only; gate_evidence.ai_summary set to '[Content stored in S3 — HIPAA project]'
+- BAA confirmation check: Lambda reads SSM /deliverpro/config/avoma-baa-confirmed; if 'false', Avoma summary storage is skipped entirely","Governance-as-layer redesign of Avoma integration. HIPAA guard mandatory."
+"ADD-10","Avoma","Sprint 5","Avoma auto-match + IPR transcript quality score","Backend","4","High","Backlog","ADD-09,CHG-04","Future Features Report — Section 3","AC:
+- When an Avoma meeting is auto-matched to an IPR checkpoint: quality scoring chain (CHG-04) is triggered automatically
+- Score result stored in gate_evidence.score and score_detail
+- IPR checkpoint result_detail updated with: 'Auto-scored from Avoma [meeting title] on [date]. Confidence: [score]. Topics covered: [list]. Topics missing: [list].'
+- If confidence >= threshold: IPR checkpoint marked as occurred=true automatically; Slack macro channel notified
+- If confidence < threshold: IPR checkpoint flagged as blocked_reason='Low meeting quality score — manual review required'
+- Nayab (pm role) can still manually override via CHG-05 override endpoint
+- ⚠️ HIPAA: scoring prompt must not request reproduction of meeting content — structured output only","Auto-scoring of the IPR meeting removes Nayab's manual Avoma link entry entirely."
+"ADD-11","Security","Sprint 5","GitHub OIDC enforcement at MCP boundary","Backend","4","High","Backlog","CR-01A","Impact Report — ADD","AC:
+- MCP server record_progress and notify_slack tools validate OIDC token on every call
+- Token issuer must match expected GitHub Actions OIDC issuer (https://token.actions.githubusercontent.com) for CI calls, OR FusionAuth issuer for human/agent calls
+- Invalid/missing token: tool call returns {written: false, reason: 'unauthorized'} — never throws unhandled error
+- SSM parameter /deliverpro/config/oidc-enforcement: 'true'|'false' — when 'false', validation is logged but not enforced (migration mode)
+- Enforcement mode switch logged to CloudWatch with actor sub when toggled
+- Unit tests: valid CI token passes, missing token fails, wrong issuer fails, enforcement=false logs but passes","OIDC enforcement gated behind SSM flag — can be enabled incrementally."
+"ADD-12","Security","Sprint 5","GitHub folder/structure enforcement gate check","Backend","3","High","Backlog","ADD-11","Impact Report — ADD","AC:
+- New Lambda: POST /api/projects/{id}/validate-structure
+- Calls GitHub API to check presence of required paths in the linked github_repo: docs/project-progress.md, docs/ directory, .kiro/ directory
+- Returns {valid: boolean, missing: string[], checked_at: timestamp}
+- If github_repo is NULL: returns {valid: null, reason: 'no_github_repo_linked'}
+- Result cached in projects.structure_last_validated_at TIMESTAMPTZ and projects.structure_valid BOOLEAN (V005f migration adds these columns)
+- Gate status view (GET /api/projects/{id}/gates) includes structure_valid in Phase 0 data
+- CloudWatch metric: StructureValidationFailed COUNT per project","Enforces .kiro folder and docs structure as a gate requirement."
+"ADD-13","PMO","Sprint 5","PMO read-only views — resource allocation + assignment dashboard","Backend","3","Medium","Backlog","CHG-08","Impact Report — CHANGE","AC:
+- GET /api/reporting/resource-allocation returns read-only view: for each active project, lists project_manager, solution_architect, implementation_lead, engineers_assigned, sow_hours, hours_consumed, burn_rate_pct, health_status
+- No write path — leadership reads only
+- Supports filter: pm, sa, status
+- GET /api/reporting/person/{email} returns all projects where the person appears in any role field (pm, sa, implementation_lead, engineers_assigned contains their name)
+- Response includes per-project: title, jira_key, current_phase, health_status, sow_hours, hours_consumed
+- Auth: leadership, admin only
+- Data is computed at query time from existing projects columns — no new tables","Read-only. No write paths. Auto-populated from existing data."
+"ADD-14","PMO","Sprint 6","PMO resource allocation UI","Frontend","3","Medium","Backlog","ADD-13,DP-15","Impact Report — CHANGE","AC:
+- New route /reports/resources (leadership/admin only)
+- Table view: one row per active project, columns: project, PM, SA, implementation lead, engineers, SOW hours, consumed hours, burn rate %, RAG health
+- Row click navigates to /projects/{id}
+- Filter bar: by PM name, SA name, status
+- 'My Projects' quick-filter for logged-in user: shows projects where current user email appears in any role
+- Empty state handled; loading skeleton shown while fetching
+- CASL: route hidden from non-leadership/admin","Chris's 'I want to see who is on what project' request."
+"ADD-15","Config","Sprint 6","Non-5×5 project type templates — validate casdm_config is fully dynamic","Backend","3","Medium","Backlog","DP-34","Future Features Report — Section 2","AC:
+- Existing casdm_config CRUD (DP-32) already supports project_type scoping; this story validates and seeds missing templates
+- Seed V005g: POC project type template with reduced gate set (Phase 0 + Phase 1 + Phase 4 only; no IPR gate)
+- Seed V005g: Migration project type template with Phase 0 as-built discovery gate added before Phase 1
+- Seed V005g: Integration project type template matching migration template
+- Each template seeded only if no rows exist for that project_type (idempotent)
+- Integration test: POST /api/projects with project_type='POC' seeds the correct POC gate set
+- GET /api/admin/config/project-types returns ['AppDev','AppMod','AIML','POC','Migration','Integration','Other','default']","Validates that casdm_config is truly dynamic, not 5×5-hardcoded."
+"ADD-16","Agent Core","Sprint 6","Agent Core / Strands migration — phase 1: SRS generation loop","Backend","6","Medium","Backlog","CHG-04","Impact Report — ADD","AC:
+- New Agent Core agent: deliverpro-srs-generator deployed in us-east-1
+- Agent orchestrates: product-analyst → aws-architect review → product-analyst fix (max 3 loops) using Strands SDK
+- Each loop step invokes the appropriate Bedrock model with the role's system prompt
+- Loop exits when aws-architect response contains 'APPROVED' OR max iterations reached
+- Final SRS written to S3 at srs/{projectId}/srs-v{n}.md; S3 key stored in projects.preliminary_srs_s3_key TEXT (V005h adds column)
+- Trigger: POST /api/projects/{id}/generate-srs (manual trigger for now; Oscar auto-trigger deferred to Phase 4)
+- Lambda timeout: 15 min; uses Step Functions for loop orchestration
+- ⚠️ HIPAA: SRS generation prompt must not accept raw customer PHI as input — SOW summary only","Strands SDK loop. Oscar auto-feed deferred to Phase 4."
+"ADD-17","Exec","Sprint 6","Executive check-in views — auto-populated summary per phase","Backend + Frontend","3","Low","Backlog","DP-24,CHG-08","Impact Report — ADD","AC:
+- GET /api/projects/{id}/exec-summary returns a read-only summary: current_phase, health_status, burn_rate_pct, open_escalations_count, open_decisions_count, last_status_log_date, next_milestone (next macro checkpoint with reached_at IS NULL)
+- No new DB table — computed from existing columns at query time
+- Frontend: collapsible Executive Summary card at the top of the project detail page
+- Card shows: phase badge, RAG health dot, burn rate bar, open escalations count, open decisions count, last update date, next milestone name
+- Visible to all roles; data is already accessible to them individually
+- Refresh on every page load (no caching)","Surfaces what leadership already has access to in a single glance."
+"ADD-18","Lessons","Sprint 7","Lessons-learned database — retrospective transcript scoring","Backend","4","Low","Backlog","ADD-09,CHG-02","Impact Report — ADD","AC:
+- New table project_lessons: id UUID PK, project_id FK, lesson_type TEXT CHECK IN ('what_worked','what_didnt','improvement'), lesson_text TEXT NOT NULL, source TEXT CHECK IN ('retrospective','manual'), created_at TIMESTAMPTZ, created_by TEXT (V005i migration)
+- POST /api/projects/{id}/retrospective/score triggers Bedrock analysis of the retrospective meeting transcript (fetched from Avoma via ADD-09 pattern)
+- Bedrock prompt extracts structured lessons: what worked, what didn't work, improvements
+- Results written as project_lessons rows with source='retrospective'
+- POST /api/projects/{id}/lessons allows manual lesson entry (source='manual')
+- GET /api/projects/{id}/lessons returns all lessons grouped by lesson_type
+- GET /api/reporting/lessons returns cross-project lessons (leadership/admin only) — queryable by type
+- ⚠️ HIPAA: retrospective content handled same as Avoma — summary only in RDS","Enables Chris's 'lessons learned database from retrospectives' vision."
+"ADD-19","Frontend","Sprint 7","Board/kanban multi-filter view — replicate Jira board","Frontend","3","Low","Backlog","DP-16","Future Features Report — Section 2","AC:
+- New view toggle on /projects route: List (current) and Board
+- Board view shows columns: one column per CASDM phase (0-4) + Closed
+- Project cards in each column show: title, jira_key, PM name, SA name, health_status dot, burn rate badge
+- Column header shows count of projects in that phase
+- Existing filters (status, PM, SA, type, search) apply to board view identically
+- Selected view (list/board) persisted in localStorage
+- Responsive: board collapses to list on mobile breakpoint","Frontend-only. Reuses existing GET /api/projects data."
+"DEF-01","Deferred","Phase 4","DEFERRED — Oscar integration + auto preliminary-SRS from presales context","Backend","13","Low","Deferred","ADD-16","Future Features Report — Section 6 ⚠️ HIPAA-adjacent","AC:
+- Deferred to Phase 4. Requires: Oscar API access, AgentCore SRS pipeline (ADD-16 partial), presales governance design, HIPAA review of SOW content handling.
+- Phase 3 delivers manual SRS generation trigger (ADD-16); Oscar auto-feed waits for Phase 4.","Blocked on Oscar API, HIPAA review, and ADD-16 being stable."
+"DEF-02","Deferred","Phase 4","DEFERRED — FusionAuth OIDC migration (identity cutover)","Backend","13","Low","Deferred","ADD-11","Future Features Report — Section 6 ⚠️ HIPAA","AC:
+- Deferred to Phase 4. Own workstream. Must preserve: Cognito MFA, TLS 1.2+, access audit logging. Controlled cutover plan required.
+- Phase 3 OIDC enforcement (ADD-11) uses GitHub Actions OIDC natively; FusionAuth is the human/agent path deferred here.","Do not bundle with feature work. Identity cutover requires its own release plan."
+"DEF-03","Deferred","Phase 4","DEFERRED — GitHub repo auto-creation on project init","Backend","8","Low","Deferred","DEF-02","Future Features Report — Section 6","AC:
+- Deferred to Phase 4. Blocked on FusionAuth OIDC (DEF-02) being live.
+- Phase 3 CHG-06 handles Slack channel auto-creation; GitHub repo creation waits.","GitHub App provisioning requires OIDC identity to be settled first."
+"DEF-04","Deferred","Phase 4","DEFERRED — Clockify integration (replace manual hours_consumed)","Backend","8","Low","Deferred","","Future Features Report — Section 6","AC:
+- Deferred to Phase 4. Scheduled Lambda via Clockify API, keyed on Clockify project ID.
+- Phase 3 keeps manual hours_consumed updates (DP-09).","New external system. Keep manual tracking through Phase 3."
+"DEF-05","Deferred","Phase 4","DEFERRED — SharePoint/Teams folder provisioning","Backend","10","Low","Deferred","","Future Features Report — Section 6","AC:
+- Deferred to Phase 4. Requires Microsoft Graph admin consent + app registration.
+- Phase 3 Slack provisioning (CHG-06) is the only auto-provisioning delivered.","Microsoft Graph admin consent is a significant setup overhead."
+"DEF-06","Deferred","Phase 4","DEFERRED — Full project-intake/origination workflow (request → triage → create)","Full-stack","10","Low","Deferred","CHG-01","Future Features Report — Section 6","AC:
+- Deferred to Phase 4. request_type column ships in CHG-01 (Phase 3 V005).
+- Full triage-to-create workflow (intake form, triage queue, AE assignment) waits for Phase 4.","request_type column lands in Phase 3 so the data is ready when Phase 4 builds the workflow."

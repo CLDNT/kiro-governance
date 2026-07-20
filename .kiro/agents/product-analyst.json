@@ -53,5 +53,5 @@
   "hooks": {},
   "toolsSettings": {},
   "useLegacyMcpJson": false,
-  "model": "claude-opus-4.8"
+  "model": "claude-sonnet-4.6"
 }

@@ -1,0 +1,514 @@
+
+
+Nausheen Fazlur Rahman
+I am good.
+
+Muhammad Faraz
+I am surviving. Oh, what do you what does that mean? Well, that tells you, like, a whole lot of new stories. But, yeah, the, like, the crux is I'm surviving.
+
+Nausheen Fazlur Rahman
+Okay. I I think that's, like, the the average work experience. Right? I mean, who is, like, you know, who is, like, super, like, chill and you know, having fun?
+
+Muhammad Faraz
+I would prefer that nowadays since, you know, a lot is going on since there is a construction going on in my house. Like Right. Right. I'm building it right now. Have to be there very early, like, o'clock, and I have to sit here till 3AM. Oh, that's a long day. Exactly. So that's why I said I'm just surviving today.
+
+Nausheen Fazlur Rahman
+I see. So where are you based, Faraz? In in Pakistan? Or.
+
+Muhammad Faraz
+I am in Pakistan. Okay. Which city? Islamabad. Oh, you work from home then Like, you don't go to the office? I do go to the office. Right now, I'm sitting at home and don't tell anyone that I am sitting at home.
+
+Nausheen Fazlur Rahman
+Okay. Okay, and do you work at the Goldberg or the DHA branch?
+
+Muhammad Faraz
+Dha. It's really close to my home and the home I'm building right now.
+
+Nausheen Fazlur Rahman
+So Oh, okay. Wait. Wait. Are you in DHA too?
+
+Muhammad Faraz
+Yeah. I'm building, like, I'm making a house in DHA 5. That's literally opposite side of DHA. Yeah. So, like Yeah. Yeah. DHA two, DHA 5. Okay. I live in DHA two as well. So Oh, that's amazing. But why did you, like, call it, like, a office then Is it, like, like, you were hired for a remote position, or you didn't hire for.
+
+Nausheen Fazlur Rahman
+Yeah. Originally, I was remote, but it's like, you know, I work pretty late till, like, 04:00 in the morning, so I think it's just easier for me to stay at home and do my work. So Yeah. But, yeah, I'm technically remote, not office.
+
+Muhammad Faraz
+Oh, okay. Okay. That that's that's good. That's good. So do you, like, go to these events that's that are happening or you know, a hard no on that as well?
+
+Nausheen Fazlur Rahman
+Lately, I have not gone. But before, yeah, I would be there at every event. But lately, I don't know what's what's been going on.
+
+Muhammad Faraz
+Hey. I just have a good question I want to ask right now since Okay. Just just had, like, an introductory meeting. So you were hired on which date exactly?
+
+Nausheen Fazlur Rahman
+June 6, 4 years ago.
+
+Muhammad Faraz
+June 6, 4 years ago. You got really, really senior Yeah.
+
+Nausheen Fazlur Rahman
+I guess you can say that. When when I joined, we had, like, 15 folks at Cloudelligent only. 15, maximum 20. So it was it was a pretty tight group back then So.
+
+Muhammad Faraz
+Like, you are the founding members of this company.
+
+Nausheen Fazlur Rahman
+Yeah. I wouldn't say founding, but, yeah, I've I've been here for some time. Hey, Tariq.
+
+Tariq Khan
+Hi, Hi, France. Alright.
+
+Nausheen Fazlur Rahman
+So I guess we can yeah. How are you, Derek?
+
+Tariq Khan
+Good. Good. How are you? How's Doing good.
+
+Nausheen Fazlur Rahman
+How's your weekend?
+
+Tariq Khan
+I hope that. Very awesome.
+
+Nausheen Fazlur Rahman
+Yeah.
+
+Tariq Khan
+Shame, I think, on on this weekend. Right? No? No. It didn't. Oh, probably on Friday, I think.
+
+Nausheen Fazlur Rahman
+I think it rained on Friday. But then it gets pretty humid. Right? So it doesn't really help out. Yeah.
+
+Tariq Khan
+Yeah. Cool. So, yep, I'm sorry I didn't attend any of the last meetings. I really don't know what's going on for this application. Did you guys get a sense of where wants to take this application now, especially you for us. I I sorry. Before that, Nausheen, if if you if you had some agenda, you can go ahead and and you know, act on that if if you had some meetings. I I was just telling my pain points. I I don't know what's going on right now because I'm stuck with another project that's taking up pretty much my whole day. So.
+
+Nausheen Fazlur Rahman
+Yeah. So, Tarek, basically, this is just like I'm setting up these meetings just to cater to Kasim's feedback, and I did discuss with Faraz that I feel we took this to Kasim a little bit early. You know, maybe, you know, we could have reviewed it internally. But it it's also good that, you know, now we know exactly we can laser focus on exactly what sort of Kasim is looking for. Right, and Derek, I think you received some feedback in our Friday meeting from Kasim about, like, you know, the automation part and how he wants everything sort of, like, placed in Sharepoint slash Teams rather than, you know, Git, and so so what happened on Friday was that, for us, myself, and Nayab, we had, like, a very extensive session, and I was sort of just explaining to for us our our methodology.
+
+Nausheen Fazlur Rahman
+Right? Because I feel he didn't get, like, a sense of what exactly is going on, where do the agents come in, what what are the govern governance checkpoints, the macro micro. I you know, we had a big discussion on that. We're we're we're gonna be ignoring the micro stuff, which is artifact generation. It it felt like wasn't really interested in that. He was more interested in the human layer, the completion layer, and the quality layer. Right? So, yeah, I'm just setting up these meetings just to make sure that we're getting this process rolling, and we have something ready. I'm not sure when we can be ready to show, yeah, just to cater to his feedback.
+
+Tariq Khan
+So and also, Brent, like, we want he wants us to connect to deliver delivery pro or something, deliver pro application. Is is that correct? Go ahead, Farooq.
+
+Muhammad Faraz
+Yeah. I would like to answer that one. So third point, there was a Deliverpro that was going on in and there is a Deliverpro going on in. Like, these are the different projects. They had the two different, like, timelines, two different roles, and two different ideas. Okay? They were completely separate. But when we took this project to, he was, like, more into automation piece. Right? So everything is being done by Kiro or even there are MCP servers or anything like that. That is, like, viewing the meeting themselves, thinking, like, whether this meeting hold that value or not. So everything automated in what we currently have. Now the old application that I was working on before, right, before this was a separate thing that was, you know, creating tickets back into Jira and you know, that was replacing Jira, actually.
+
+Muhammad Faraz
+But this one, this is more focused towards whether something happened or not or and having a oversight what's exactly going on into the organization. So, like, my understanding to the whole procedure was, one, I would take a understanding from, like, all of this AI stuff from you, and second, all of the AI DLC Kasim is thinking about, and he works with Nausheen on that. So I'll take these two pieces and attach them into Deliver Pro in such a way I fulfill, like, Chris' idea as well as Kasem's idea. So, like, this is what's going on right now. Like, we are gonna like, simply, I'm gonna delete the old piece that we had. Not this one. This one remains. I'm gonna do the changes that Kasim expects to see, and that also fulfills Chris's purpose over having this app.
+
+Tariq Khan
+So when you say you're gonna delete you're gonna delete Deliver Pro, is is that what you're saying, or you're gonna delete this application?
+
+Muhammad Faraz
+The older Deliver Pro, like, base idea Kasim had before. Now that idea is basically obsolete. It's not living in his mind anymore. He's more focused toward this one, but he wants automation in place. Like, everything SR has been generated. Kasim says, why not we we have those artifacts in our Sharepoint. Why don't we generate it for the user and send them all of the things in a single Github and then deliver them to, like, the user. So this was a basic idea he had in mind and So he saw the the SRS in place. Right? So Yeah. Like, these things that he wants automated.
+
+Tariq Khan
+So he essentially wants all those agents to go to agent core that we have on our local machine. Is is that what the idea is?
+
+Muhammad Faraz
+No. Not exactly. Not exactly. So the so base idea I was looking at for this kind of job was very simple. First thing, the agents that we have on Quiro. Right? These agents, of course, they are gonna have they're gonna sit on the Lambda for generation purposes. The prompts that that they hold, The things that they hold, they are gonna sit on Lambda for the generation purposes, and whenever we are gonna, like, start a project, it's gonna have their. SOW, some discovery calls, some sessions that we look at, and it's gonna generate the SRS, place it in the Github, and then deliver it to to you guys for future, you know, like, things. That will be your phase zero.
+
+Muhammad Faraz
+So automation of the whole phase zero goes over here since well, that's a step that always replicates itself. The main point over here was very simple, to make sure the folder structure that we have is consistent throughout all the projects. Like, no one can actually do something like this that they go on with their own methodology.
+
+Tariq Khan
+Okay. So I I would advise if if we are going down this path, I think we should we should leverage agent core and use. Cloudelligent Orchestrator, like, push out like, if you know if do do you have idea about agent core? Have you created agent strands based agent core work? If you have done it, then you can create a cloud you can create an orchestrator there, and then you can put the entire flow that we have on our on this set of key agents into that agent core process. So why I'm saying this is because if we put these agents there and we use the the the STM to to push these artifacts there and generate something, we can actually then in the next phase really solve the presales issue as well.
+
+Tariq Khan
+The presales issue is, you know, before generating something in Oscar, the. SOW, it should highlight the problems in that SOW, and what I do right now is I run the same set of agents on those initial meetings, and I find out the gaps in the SOW. Like, where am I missing something? Am I missing an open question that needs to be answered before I create the SOW? So we'll kill kill two birds with one stone. Because if we create this as a generic agent core based set of agents that work through the initial set of prep prep documents, it can also be then plugged in inside Oscar when you create an actual SOW, and it can create a small document for you for our solution architect based on the you know, these agents can create these open questions and and look at your, you know, the kind of setup that you're creating or the number of hours that you are thinking about and give you another point of view based on much specialized sort of, you know, lens.
+
+Tariq Khan
+So I I'm all for this idea. I mean, it's very good. I I always wanted to do this. I wanted to push these agents to agent core because it should be there when you create an SOW and also right after when you create an SOW. So now right right now, what's happening is I'm doing this these things manually. I when I create an SOW, I run that those initial set of meetings, and I ask these set of agents, our AWS architect, right, what is the what are the problems that you can see? Where am I what kind of hours do you think we should code for this SOW and why? Right, and Also So go ahead.
+
+Muhammad Faraz
+Yeah. So now when we're thinking about it, brilliant idea on the agent core part. I do agree with you since we can have a whole set of knowledge base sitting over there, and it won't won't be having, like, having the context problem. It will be not hallucinating a lot since the context will always live in the knowledge base, and agent core works differently than the agents that are sitting on our local machines. So I do agree with that idea. One thing, you mentioned strand API. So what strand actually gives this agent is the ability to for the tool calling and for MCP server calling or anything like the agent capabilities. Without strands, we can still use the con con you know, the what's the that called So Conversesate. Yeah. Why am I Yeah. Conversesate, that that always helps us with the generations, completions, and everything. So is strands a must have?
+
+Tariq Khan
+Yeah. So because I'm I'm saying strands because there is a loop of and a certain number of gates that it goes through. It there are if you see if you look at the prompts, you will see there are hallucination gates. So what I wanna do is I wanna make a 3 loop. I wanna create a loop between these agents. So you won't be able to create those loops without strengths. So strengths, you you have to configure. Okay. So now go to that agent if that if the review pass passes, if the plan reviewer or or the product analyst approves or I think it's the plan review. Right? So once you go to AWS architect, you create the initial SRS, get it reviewed by the plan plan reviewer, and then come back.
+
+Tariq Khan
+So go to 4 3 or 4 loops or until both of them agree. So you won't be able to create this loop without strands. So you would you need to put this into Python, upload it, you know, so that it runs through this loop and orchestrate it through the using the STM. Right? The short term memory. You don't need maybe you don't need the LTM. So STM, you can work with ST. So just take what I've said, give it to Kiro, and you know, you can ask these questions. I I think you cannot do this. What I'm saying, you cannot do this without without these trends, and it's very easy. I mean, it's it's not complicated. It's gonna generate all the growth. It's trends. I have no worries with working on trends. I did.
+
+Muhammad Faraz
+A whole course of Agentcor, and since then I've been working on Agentcor on Oscar, product x, and whatnot. My whole, you know, other personal projects. So I'm working on Agentcor and Strands. I do have this. But my all these, you know, like, main point over here was trying to add the additional layer of complexity, which can be removed directly by using what agent core has to offer natively. So I do see a pattern coming up here. So if there are no native things for this looping and other mechanism, I am gonna go with strengths. It it gives us a good opportunity to use MCP servers directly in the agent core as well strengths strengths give us.
+
+Tariq Khan
+Yeah. I mean, you would need MCP server. Right? Because yeah. For for at least for the pricing piece. Right? You you wanna so what the AWS architect does is it kind of goes and searches for the for the least cost viable solution for each problem. So it needs direct access to the AWS pricing API so that it can review those things through the pricing API when it suggests something. Yeah. Probably, it's not gonna do that at the SRS stage. Yeah. So probably you can walk away with MTP.
+
+Muhammad Faraz
+It's like a good good thing to have. I'll add it either way. I'll add it.
+
+Tariq Khan
+Yeah. Okay. Perfect. Yeah. Just so Yeah. Just try yeah. Go ahead.
+
+Muhammad Faraz
+So, like, for now, my goal is to understand the main ideology with, like, of CASDM, and that for that, we have Nayab and Nausheen. Nausheen, I would say, so is the main character over here So as he was working with customers.
+
+Tariq Khan
+Yeah. So so with this this service methodology, I think it's not very complex. I mean, you've already gone through the different stages. It's just where we have put this macro flag. Right, Nausheen? Like, where we have put Yeah. This flag. Yeah. So it's just you need to worry about those flags, like, where those macro flags are to and what Carson needs, you know, when that macro flag is hit. It's just that. You don't need to understand the entire thing. I and I think it's pretty easy to understand. It's what we we are doing actually. So, essentially, me and Nausheen sat together and made all of this. Like, I gave the input for the what the agent was doing and what the human was doing and and everything was kind of graphically put here.
+
+Tariq Khan
+So and it's not not very different for what we what you are doing right now in app development. So you don't need very lengthy sessions to understand this, and even if you do need it, I would just ask you to focus on those macro flags and what Kasim needs. What what what does he have in his head for those macro flags? That's the only thing that should probably understand.
+
+Muhammad Faraz
+Yeah. Actually, me and Nausheen were working. Nausheen, you want to say something?
+
+Nausheen Fazlur Rahman
+Yeah. I just wanted to add that we like, maybe we're talking about the same thing for us that we kinda, like, actually removed all the micro stuff for now, maybe in a later iteration if we wanna dive into, you know, more granular details. But right now, I'm just focused on the macro stuff. Just the gates and a few meetings that we wanna check the quality of. That's pretty much it. We're not diving in too deep.
+
+Muhammad Faraz
+Gotcha. So exactly, like, currently, this the whole focus of understanding this whole procedure was not actually understanding the procedure or underlying mechanism, but more towards what do we need to show on the Leverpro. Like, the last meeting me Nausheen and Nayab had was exactly looking at which piece we can automate, which piece we have to cut down, which piece is actually very important, and which piece is totally manual. So these 4 things we were focused on in the last meeting, and actually, we are just, you know, taking pointers from here, from this. PDF file, Miro file. I don't know exactly. So we are just taking pointers from here, what are the pieces that we can automate, do manually, or needs more focus on. Right? So these were the main goals of these meetings.
+
+Tariq Khan
+Yeah. Okay.
+
+Muhammad Faraz
+So right now, we were on the phase 3, I believe.
+
+Nausheen Fazlur Rahman
+Yeah. I think we covered phase two, and phase 3, build and implement, let's go over the flow. So build and implement, and I've opened the app dev one for now because this one is, you know, we can start our baseline from here. So if I just go back to the design and review phase, once we know the gates, you know, the exit criteria has been met, we move on to build and implement. Right, and over here, basically, a lot of the stuff is being handled by the lead implementation engineer or the Devops engineer depending on which practice, and again, sorry. Like, I just made sure that we are just tracking not every single thing because, you know, there's a lot of, like, code generation here or we're not gonna be tracking any of that. We're we're just gonna be tracking, like, basically, the actual gate, the exit criteria, and and a few other things. Any important meetings that that are supposed to happen, which I we we're gonna be tracking that. I think we can track this meeting as well.
+
+Tariq Khan
+And you wanna track it automated like, automatically, right, through the meetings that happen in the Exactly. Of Ooma?
+
+Nausheen Fazlur Rahman
+Right. Right, and one thing mentioned, he doesn't remember, like, initially, we had yes, no, yes, no. Kasim does not want any binary stuff. Right? He doesn't care whether the meeting happened or not. You know? He want he needs to see, like, the, basically, like, the quality of the meeting. You know? We're for example, if if I go back to the IPR, right, like, the IPR meeting that happens in design and review, we don't want a yes, or no. We wanna know, like, was everything covered, and you know how in the IPR we have, like, a whole deck, and the deck has, like, okay, the deltas or the scope or the ins like, key I guess, maybe, you know, agent 4 or whatever technology you guys use, maybe we can have, like, that go through the transcripts and sort of rate the quality of the meeting. Were these points covered, you know, for that project? Something like that. So he's more concerned about the quality.
+
+Muhammad Faraz
+Go ahead. Yeah. Nausheen, I think so you missed a point. We discussed on IPR is gonna be a human review instead of tech and transcript analysis. Yeah. That's gonna stay there, transcript analysis, but there is a human review as well. Like, Gurumesh. Talked to, nayab on the Gurumesh. System. Yeah. So, like, you have to add a human flag over there as well.
+
+Nausheen Fazlur Rahman
+Okay.
+
+Muhammad Faraz
+Yeah. The ping thingy.
+
+Nausheen Fazlur Rahman
+Yeah.
+
+Muhammad Faraz
+Since these meetings we discussed are, you know, happening every Wednesday, and if we don't know which Wednesday a project had its IPR meeting and there is no way to track it, we are adding a human effort into this to actually identify if the meeting for that specific project has happened. Just look into the last week meeting and do the transcript analysis.
+
+Nausheen Fazlur Rahman
+Right. So. I guess within build and implement, we're not gonna be tracking, any of the code generation, validation, the the deployment of the code, the checking of the code, what we are going to be tracking perhaps is basically gate, and I put one tracker here for the SA to sort of review the whole deployment. But do you guys think we need to have that human check over here, and do we need to track that human check?
+
+Muhammad Faraz
+So this is a meeting, if I'm not wrong. Right?
+
+Nausheen Fazlur Rahman
+No. Not not necessarily. For example, like, lead implementation engineer, you know, he's gonna deploy it. He's gonna start, like, testing out the code. But then the SA has to sort of give the overall check or the overall, you know, go ahead. It can happen it's not a dedicated meeting. It can happen offline, but, Kasim never mentioned any, like, specific meeting, like the IPR, which is, you know, which is, like, mandatory. So I don't and I think we already have too many meetings into the pipeline, but I guess it depends on on it's not a must. But if you guys wanna have a meeting with the SA, go ahead. But it's not a must. It can be done offline.
+
+Muhammad Faraz
+So there there should be instead of quality, there should be a human review. Okay.
+
+Nausheen Fazlur Rahman
+Okay. So, again.
+
+Muhammad Faraz
+Are checking the quality of the meetings. Are not checking the quality of the, you know, something that is not a meeting. Yeah. That comes as a human review.
+
+Muhammad Faraz
+So, again, first thing that I understood from was, like, a lot of people skip something just because it's tedious work. Right? So Yes. If we had a lot of human reviews, it's bound to be skipped, and again, we are gonna get scold by that this is not what he's looking for, or this should not be done. So we have to make sure that the human effort in the system, like Deliverpro, should remain minimal and shouldn't be a lot when it comes to, like, adding evidence or maybe.
+
+Nausheen Fazlur Rahman
+You know.
+
+Muhammad Faraz
+Adding some notes around it. So this can be a yes, or no.
+
+Nausheen Fazlur Rahman
+You want this to be a yes, or no thing?
+
+Muhammad Faraz
+Yeah. Like, for the value of it. Okay. Yes, or no comments, anything. Not quality. Just note that.
+
+Nausheen Fazlur Rahman
+Add comments or something.
+
+Muhammad Faraz
+That that could be comments or just a yes, or no to identify whether this piece was done. Since it's an important one, we cannot skip it.
+
+Nausheen Fazlur Rahman
+I mean, this is going to get covered within the gate, the exit criteria. Yep. So do we need to have an explicit callout, like, here? If if the gate is covering, you know, the SA should have gone through the entire deployment, you know, the testing and everything, if we add that in the gate, the exit criteria, we can't skip over here. We'll add the human aspect. I mean, that should be there, but we do we need to track this?
+
+Muhammad Faraz
+No. Comments are something that is some, like, correct me if I'm not wrong, Nayab. Chris mentioned this one as a part where s a not s s. Sorry. Pms are delivering comments based on Jira according to some project that is on a project tracker. Jira board. So, like, PMs come over there. They add their comments. This happened. This happened. This happened, or this didn't happen. These were the problems. I don't know what pieces they are. I haven't seen them myself. But Chris informed me they are there, and they want this that to be on this system instead of Jira. So, like, my point being there, comments are always good to have. Okay. Yeah. On every step, even if that is a transcript analysis, comments are always good to have.
+
+Nausheen Fazlur Rahman
+And.
+
+Nausheen Fazlur Rahman
+Then, both we have the exit criteria, everything that's generated, deployed.
+
+Nayab Waseem
+I would like to add here, but.
+
+Nausheen Fazlur Rahman
+Go ahead. Yeah.
+
+Nayab Waseem
+I think my Internet is really choppy today. But I was saying that, like, on Jira, you know, whenever whenever we have, like, a decision, you know, if if the team wants us to extend the date or if there's any problem going on with with the with the decision making, so the team come comes out with the decision that they think is right. They put up in the in the ticket board, and then Chris and I go through that, and when Chris tells me, okay. This is good to go, then we add that into, you know, in the into the ticket that we have, and the the second process is that the escalations. So if you have if you're having any, you know, risk or blockers that needs to be escalated as soon as possible, so that's what we are going on.
+
+Nayab Waseem
+So we used to rely on comment commenting before, but we do utilize that when, you know, we have a major update or you know, we need to put some reminder over there. So that's mainly we use it. But for main main purposes, we use escalations and the, yeah, the the decision making tickets.
+
+Nayab Waseem
+Okay.
+
+Nausheen Fazlur Rahman
+Alright. We're almost out of time. Shall we just quickly cover the last one, launch and enable?
+
+Muhammad Faraz
+Sure. I think somebody skipped exit criteria. I need to Okay. Yeah. Quickly look through that.
+
+Nausheen Fazlur Rahman
+Yeah. Sure.
+
+Muhammad Faraz
+Let's generate an r 10 XLE What is the l e?
+
+Nausheen Fazlur Rahman
+Lead implementation engineer. Just a shortened one.
+
+Muhammad Faraz
+Okay. So that's engineer, and the solution, okay, that push me in a complete demo accepted. What is the main thing that comes up as a demo accepted? Is it a meeting? Is it something that Kiro said, okay. Done, or is it something else?
+
+Nausheen Fazlur Rahman
+I think it should be by us. Everything human. We're not gonna rely on Kiro or the agents.
+
+Muhammad Faraz
+So that's that's adding effort on the human side, but sure. A tick mark would be good enough over here, and validation evidence, they did know what's.
+
+Nausheen Fazlur Rahman
+Okay. So these two these two are basically suggestions with which shared with me, but I I mean, do do you guys actually follow that? Do you think it's actually important at this phase?
+
+Muhammad Faraz
+The last one is important because that recently happened. Like, no one controls scope drift. That happened on this new mountain new mountain films project.
+
+Nausheen Fazlur Rahman
+So you guys you guys need to track and report this, basically, and then Yeah.
+
+Muhammad Faraz
+It's happened once, I believe, so it should be important. The other one, I don't think about that.
+
+Nausheen Fazlur Rahman
+Validation evidence of David. Validation evidence.
+
+Nausheen Fazlur Rahman
+Is it testing validation perhaps? Like, after you after the.
+
+Nausheen Fazlur Rahman
+Your, like, you know, the UAT report and all of that. I think it's related to testing. But do we need to actually call that out? Does do you think the leadership wants to see this? We can just skip it. I can just remove it.
+
+Muhammad Faraz
+Yeah. This is a part of This is a part of code leadership has no interest in looking at the parts of the code. They just want it done or not done.
+
+Nausheen Fazlur Rahman
+Okay. So. I remove that and follow on.
+
+Tariq Khan
+Hold on. Yeah. So this is which one?
+
+Tariq Khan
+Build and implement? Or.
+
+Nausheen Fazlur Rahman
+Yes.
+
+Tariq Khan
+Is it the launch enable?
+
+Nausheen Fazlur Rahman
+No. This is build and implement.
+
+Tariq Khan
+Oh, okay. Okay. I thought we moved on to launch enable. Yes. Okay. May I I agree. This is probably.
+
+Nausheen Fazlur Rahman
+Something to do.
+
+Tariq Khan
+Not something. So this is the last meeting before we go launch enable, or is it something iterative?
+
+Nausheen Fazlur Rahman
+Oh, this is something iterative. It's not a meeting. It's basically when this whole phase is done, the project manager will come in, and that's why it's this red orangish one, and they will make sure that all these things are done. Like, you know, for example, follow on ops log for AE. We have this meeting that happened over here. Actually, we don't need this. You know, and whether this meeting happened, did the SA share the follow on opportunities with the AEs and so forth? You know, all of this should be complete, and then they can push the or they can pass over to the next.
+
+Tariq Khan
+So so we are tracking that meeting, the AE one, but we don't wanna track this one. That that's the decision?
+
+Nausheen Fazlur Rahman
+I mean, it's not a meeting, but but this is one of the major things we want to track and what what leadership wants to see. Right? The the exit criteria. It's not a meeting. Right? It's just, you know, the PM sort of has that thing that, you know so Okay.
+
+Tariq Khan
+So we are tracking it.
+
+Nausheen Fazlur Rahman
+Yeah. We have to track it. It's not it's not necessarily a meeting, but we have to track. I mean, this is the main stuff. This is the macro stuff that we're tracking.
+
+Tariq Khan
+Yeah. Yeah. Yeah. So IIII thought maybe we were not gonna track this, this exit criteria.
+
+Nausheen Fazlur Rahman
+We should. Right? I mean, that yeah. I mean.
+
+Tariq Khan
+That I just maybe maybe I heard Fraaz telling that we probably don't need it. I think I missed misheard or something. I might have misheard.
+
+Nausheen Fazlur Rahman
+Yeah. Okay. We are tracking the gates and everything that happens within that, and then yeah, and then we move on to the last one, launch and enable, and again, I I wanna ask you, do do we want to track the UAT review with the client?
+
+Tariq Khan
+So so UAT review is not a one day thing. It's like, it linger on for one to two weeks, maybe 3 weeks. So yeah. Because it's it's not a one day thing for most of the projects that we are working on at least. So.
+
+Nausheen Fazlur Rahman
+Yeah. And.
+
+Tariq Khan
+We definitely wanna track it.
+
+Nausheen Fazlur Rahman
+Yeah. But You wanna track it, like, multiple or or do we want to just see whether the the UAT happened with the customer and and the sign off is done, or do you wanna track the actual meeting and the qualitative aspect of these meetings?
+
+Tariq Khan
+Yeah. That's an important question. So one of one of our project I mean, what what we are hitting right now in app dev and app one is, like, when we go to UAT meetings, we have a lot of bugs. So I'm not sure if the leadership wants to.
+
+Nausheen Fazlur Rahman
+Yeah.
+
+Tariq Khan
+See see that, you know, how many projects are getting, you know, sort of lingered on. Exactly. Because of because of this. Is that a good factor? I mean, it might be.
+
+Nausheen Fazlur Rahman
+It might be. Yeah. Because because of this, the project may extend. Right? Let's say you guys go in and the customer has some client feedback. Right, and then you got you got kinda have to go back and go through the code generation. I'm interested to have maybe it's a few small fixes or maybe a bit major ones. But.
+
+Tariq Khan
+So But you do have to go back and fix it and come back. Yeah. Exactly. Kind of runs again and again. So what I think the leadership would be interested is why what are the pain points. Right. That are creating these loops.
+
+Nausheen Fazlur Rahman
+Right. So, yeah, I think I'll leave it here, Tarek, just in case. You know? Because the project may be extended as well.
+
+Tariq Khan
+Yeah. It it is. Yeah. So most of our projects are getting extended because of this. Right, and and sometimes it's the client being too, you know, too picky about things. I mean yeah, and and then sometimes this is on us, I mean, because our QA is not diligently testing everything because it's overloaded or he or she never let it out of order. Okay. I don't wanna say. Okay. So so, I mean, we do have one QA right now. So, yeah, it's pretty obvious. But yeah.
+
+Nausheen Fazlur Rahman
+Okay. We'll track all the meetings over here. One other thing, share sign up document with the customer. Does this need to be tracked? I don't think so. I mean, it's a pretty it's a pretty micro and that's gonna be covered the sign off is gonna be covered in the exit criteria as well. So I think I'm just gonna remove it from you. What do guys say? Yeah. It's too micro. What about the project retrospective? Do you guys wanna do you think the leadership wants to see and this is an internal meeting, I think. Right? This is very.
+
+Muhammad Faraz
+This is very important. This was my feedback at times.
+
+Nausheen Fazlur Rahman
+Okay, and I it's internal, right, if if I'm not wrong?
+
+Muhammad Faraz
+I have no idea. I've never been to this meeting before.
+
+Nausheen Fazlur Rahman
+Okay. Because the customer has.
+
+Muhammad Faraz
+In a meeting.
+
+Nausheen Fazlur Rahman
+Yeah. The customer will attend the executive check in. So I think it's an internal meeting, and should we track it? Does the leadership wanna see oh, alright. So this is going to be tracked. The executive check in call, this is with the client. So this can also be tracked. Right? So this is.
+
+Nausheen Fazlur Rahman
+K. We can track that as well, I guess, in script, and then the actual data itself, right, which is pretty simple. KT. Oh, okay. Do you wanna track the actual KT sessions and what happened within those KT sessions with the customer? Does the leadership wanna see all of this?
+
+Tariq Khan
+I don't think so. I mean Right?
+
+Nausheen Fazlur Rahman
+Yeah.
+
+Tariq Khan
+Yeah.
+
+Nausheen Fazlur Rahman
+I think they're they're more interested in the actual executive check in call rather than that. So I I removed it from the KT, and the KT I mean, the it's gonna get checked anyhow. Within the gate, and these are the gate exit criteria for the last phase.
+
+Nausheen Fazlur Rahman
+Okay. So this is the end of the project. We've sort of really defined what should be tracked, and for us on my end, I have to give you a word documentation. Do expect that expect that by tomorrow, hopefully, and I'll also share the updated version of this, this app app dev flow so you guys know exactly where to hit in terms of of the macro trackers. Right? Like, I think we've refined this pretty well. You know? We've removed all the yes, nos binary, and we just kept it to the gates and very important meetings and the qualitative aspect of those meetings.
+
+Muhammad Faraz
+Yeah, and we also need to set up one important thing. That is the names of the meetings, standardization across platform. Please roll out it as a part of CASTM.
+
+Nausheen Fazlur Rahman
+Okay. So, for example, the implementation plan review would well, this is all already okay. Yeah. I'll do that.
+
+Muhammad Faraz
+Is that already the right title to it? But all of the other meetings that are being fetched automatically, they need to have a specific title, and that specific title is what's giving them the exact, you know Okay. Meaning to be fetched.
+
+Nausheen Fazlur Rahman
+Right. Right. Exactly. So, for example, if we have this meeting, it has to be the Avoma meeting has to be named in a very specific way so your agent core, whatever, like, that can retrieve that meeting, right, automatically. Okay. That that's a really good point. I will also take care of all the major meetings we wanna track, and for example, like, the discovery readout session with the client, it has to be named in a certain way so that people are not manually uploading it. Agent Core can automatic automatically retrieve it based on the the naming convention.
+
+Muhammad Faraz
+Exactly, and it should have the name of the project inside of it. So that is the basic factor which differentiates between meetings. So, like, if you are having a meeting for iCivics, it should not be iCivics. Icivics phase one or it's phase 3, so depending on the workflow.
+
+Nausheen Fazlur Rahman
+Okay. Okay.
+
+Muhammad Faraz
+The complete name that marks, like, this is the key of the project, or even we can define the key and use those keys over there. That's, again, totally up to you. Must be unique, of course, and should make a lot of sense to the users.
+
+Nausheen Fazlur Rahman
+Okay. Yeah. I can actually work on a naming convention for all of the meetings, and when we roll this out, we can also roll out, like, hey. When you set up this meeting, you know, make sure it's named in a very specific way so it can be tracked. Exactly. Okay. I'll do that. Thanks for that point. Alright. I have another meet do do we need another meeting tomorrow? I've set up another meeting at the same time.
+
+Muhammad Faraz
+Well, I don't think so. Tomorrow would be required. It will give me just some time to do research on the agent core part and the part where we we are doing the automations. If I need a meeting, I can have it directly set up with you. Like, you do not need this whole setup over here, which, like, we are doing currently.
+
+Nausheen Fazlur Rahman
+Okay. I'll cancel tomorrow's meeting, and then we can just connect if there's some additional questions.
+
+Tariq Khan
+Exactly. One quick quick thing here from my side. So so the application that we built, do do we get to keep that. All of like, or or is it all discarded, the the stuff that the agents will you know, the MCP and all that stuff, is that needed anymore?
+
+Muhammad Faraz
+I didn't get that question really.
+
+Tariq Khan
+So so we we created a flow, right, for the key of governance on the agent, like, the the agents that we have right now in the repository, you know, calling the NTP server to hit Slack and calling and and doing entries in the database that Kristen is gonna populate in his app. Are we still doing that app, or is that app completely out of the window?
+
+Muhammad Faraz
+We are still working on the same piece that we had, like, till Thursday, and we are gonna advance over that.
+
+Tariq Khan
+Okay. So we're gonna hook up the the okay. So same agents, they will upload those artifacts into the folders that that wants and also populate those macro and micro stuff in the DB, which Chris will then show on the app.
+
+Muhammad Faraz
+Exactly. Exactly. No. This MCP server that we had, I believe so that is what you were talking about. So this MCP server, we can add a lot of more con you know, customizations to it, and it can handle a lot more than what it can right now. I I do have to set up a OIDC account so we make sure that we are full on this part. Like, not no one can actually just add up stuff to make sure that it's done or try to bypass what we have. So I'll set up a Github OIDC account.
+
+Tariq Khan
+So when you're going for OIDC, I would recommend using Fusionauth. We have a collaboration with them. Like, they are our partner. So don't go for any any other OIDCs besides them. So use Fusionauth and use the and leverage what they offer as MCP, like, authentication. They they have very good stuff going on, you know, that that they have built for for even for agent core authentication and even for these MCP authentication. So we have a partnership with them. Use them.
+
+Muhammad Faraz
+Just to confirm, I'm just dropping the link in the chat. Please confirm. This is the one. Right?
+
+Tariq Khan
+Fusionauth.io. Yep. This is the one. Okay. If if you need any help I mean, they have their we we can contact their team, and they can help us with if you're stuck somewhere. So but but their documentation is pretty neat. You you can you can have a read I mean, you can use Keyro to to read all of that and prepare your plan. But use this for OIDC. 100%. I will do that.
+
+Muhammad Faraz
+I just need to check it there for, like, for OIDC for.
+
+Tariq Khan
+Mcp. Right? You want it for the MCP? Yeah. They do. Yeah. Do they have a yeah. They have something for for MCPs.
+
+Muhammad Faraz
+Okay. I'll I'll take a look at it. I'll take a look at it. Perfect. I think so we are all good. Like, everything is sorted out. Nausheen, if I need anything from you, I'll contact you, and if anything is needed from Nayab, I will contact her.
+
+Nausheen Fazlur Rahman
+Okay, and Faraz, I owe you that Microsoft Word documentation and the the PDF version of this flow, which I will send within 10 minutes 10 to 15 minutes.
+
+Muhammad Faraz
+Perfect.
+
+Nausheen Fazlur Rahman
+Okay. Alright. Thank you, everyone. Have a great night.
+
+Tariq Khan
+Thank you. Goodbye. Okay.
+
+Nausheen Fazlur Rahman
+Bye bye. Thanks, everyone.

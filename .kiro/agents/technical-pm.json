@@ -25,5 +25,5 @@
     "file://docs/code-structure.md"
   ],
   "prompt": "file://technical-pm/prompt.md",
-  "model": "claude-opus-4.8"
+  "model": "claude-sonnet-4.6"
 }

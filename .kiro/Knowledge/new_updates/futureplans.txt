@@ -1,0 +1,506 @@
+Chris Xenos
+How I added?
+
+Chris Xenos
+How are you doing? Oh, you're on mute.
+
+Muhammad Faraz
+Oh, I am so sorry. I've been speaking. So, yeah, actually, I've been fixing that one Github issue, like, the one I asked the token for. So it's nearly done. It's just, you know, like, just deploying it right now. So once it's deployed, it will actually fetch the gates and store it on the application. Like, we have microgrids. Right? To detect them, we have a button over there. So clicking on the button automatically detects all of the microgrids that have been solved so you exactly know where we are on the project.
+
+Chris Xenos
+Okay. Just a heads up. Another thing Kasim brought up is that we wanna make sure, like, those.
+
+Chris Xenos
+If you look at the process flow, there's add on revenue the executive check ins, he wants those tracked too. Executive check ins can, like like, give me something to process on?
+
+Muhammad Faraz
+Yeah. Do you have the flow diagram? The flow diagram. Let me see. I think so. I do have that, but I have to dig a lot to find that again.
+
+Chris Xenos
+Yeah. Just at certain points, there are executive check ins.
+
+Muhammad Faraz
+I think so. No. She shared that somewhere. Raya, do you have the the MURA diagram?
+
+Nayab Waseem
+I'll have to open up on my browser. Give me a second.
+
+Chris Xenos
+I just would have to go through and try to find my password again.
+
+Muhammad Faraz
+I think that I actually do have it somewhere in the Quiro. Like, I I, like, I do have that. No. I don't know if this one is you know? Like. Yeah. I actually got it. I got into it. I just need to.
+
+Nayab Waseem
+Connect with my email because it's always asking me to relog in.
+
+Muhammad Faraz
+Alright, guys. Where where are we? Hold on.
+
+Nayab Waseem
+Okay. I got the access. So is it CASTM baseline draft one, or are you looking for the, file service delivery methodology one?
+
+Muhammad Faraz
+I almost said What's the.
+
+Chris Xenos
+One you worked on with with.
+
+Muhammad Faraz
+Machine?
+
+Nayab Waseem
+I think I worked on with the final service deliver deliver methodology version to one. Wait. Let me open the least latest one she's working on.
+
+Muhammad Faraz
+Okay. Hold on.
+
+Nayab Waseem
+This is the one. Okay.
+
+Chris Xenos
+So we actually Do.
+
+Nayab Waseem
+You guys want me share my.
+
+Chris Xenos
+Yeah, please. Because I can't find my password right now.
+
+Nayab Waseem
+No problem. I'm just putting it up here as well, and I'm also sharing my screen. Okay.
+
+Chris Xenos
+Yes. I mean, it's good just is this it?
+
+Muhammad Faraz
+Yeah. I have it. That's it.
+
+Chris Xenos
+Yeah. So there's just some of these points that we shoulda had on there, like the so if you look at those two purple boxes at the top.
+
+Nayab Waseem
+Okay. This one or this one?
+
+Chris Xenos
+At the top. Yeah. So it's the executive check ins. So we had something there. What's that? I can't really read it.
+
+Chris Xenos
+No. Not that. But.
+
+Muhammad Faraz
+I think so that's the bottom one, Chris, that you're looking for. A No.
+
+Chris Xenos
+No. No. It's this one. It's the yeah.
+
+Nayab Waseem
+It's the Lorenaz No.
+
+Chris Xenos
+No. No. Hold on, guys. I know what I'm looking go up. Up. Up. Okay. See that top purple box there?
+
+Nayab Waseem
+This one? The purple one?
+
+Chris Xenos
+Yeah. Is that an exec that's not an executive check in. Right?
+
+Nayab Waseem
+I mean, this one says sales to do every hand of meeting.
+
+Chris Xenos
+And Okay. Did that okay. Did that change? Like, is this the.
+
+Chris Xenos
+Who does this? This like I mean.
+
+Nayab Waseem
+I'm right now on the baseline draft one. Let me check different versions of it. This one is the final version.
+
+Chris Xenos
+Okay. Yeah. This is the final one. Okay. What what's the leading box up to that? What's that red box at the at the bottom underneath that the top purple?
+
+Nayab Waseem
+Okay. Hold on.
+
+Chris Xenos
+Go directly down from that purple box.
+
+Nayab Waseem
+Yeah. Okay. You're talking about this one? Yes, ma'am.
+
+Chris Xenos
+And then go down from that. Complete SOW handoff checklist. So this is this is one gate. Right? Are we is this in the in your in your events for us, or I forget what you're calling them. The that's in there. Right? Yeah. Okay. So go keep going to the right then Go to up to the top and go to the right.
+
+Chris Xenos
+Go to the right. All he's all he was asking for for us is these additional opportunity check ins that they get logged that we can track them, and so if you keep going to the right, looking at the top, I think that swim lane is.
+
+Muhammad Faraz
+Chris, I do have something named as executive check in call.
+
+Chris Xenos
+Yeah. That's it. That's all I'm saying is he's he's gonna wanna That's a meeting.
+
+Muhammad Faraz
+That's a meeting, that is in my system right now. So when we are on the phase 4, there is a meeting that is executive check in call two.
+
+Chris Xenos
+Okay. But you have you have that handoff meeting. I know you have that. So there's a second one before launch and there's there's one before launch and enable. There's one before phase 4 in phase 3. This is the other one.
+
+Muhammad Faraz
+In phase 3, I have two checkpoints, which is review 3 generated outputs by Tech Lead and validate performance, security compliance by Tech Lead. Yeah. So I have two checkpoints over there.
+
+Chris Xenos
+I need this one.
+
+Chris Xenos
+So when are are you go meeting with Kasim after this for us today?
+
+Muhammad Faraz
+So the meeting is around about 12:30.
+
+Chris Xenos
+Yeah. So I'll put you in there. So he may ask you about this. So just make just. Naya, are you in that meeting?
+
+Nayab Waseem
+Which one?
+
+Chris Xenos
+It's a a review of the service delivery methodology and what and this application.
+
+Nayab Waseem
+I don't think so. It's on my calendar. Let me check. Nope. It's not.
+
+Chris Xenos
+Because I won't be able to go, so it'd be good if you guys were there. Well, I am.
+
+Muhammad Faraz
+I can't believe so, and I believe so. That would be like, I am alone on that meeting because Tarek wouldn't join. He's out sick.
+
+Chris Xenos
+Yeah, and I can't be there, so you're kinda being or you're alone.
+
+Nayab Waseem
+I attend. So the meeting is on your calendar, Chris, from 02:30 to 03:30.
+
+Chris Xenos
+Just invite yourself to that.
+
+Nayab Waseem
+Yes. I'll forward that to me.
+
+Chris Xenos
+Okay. Alright. Let's let's take a reset because I have Andrew here too, and we don't have a lot of time. So the perfect for us, showed me where we are with the the this is the governance tracker for for.
+
+Chris Xenos
+The service delivery methodology, right, for this service delivery methodology, and so what, Faraz has done is he's took our initial requirements, understanding the concept, right, and and started putting together the application, and it's actually further along than I thought. So surprised me this morning. So but I wanted you two to see what I saw and then talk about what's needed, and then Naya, take the notes from this meeting. We gotta start a prioritized list of enhancements. Okay, and things that we need. So.
+
+Muhammad Faraz
+Alright. So.
+
+Chris Xenos
+I think we just need to based on whatever call you have with Qasem this afternoon, Nayab, do the same thing. Just you start capturing, and we'll set the priority so that he has a backlog to work from, and Andrew, I just wanted you to see this and kinda let's get feedback on we're gonna have to decide when what's the soonest we can roll this out.
+
+Chris Xenos
+So let's go ahead for us and just so now that everybody knows what we're talking about, we've reacquainted ourselves with the the model. Let's go back let's go to the app, Fraz, and just kinda walk through.
+
+Muhammad Faraz
+Sure. Walk through this in morning. Sure. Why not? Okay. So before we move on, let me clarify on the point where we have to do this launch and enable on this one. So I believe so we have some pointers that I'll list out to you in the group chat. So, like, we will we will need to onboard some projects. We will need to onboard some users. We will need to onboard few things like roles and capabilities, what someone can do. They are pretty much there, but they are not, like, 100% implemented because just because we have to show this product as an idea that we are gonna enable. Right? So they are there, but not hardly implemented. So it's easier to navigate for now, like, to understand the idea. Okay.
+
+Chris Xenos
+But you see the the roles. Right? There's not that many roles. There's, like, project manager.
+
+Chris Xenos
+Leadership.
+
+Chris Xenos
+What else do we have in there? SA.
+
+Muhammad Faraz
+Sa, project manager, leaders, and then there are some normal users if you want them to be there.
+
+Chris Xenos
+Yeah. It's giving you, like like that. Yeah. Yeah. Engineers and Saas or whatever. Exactly. Okay.
+
+Muhammad Faraz
+So it's, like, basic 4 roles that we are talking about, and let's let's just go through one piece at a time, and like, let's just see what we have there right now. So this is going to be the better basic interface for now. We're just gonna have a dashboard, and this dashboard is something that I am currently working on, and currently, it doesn't doesn't show a lot of things, but I have plans for it. So we are gonna discuss projects right now. So the all of the projects are gonna be listed as this list. They can be searched searched by the Jira key they have, or they can be searched by their title, even statuses, where they are, on the phases, and any other thing that can be there.
+
+Muhammad Faraz
+Like, currently, I have only app dev type over here, so I can search by app dev only, and there are PMs, essays, and of course, we can have much more filters that we want. Moving on, this is gonna be our project. First things first, it's gonna have its linkage between Github and Slack because, first, we are using Slack for communication channel. We need to know what was done, and by that, we cannot all always come on the application and see where we were sometimes. Quick checkups are indeed the best thing that we can have. So working on this, like, whenever some someone comes in and tries to complete something, this notifies the Slack immediately and telling Slack, hey.
+
+Muhammad Faraz
+This happened. So to do that, we have to create a linkage, and we just have to add the channel ID. I am gonna show you right now where this channel ID is coming from. This is not something too much technical. Anyone can put this over here. Moving onwards, we will need to have a Github URL because, currently, we are tracking the progress of the project in documents of the project. Right? So all of the documentation, there is one file called progress tracker that actually tracks the project, where is it currently at, and what's happening in the project. So we're gonna use that file to identify some of the artifact, which are micro artifacts. Right? Microgates, and some aren't macro gates, which are, primarily looked at from this application.
+
+Muhammad Faraz
+So talking about the micro, things that are artifacts, like SRS, then there is, you know, some baseline Jira backlog created over there, and all of the kickoff deck was created or not. Something these these are coming from the Kiro since Kiro generated all of these things. So they are directly taken from Kiro. You can just, you know, hit this button, sync gains from repo, and it will, you know, bring in all of the things, microgrids that are already done. So you will have a clear visibility of what was done in the code base. Right, then there are your macro checkpoints, which are 5 outputs reviewed by SA and transcript analysis of sales to delivery handoff. Right? So these are the ones those are being covered in phase zero.
+
+Muhammad Faraz
+Right? I'm gonna have a setting to add more of these things since these these are dynamic checkpoints. So they can be added from the settings by leadership only. Right, Chris? So this was mentioned by you that they need to be added via settings as well. So moving on, we have phase one, and again, in the phase one, working SRS is our only artifact coming as a microgrid, and from the microgrid, we have working SRS reviewed by SA, kickoff call initiated, and everything else. Now what marks them as complete is very simple. We just have to add an evidence. Evidence could be a meeting file or URL. Meeting is specifically your Avoma link, and once that is provided, when you click on, you know, complete, it will actually translate that into something useful.
+
+Muhammad Faraz
+So, like, over here, I had some meeting over there. So it actually told me from the transcript that this was failed. There was no confidence and zero topics from here that were covered in the meeting, and that that was 100% the case with the meeting that I gave it. Yeah. So.
+
+Chris Xenos
+For us, for, like, for a human review of an SRS, how how do we like, what's your thoughts on capturing that? Like, one is, like, can we tell from Kira that that occur?
+
+Muhammad Faraz
+So a human review would be very simple. He would just have to upload a file over here. Yeah, and that is your SRS file that he reviewed, and when he comes here, he just tells us the notes, what he reviewed and who was it reviewed by. Currently, I was testing this. So, yeah, some of these things are reviewed by entirely from the backend. So he he was.
+
+Chris Xenos
+So by uploading this Okay.
+
+Muhammad Faraz
+And what was the results?
+
+Chris Xenos
+Okay. So that that's the proof that they did it. Like, okay. We can see that it was generated, but the proof that they did it is to upload it here. Yeah. Okay, and and and sort of a test that they did it.
+
+Muhammad Faraz
+Exactly. So they can just add some notes over here. That could be approved as well since, again, notes do tell us about what was actually.
+
+Chris Xenos
+I mean, yeah. I mean, it'd be great if they, like, the yeah. So, I mean, basically, I reviewed it. Is it they're attesting that they did it?
+
+Muhammad Faraz
+Exactly.
+
+Chris Xenos
+And we we can require comments probably to say, okay. You you certify you know, you're you're attest you're you're confirming you've reviewed this.
+
+Muhammad Faraz
+Exactly. So this is something that will need some future enhancement upon. Like, this thing should be required. This shouldn't be required. This thing should be a must to have. This thing can be, you know, ignored at all times. So these are the things that I would need someone to, you know, actually know about the process and just tell me what to do over here. So it saves my time off the r and d and more into the development. That's right.
+
+Chris Xenos
+That's right. Okay. I like it so far.
+
+Muhammad Faraz
+So moving on to some meetings that happened. Right? There is, like, this was a human review. There is a transcript analysis I showed. So there is someone which is, meeting. A meeting happened. So when I picked complete, it asked me, meeting occurred? Yes, or not yet. Not yet means it was not completed. So when I do yes, it asks me for a date, a meeting link, and what was inside of that meeting. So this is a proof of meeting was occurred on this date. So we know the meeting has been.
+
+Chris Xenos
+That's correct. It is a meeting.
+
+Muhammad Faraz
+So this is the evidence of this piece. Right? Yeah. So when I save this checkpoint, it will trigger a a Slack notification. Let me just quickly go over there and show you how these are seen. So you can see there is one Slack notification over here, and there is another one over here. So you can see, like, these are done by this application. You're like, itself. You do not have to tell it again and again. This will be not only in this particular group, any Slack channel that you have, and like, any Slack channel that you have, you just put up the Slack channel ID, which you can do very simply by just clicking on the title of the channel and just copying this ID. There is a copy button over here too. Just copy it, go back into the system, and when you're back into your system and you're creating your project, you just add it over here, and voila. This works. As simple as that. Okay?
+
+Muhammad Faraz
+So this was the basic thing. Next, moving on to any of the phases on which all the checkpoints are done. That marks that phase as completed. The microgates are not the blocker for for this. Since microgates are coming directly from Kiro, they can be skipped. Someone maybe something didn't write on, you know, like, the progress tracker. So this can be completed manually. You can just say, hey. It was completed, and boom. Is it taking commits?
+
+Chris Xenos
+Is it reviewing the commits, the code commits.
+
+Muhammad Faraz
+Or the the the git commits? It is reviewing a file in QURO. Let me show you that file simply.
+
+Chris Xenos
+The the progress file?
+
+Muhammad Faraz
+Yeah. It will it it is taking a look at this file. Right? Okay. This is So we're not using the books. Exactly. So this is the file it's looking at, and it is mentioned over here that SRS was approved. Right? This is how it takes that back into that system. So, currently, I was just, you know, deploying this fix, a small fix that was that will automatically fetch this and add it over here. Currently, you can see clearly that when I do a sync, it shows me 3 matched. Right? So the 3 pieces of microgates were actually matched.
+
+Muhammad Faraz
+Currently, not displayed on the system because this is being fixed. Right? So but they were matched, and once they are, you know like, the mapping had been created of them into the system, they will be available over here. Symbol. Okay.
+
+Chris Xenos
+So you will see them here that that from this phase, all these things were completed. Exactly. Exactly. Okay. Those.
+
+Muhammad Faraz
+Will be marked completely like this green effect coming over there, and they will have this complete, and when they were completed, this is gonna be here.
+
+Chris Xenos
+Okay. Okay. Go ahead, Naya.
+
+Nayab Waseem
+So, can we like, again, we have these phases. Right? So we cannot, like, skip one phase and go to another. So there there's a proper channel for that. Right? So what needs to be completed for us to move to the next phase?
+
+Muhammad Faraz
+So, like, stopping it in on a phase until a next phase is come like, the first phase is completed or something like that?
+
+Nayab Waseem
+Yeah. Yes. Completing one phase. Like, you know, we have, like, phase zero, phase one, phase two, and then we we first have to complete phase one to move Yeah.
+
+Chris Xenos
+You gotta I think that's another one where you gotta look back at the flow diagram. I think there's some gates that like, for example, the IPR is a gate to go from, design review to implementation. Sure to Now.
+
+Muhammad Faraz
+Now this this point where Naya mentioned, we will have a phase lock until the previous phase is completed. Yeah. Now this needs a complete understanding of the gates itself. That's the first thing. Gates, then what is the trigger to net the next gate? Right? Now this needs the complete understanding of that behavior. Now I have what I have done is actually a demo of those things. Right? I included a lot of things, and I might have excluded a lot of things because. I didn't had other like, this much, understanding of the whole system, what's going on. Right? So, like Well.
+
+Chris Xenos
+There's a vision for this. Right? So, eventually, what we're looking for here is, like, it's a project tracker for this, but it's going to be a professional services automation. So the long view of this is Deliverpro. I can see who is resourced on my project. Eventually, I'll see how many hours they've charged the projects. I'll know if it's ahead or behind. I'll know if there's escalations. I'll know do I need to add more people. I'll also be able to do resource planning in here. So that's the long term view. Right now, my priorities are, do we cover the AI DLC? Yeah, and and can I get the team off of Jira and onto here? Because I'd really like to get out of the Jira service. I don't wanna have to do reporting in two places. So it doesn't have to have everything, but, I think is the IPR review in here in in one of your gates?
+
+Muhammad Faraz
+So let me check. So Over here. Review.
+
+Nayab Waseem
+Phase two.
+
+Chris Xenos
+Yeah. IPR? Where's that?
+
+Andrew Peterson
+I'm just trying to do for us. Phase.
+
+Muhammad Faraz
+Two? Yeah. Yeah. Yeah. So yeah. It's over here.
+
+Chris Xenos
+Okay. So we know that we that should have a date, a meeting date, and all that stuff, so that's great. For this one, for us, we're gonna wanna know what recommendations were made.
+
+Muhammad Faraz
+Yeah. Perfect. Currently, there are notes populated by AI, and it just tells you that zero out of these topics were covered. Right? So and all of these things are missing. So right now, I just gave it some random link from there, new mountain films, and this was a discovery call. Right? So, obviously, it's gonna state that dispute.
+
+Chris Xenos
+Yeah. Put just put in here, like, one of the things we're gonna need is what recommendations were made. Like, what so if you think about a review meeting, you're gonna get feedback.
+
+Nayab Waseem
+Yeah, and and also, for us, this is a trigger. Like, we cannot move to build an employment until or unless, a deal has successfully passed from the IPR process.
+
+Muhammad Faraz
+I gotcha. So a 100%. Now these are the things I am gonna take these from the meeting. So, like, I wouldn't ask Mayab to take a track of it, what was actually missing. I'm gonna take a track from directly from the meeting notes that I'm gonna get. Right? But, Nayab, for this specific reason, I would require your, you know, like, help to make this project actually mean something.
+
+Nayab Waseem
+Yeah. Sure. Definitely. I.
+
+Chris Xenos
+Yeah. I mean, I wanna approve the the the whatever prioritization we have just because I have a pretty firm vision for what I think that I need this to be, and I you know, Kasim will probably have another layer, but I wanna see what these what the what we're saying is priority. Like, for me, right now, the priority is, okay. Are we covering the AIDLC? Can we see who's assigned to a project? Can we. I think that the other gate it's just one more gate, which is the the like, you can't close a project until there's been a, sign off document and a, postmortem, a retrospective.
+
+Muhammad Faraz
+So there is the retrospective. Right? Yep, and the postpartum I. I don't know what you call this. Retrospective.
+
+Chris Xenos
+Is it. So what I wanna do so what I wanna do with the retrospect what I wanna do with these retrospectives is use those transcripts to create a lessons learned database. So that you don't need that day one, but we wanna see what what lessons were learned, what worked and what didn't work. That's that's what we wanna know. Yeah, and then Andrew, whatever the your pointers are, whatever your guidance is for those meetings, we gotta make sure it's embedded in the transcript analysis.
+
+Chris Xenos
+K.
+
+Andrew Peterson
+So.
+
+Chris Xenos
+Okay, and then the other thing we talked about this morning was, just some kind of status reporting, weekly status reporting.
+
+Muhammad Faraz
+Yeah. For that, I would need the form from you, like, current form that we have. So I can actually embed forms into this project. So every project that's gonna be in here, it's gonna have a separate way to submit forms, and the form will be recorded for a week. So, like, it's gonna have forms, and when you click on the form, it's gonna show you what form you want to do. Right, and when you click on the weekly project report, it's gonna open up the form on the screen, allow you to submit it, and once submitted, it's gonna be shown to the leadership only.
+
+Chris Xenos
+Well, shown to anybody on the project. I mean, it's not there's no reason to hide it. You can just have you know, you can have a sub menu that says, what whatever. You know? But it there's no reason to not make it visible.
+
+Chris Xenos
+Gotcha.
+
+Nayab Waseem
+Yeah. For us, do we have escalations in there?
+
+Muhammad Faraz
+I am planning to add escalations since Chris mentioned this this morning. Okay.
+
+Nayab Waseem
+Yeah.
+
+Muhammad Faraz
+So, like, these are the things that are needed to be added as a future adjustment. For now, this is just a vision that just like Chris mentioned, this is gonna be a vision what's this gonna be and what's this gonna have. The final thing that we are gonna see is not so far away. Like, I have bare bones. I have most of the things done. I just need to embed more things, add some strong validation checks, and few of the, you know, micro adjustments here and there, like, what per person will see what project and all of the things, the people on a project, something like who is gonna be deciding this project goes to these set of people. So, like, the user things. So these small adjustment on this project will mark it as complete and ready to go.
+
+Nayab Waseem
+I think one thing that we we would really appreciate and want is that, like, you know, we have, like, a lot of dates on the projects that that we want only, like, Chris. Maybe this leadership can have access to change.
+
+Chris Xenos
+Yeah. Yeah. Like, the expected the expected completion date and and the Yeah.
+
+Muhammad Faraz
+I think you can add those. I think so you can add those from here. No. No. Oh, sorry. It was in the old Deliver Pro application that I had. Sorry. So this expected completion and planned kickoff, this is coming directly from the old, like, Deliver Pro we had. But I'm gonna add somewhere, you know, exactly in the project creation, plus I'm gonna make it a better screen, just not a random small model coming on the page. So there's there is much better tracking, much better information handling over there.
+
+Chris Xenos
+Yeah. I mean, I think you're gonna need another level of, like, menus for project. Like, okay. What's this, you know, status reports, assignments. Yeah, and and escalation, something like that.
+
+Muhammad Faraz
+Yeah. I gotcha. 100%.
+
+Chris Xenos
+But I think I think those are the things we need just to get off of Jira, and I I again, I don't wanna overcomplicate it with who can see what right now. I mean, maybe the dates, we we kind of restrict. But.
+
+Chris Xenos
+Let's sooner we can get.
+
+Muhammad Faraz
+Priority tracker for this application, and we can just track out the priorities and fix on like, do that first, and then keep on adding priorities to this project. Like, this is never ending. This is just, like, growing in every single way to become the one that you need.
+
+Chris Xenos
+Yeah. Okay. Andrew, do you have any anything before we draw? Because I know we're over.
+
+Andrew Peterson
+No. Just that this looks really slick and well thought out, and the the user interface is very, simple and but in a good way. I'm not saying it's there's not a lot of stuff going on underneath, but saying, like, from a user experience, perspective, this looked really, really clean and is is hitting all of the, the bases that we wanted to hit as far as, like, gates from phase to phase, etcetera. So this is really, really great for us.
+
+Chris Xenos
+Yeah. For us, one it it is really good. For us, one thing in in that we're gonna wanna get to, and I'm just saying it, like, the team other than the project managers and the essays don't really need to get in here except.
+
+Chris Xenos
+Where they wanna see their assignment. So, like, when we assign somebody to a project, maybe we can see their percent commitment or something. Like so if I'm you and I know I'm on, I wanna know.
+
+Chris Xenos
+You know, how many it's not enough to know I'm on 3 projects. It's just, okay. If I'm on 3 projects, how much time do I dedicate to each one, and so.
+
+Muhammad Faraz
+So the amount so the burn rate you are talking about?
+
+Chris Xenos
+Not quite the burn rate. One is our plan. Right? Like, saying, okay. The SA is gonna be 10% of this. The the. AI engineer is gonna be 20%. The the project manager is gonna be 15% of the budget. Yeah. Right? So that should tell you how much time hours wise you you so that when we look at the person in a later phase, not right now, but when we look at when I look at Andrew, I wanna see his projects and how much of his available time is consumed. But that'll be a later phase. We just need to say. Yeah. For us.
+
+Andrew Peterson
+What Chris is trying to say here is that out of, say, 40 hours as your max billable. Right? You'll say, okay. These these 3 projects or 4 projects are taking up 25 hours of my time according to the estimates from the the SOWs from those respective projects. Right? So then you could say, okay. Well, you know, Andrew has, you know, some time to take on something else or an engineer has some time to take on something else, what have you. Right? You can kinda see all that.
+
+Chris Xenos
+Yeah. The count of projects is not just the count is not the count is important because at some point, you can't do any more meetings. Right? But it's the number of hours during the start and end of that engagement that you're gonna have to have.
+
+Andrew Peterson
+That's right.
+
+Muhammad Faraz
+So that's gonna be that's gonna be two way thing. First, we can have Cloudcify integration, which is perfect to know what how many hours a person is putting on the project. So that's one way of thinking it. Second, we need it.
+
+Chris Xenos
+Yeah. That's that's that's act I'll show you some of the dashboards I have where I've already done some of this work. But Yeah. For right now, I just wanna capture what percentage is their plan for.
+
+Muhammad Faraz
+Yeah. Okay. Okay. So total SOW hours and how many hours this person is putting on this?
+
+Chris Xenos
+Just percentage of their available that yeah. We can think of it percentage of the project. That's fine.
+
+Muhammad Faraz
+Perfect. I got you. I have the idea, and you know, that that's gonna be pretty much simple when we are gonna have users on this project. So, like, the whole team, I'm not saying they are gonna be able to access this application or they have to make their accounts on this application. I'm just talking about, like, seeding them into the database. Like, these people exist, and after the seeding happens, right, that's where when we are starting the project, we are gonna allocate the people. So this much time goes to him. This much time goes to him, and we can have a reporting on that. So everything that is in the database can be, you know, reported on Yeah. Every single way. Well, for right now.
+
+Chris Xenos
+It's good enough just to say this is the project manager. This is the this is the essay. This is the that's a great start.
+
+Muhammad Faraz
+Yeah. So onboarding will solve the problems.
+
+Chris Xenos
+Alright. So I think you have what you need from us. It's just Nava, let's take these notes, and and and I'll need to prioritize them for for for us. But first, I wanna see what Kasim adds to his list. Perfect. Okay.
+
+Nayab Waseem
+I'm gonna create a thread, and I'm gonna share the notes with you guys here.
+
+Chris Xenos
+Yeah. I just want a document, though, that we need an artifact that he can track that is like a cell document. Yeah. Something that says this is the priority of of what I'm supposed to work on so he's not stuck. Yeah. Okay. So for us, Nishin and I, we, we worked on phase by phase, checklist. I can also share that with you, and I can create another tab for the priorities over the Oh, he had that. He had that, the phase by phase, that Excel you gave me? Yep. So what we're looking for here, Nab, is just like, okay. We I mentioned, like, 4 or 5 things I wanted to see, like, escalations, like being able to see who's assigned.
+
+Chris Xenos
+Yep. We need to say which one of those is more important so he knows what to work on first. He he he can't spend time trying to guess which one I'm like, I need to give him a chance to to to, I need to take those decisions away from him so he doesn't have to spend time thinking about that. He can just go down the list and just start building.
+
+Nayab Waseem
+Yep. I got it. A priority checklist. Yep.
+
+Chris Xenos
+Yeah. Alright. Cool. Thank you, Farah. Sorry to take up so much of your time, but I'm I'm I'm really you're right. I'm pretty pleased.
+
+Muhammad Faraz
+Okay. No worries, man. No worries. Thank you. Working on this, and it's amazing that we are making it happen.
+
+Chris Xenos
+Yeah. It's cool. It's really cool. Alright. I'll catch you later. Thank you. Alright. Let me know if Kasim gives you a whole, like, list of things. Like, I'll argue with him over who's who's who's.
+
+Muhammad Faraz
+I am I am imagining that I'm gonna get a whole lot of backlash over this, but, still, we we are No.
+
+Chris Xenos
+But but I just talked to Kasim, and he's and he agrees, like, okay. I'm driving this. Like, at the end, if he's driving it, then then I'm not I can't be accountable for it. Right? Like Yeah. It's one way or the other, and so he agreed, like, hey. I'm driving this, and he's going to yeah. He'll get feedback. But Yeah. But he doesn't he can't be another a product owner for another project. He's got Oscar and and whatever else he's working on. I don't know. Alright, guys. Thank you. Appreciate it. Good job. Thanks, everyone. Bye bye. Thanks, Russ. Thanks, Russ. Bye bye. Bye.

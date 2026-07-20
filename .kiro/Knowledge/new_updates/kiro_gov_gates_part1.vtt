@@ -1,0 +1,2160 @@
+WEBVTT
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/6-0
+00:00:03.414 --> 00:00:04.574
+<v Muhammad Faraz>When it comes to Urdu.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/7-0
+00:00:05.214 --> 00:00:06.294
+<v Nausheen Fazlur Rahman>Oh yeah, that's true.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/8-0
+00:00:09.014 --> 00:00:09.574
+<v Nausheen Fazlur Rahman>Okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/9-0
+00:00:09.134 --> 00:00:10.494
+<v Muhammad Faraz>Perfect, the record is in.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/11-0
+00:00:11.334 --> 00:00:15.517
+<v Nausheen Fazlur Rahman>Okay, thank you.
+So let's move on to phase one,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/11-1
+00:00:15.517 --> 00:00:20.658
+<v Nausheen Fazlur Rahman>discover and align.
+And this is basically where I feel the</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/11-2
+00:00:20.658 --> 00:00:27.629
+<v Nausheen Fazlur Rahman>practices will start to change because
+different practices have different types</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/11-3
+00:00:27.629 --> 00:00:29.894
+<v Nausheen Fazlur Rahman>of discovery sessions. And</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/12-0
+00:00:30.774 --> 00:00:32.214
+<v Nausheen Fazlur Rahman>different artifacts.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/13-0
+00:00:33.814 --> 00:00:38.478
+<v Nausheen Fazlur Rahman>and different even like steps that needs
+to be done. For example, in app mod,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/13-1
+00:00:38.478 --> 00:00:43.382
+<v Nausheen Fazlur Rahman>Tariq told me that you guys have to like
+literally go through the whole code base</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/13-2
+00:00:43.382 --> 00:00:47.388
+<v Nausheen Fazlur Rahman>of the customer, right, for their app,
+their existing application.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/13-3
+00:00:47.388 --> 00:00:51.095
+<v Nausheen Fazlur Rahman>You have to like go over the whole
+architecture and you know,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/13-4
+00:00:51.095 --> 00:00:54.862
+<v Nausheen Fazlur Rahman>have to do so many things.
+You have to check whether they have</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/13-5
+00:00:54.862 --> 00:00:57.254
+<v Nausheen Fazlur Rahman>regression testing done or not. So like.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/14-0
+00:00:57.574 --> 00:01:01.275
+<v Nausheen Fazlur Rahman>And for app dev,
+that's not an issue because we're</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/14-1
+00:01:01.275 --> 00:01:03.814
+<v Nausheen Fazlur Rahman>starting from scratch, correct? So.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/17-0
+00:01:04.134 --> 00:01:07.441
+<v Muhammad Faraz>Mostly,
+like there are some projects in app dev</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/15-0
+00:01:05.174 --> 00:01:05.574
+<v Nausheen Fazlur Rahman>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/17-1
+00:01:07.441 --> 00:01:10.748
+<v Muhammad Faraz>that is a part of, you know,
+some enhancements,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/17-2
+00:01:10.748 --> 00:01:12.814
+<v Muhammad Faraz>so they're not the greenfield.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/16-0
+00:01:11.494 --> 00:01:11.974
+<v Nausheen Fazlur Rahman>Right.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/19-0
+00:01:13.334 --> 00:01:16.785
+<v Nausheen Fazlur Rahman>Exactly, exactly. So I guess my point is,
+you know,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/19-1
+00:01:16.785 --> 00:01:21.431
+<v Nausheen Fazlur Rahman>discovery is where the practice
+differences will start showing up the</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/19-2
+00:01:21.431 --> 00:01:25.280
+<v Nausheen Fazlur Rahman>most. But yeah,
+but I guess the idea is sort of the same,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/18-0
+00:01:22.574 --> 00:01:23.374
+<v Muhammad Faraz>Exactly.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/19-3
+00:01:25.280 --> 00:01:28.399
+<v Nausheen Fazlur Rahman>that, you know,
+they'll have the kickoff call,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/19-4
+00:01:28.399 --> 00:01:33.642
+<v Nausheen Fazlur Rahman>they'll have all this discovery sessions
+and all the output gets fed back into</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/19-5
+00:01:33.642 --> 00:01:33.974
+<v Nausheen Fazlur Rahman>Kiro.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/21-0
+00:01:34.454 --> 00:01:37.119
+<v Nausheen Fazlur Rahman>You re-index it and then,
+and at this stage,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/21-1
+00:01:37.119 --> 00:01:41.442
+<v Nausheen Fazlur Rahman>you create the working SRS, right?
+And that's what you also showed us in</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/21-2
+00:01:41.442 --> 00:01:44.995
+<v Nausheen Fazlur Rahman>that governance app as well, right? That,
+and again, again,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/20-0
+00:01:43.454 --> 00:01:44.094
+<v Muhammad Faraz>Exactly.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/21-3
+00:01:44.995 --> 00:01:49.614
+<v Nausheen Fazlur Rahman>I don't think Qasim wants to know, okay,
+but the phase zero may be generated,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/21-4
+00:01:49.614 --> 00:01:54.174
+<v Nausheen Fazlur Rahman>it's being generated, and then phase one,
+you're generating the working SRS.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/22-0
+00:01:54.254 --> 00:01:59.654
+<v Nausheen Fazlur Rahman>It's the same thing,
+but I guess what we want to track is...</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/24-0
+00:02:01.094 --> 00:02:06.152
+<v Nausheen Fazlur Rahman>How is the discovery, yeah, exactly,
+the discovery readout session of the SRS</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/23-0
+00:02:01.774 --> 00:02:02.814
+<v Muhammad Faraz>The purple thing.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/24-1
+00:02:06.152 --> 00:02:11.274
+<v Nausheen Fazlur Rahman>with the client and the quality of that.
+Not just that it happened, yes or no.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/24-2
+00:02:11.274 --> 00:02:13.414
+<v Nausheen Fazlur Rahman>Maybe yes or no is not the right.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/25-0
+00:02:15.574 --> 00:02:18.805
+<v Nausheen Fazlur Rahman>wording over here.
+I may have to go back and fix it,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/25-1
+00:02:18.805 --> 00:02:20.694
+<v Nausheen Fazlur Rahman>but the quality of the session.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/26-0
+00:02:22.174 --> 00:02:24.894
+<v Muhammad Faraz>So just mention quality in the purple
+thingy.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/27-0
+00:02:25.334 --> 00:02:25.814
+<v Nausheen Fazlur Rahman>Okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/28-0
+00:02:26.814 --> 00:02:30.790
+<v Muhammad Faraz>Yeah,
+that would that would be much more useful</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/28-1
+00:02:30.790 --> 00:02:33.854
+<v Muhammad Faraz>since it's not a one or zero anymore.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/31-0
+00:02:34.134 --> 00:02:37.178
+<v Nausheen Fazlur Rahman>Yeah,
+I think I should remove all the the guess</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/29-0
+00:02:34.734 --> 00:02:35.774
+<v Muhammad Faraz>It's just.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/31-1
+00:02:37.178 --> 00:02:40.348
+<v Nausheen Fazlur Rahman>and knows because Qasim clearly didn't
+want that.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/31-2
+00:02:40.348 --> 00:02:45.103
+<v Nausheen Fazlur Rahman>And initially for us when we were
+discussing it with Chris, he's like, no,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/31-3
+00:02:45.103 --> 00:02:50.302
+<v Nausheen Fazlur Rahman>we just want to track whether it happened
+or not. But clearly Qasim wants deeper,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/31-4
+00:02:50.302 --> 00:02:54.867
+<v Nausheen Fazlur Rahman>right, or qualitative analysis.
+So I'm just going to be removing yes or</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/30-0
+00:02:51.174 --> 00:02:51.374
+<v Muhammad Faraz>AZ.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/31-5
+00:02:54.867 --> 00:02:55.374
+<v Nausheen Fazlur Rahman>no from.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/32-0
+00:02:55.454 --> 00:02:59.362
+<v Nausheen Fazlur Rahman>all of them. So again,
+I don't think we need to track any of the</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/32-1
+00:02:59.362 --> 00:03:02.547
+<v Nausheen Fazlur Rahman>micro stuff.
+We can just track whether this meeting,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/32-2
+00:03:02.547 --> 00:03:05.493
+<v Nausheen Fazlur Rahman>I mean,
+what the quality of this meeting and the</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/32-3
+00:03:05.493 --> 00:03:06.214
+<v Nausheen Fazlur Rahman>final gates.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/33-0
+00:03:08.054 --> 00:03:12.229
+<v Nausheen Fazlur Rahman>Was the final,
+was the SRS or what are the artifacts of</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/33-1
+00:03:12.229 --> 00:03:16.254
+<v Nausheen Fazlur Rahman>this discovery phase?
+Was it reviewed by SA and team?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/34-0
+00:03:17.894 --> 00:03:18.734
+<v Muhammad Faraz>Quick question.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/35-0
+00:03:19.854 --> 00:03:25.143
+<v Muhammad Faraz>What about the internal team?
+Do we need to track microgates? I thought,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/35-1
+00:03:25.143 --> 00:03:27.534
+<v Muhammad Faraz>I really thought that was useful.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/37-0
+00:03:30.654 --> 00:03:36.959
+<v Muhammad Faraz>Because we are getting notified that the
+SRS was made even before anyone is coming</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/37-1
+00:03:36.959 --> 00:03:43.264
+<v Muhammad Faraz>to us and telling us, hey, I made the SRS,
+woohoo, right? So it was just tracking,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/36-0
+00:03:41.734 --> 00:03:42.214
+<v Nausheen Fazlur Rahman>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/37-2
+00:03:43.264 --> 00:03:45.694
+<v Muhammad Faraz>hey, SRS was generated. So that.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/38-0
+00:03:45.094 --> 00:03:47.654
+<v Nausheen Fazlur Rahman>You want to track this internal meeting
+as well?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/41-0
+00:03:47.894 --> 00:03:53.759
+<v Muhammad Faraz>No, no, no, no, not the internal meeting.
+I'm talking about the artifacts,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/39-0
+00:03:53.174 --> 00:03:53.974
+<v Nausheen Fazlur Rahman>Oh, the artifact.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/41-1
+00:03:53.759 --> 00:03:57.591
+<v Muhammad Faraz>the soft artifacts.
+I wouldn't call it physical,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/41-2
+00:03:57.591 --> 00:04:01.814
+<v Muhammad Faraz>they're not on the paper, but yeah,
+you get my point.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/40-0
+00:03:59.494 --> 00:03:59.974
+<v Nausheen Fazlur Rahman>Yeah, yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/42-0
+00:04:02.534 --> 00:04:04.774
+<v Nausheen Fazlur Rahman>Okay, you want to track this SRS?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/45-0
+00:04:05.694 --> 00:04:11.228
+<v Muhammad Faraz>The SRS, there is your spec files,
+which is the part of decomposition,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/43-0
+00:04:05.974 --> 00:04:06.934
+<v Nausheen Fazlur Rahman>Micro level.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/45-1
+00:04:11.228 --> 00:04:16.216
+<v Muhammad Faraz>domain decomposition,
+and a lot of things that you mentioned in</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/44-0
+00:04:13.174 --> 00:04:15.974
+<v Nausheen Fazlur Rahman>I think that, yeah,
+I think that will come.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/45-2
+00:04:16.216 --> 00:04:17.774
+<v Muhammad Faraz>the managed service.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/46-0
+00:04:18.854 --> 00:04:23.544
+<v Nausheen Fazlur Rahman>I think this will come in the later phase,
+but in phase one we are,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/46-1
+00:04:23.544 --> 00:04:26.854
+<v Nausheen Fazlur Rahman>I think we're just creating this artifact,
+SRS.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/47-0
+00:04:26.694 --> 00:04:32.494
+<v Muhammad Faraz>Yeah, for the app app dev, I believe so.
+This is the only artifact of phase one.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/48-0
+00:04:32.854 --> 00:04:37.340
+<v Nausheen Fazlur Rahman>Yeah, exactly, exactly.
+So I think we're good here. But what,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/48-1
+00:04:37.340 --> 00:04:41.174
+<v Nausheen Fazlur Rahman>and I guess the governance check would be
+over here.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/49-0
+00:04:44.934 --> 00:04:49.857
+<v Nausheen Fazlur Rahman>that did the SRS get reviewed? I mean,
+not created because, you know,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/49-1
+00:04:49.857 --> 00:04:54.358
+<v Nausheen Fazlur Rahman>that's not important.
+Was it reviewed by SA and the wider team?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/49-2
+00:04:54.358 --> 00:04:59.704
+<v Nausheen Fazlur Rahman>Was the scope and success confirmed by
+the customer within this meeting and</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/49-3
+00:04:59.704 --> 00:05:04.134
+<v Nausheen Fazlur Rahman>current state documented?
+I don't think this one is important.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/50-0
+00:05:05.414 --> 00:05:05.894
+<v Nausheen Fazlur Rahman>Um...</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/52-0
+00:05:07.654 --> 00:05:11.614
+<v Muhammad Faraz>What is the current state documented?
+Like the version of it?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/51-0
+00:05:08.214 --> 00:05:08.614
+<v Nausheen Fazlur Rahman>But...</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/53-0
+00:05:13.014 --> 00:05:15.334
+<v Nausheen Fazlur Rahman>No, I think the current stage of their...</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/54-0
+00:05:16.494 --> 00:05:18.054
+<v Nausheen Fazlur Rahman>of their architecture or something.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/55-0
+00:05:19.254 --> 00:05:23.940
+<v Nausheen Fazlur Rahman>But I think it's a part of SRS, no? Like,
+doesn't the SRS like have the current</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/55-1
+00:05:23.940 --> 00:05:25.814
+<v Nausheen Fazlur Rahman>state architecture or something?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/56-0
+00:05:27.014 --> 00:05:31.183
+<v Muhammad Faraz>It has something known as versions.
+Like there are different versions,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/56-1
+00:05:31.183 --> 00:05:35.646
+<v Muhammad Faraz>like there are different drafts of SRS,
+something changed, something added,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/56-2
+00:05:35.646 --> 00:05:38.876
+<v Muhammad Faraz>something, you know,
+that wasn't previously discussed.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/56-3
+00:05:38.876 --> 00:05:41.694
+<v Muhammad Faraz>So there are different versions of
+working SRS.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/57-0
+00:05:43.814 --> 00:05:46.898
+<v Nausheen Fazlur Rahman>Okay,
+so this was given to me by Qasim and I'm</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/57-1
+00:05:46.898 --> 00:05:51.163
+<v Nausheen Fazlur Rahman>not sure what this means.
+I'm not sure whether it means like the</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/57-2
+00:05:51.163 --> 00:05:52.934
+<v Nausheen Fazlur Rahman>current state architecture.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/58-0
+00:05:54.614 --> 00:05:59.169
+<v Nausheen Fazlur Rahman>of the customer and not the target state
+architecture, if you know what I mean.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/58-1
+00:05:59.169 --> 00:06:00.934
+<v Nausheen Fazlur Rahman>Or maybe we can just remove it.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/59-0
+00:06:00.014 --> 00:06:03.271
+<v Muhammad Faraz>Yeah, where they are,
+where they are standing right now,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/59-1
+00:06:03.271 --> 00:06:04.414
+<v Muhammad Faraz>something like that.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/61-0
+00:06:04.774 --> 00:06:07.597
+<v Nausheen Fazlur Rahman>Yes, exactly.
+Like what is the current state of,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/61-1
+00:06:07.597 --> 00:06:11.053
+<v Nausheen Fazlur Rahman>for example, if it's an app mod,
+I remember like for Gallo,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/61-2
+00:06:11.053 --> 00:06:15.430
+<v Nausheen Fazlur Rahman>we made like a current state architecture
+diagram for them. Okay, you know,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/61-3
+00:06:15.430 --> 00:06:18.022
+<v Nausheen Fazlur Rahman>this is how their current system looks
+like,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/61-4
+00:06:18.022 --> 00:06:20.614
+<v Nausheen Fazlur Rahman>the architecture or the code base and
+stuff.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/60-0
+00:06:19.854 --> 00:06:21.294
+<v Muhammad Faraz>You were on Gallo?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/62-0
+00:06:22.294 --> 00:06:26.518
+<v Nausheen Fazlur Rahman>I mean,
+I was in the capacity of technical writer,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/62-1
+00:06:26.518 --> 00:06:29.334
+<v Nausheen Fazlur Rahman>project manager type a little bit.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/64-0
+00:06:29.454 --> 00:06:32.649
+<v Muhammad Faraz>Well, that's funny.
+I got into Gallo for one week.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/64-1
+00:06:32.649 --> 00:06:34.654
+<v Muhammad Faraz>I got the MacBook and I got out.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/63-0
+00:06:32.934 --> 00:06:33.334
+<v Nausheen Fazlur Rahman>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/65-0
+00:06:35.574 --> 00:06:38.214
+<v Nausheen Fazlur Rahman>We got the map. Lucky.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/66-0
+00:06:37.614 --> 00:06:40.334
+<v Muhammad Faraz>Yeah, that was an achievement,
+so I had to tell it.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/67-0
+00:06:41.094 --> 00:06:45.574
+<v Nausheen Fazlur Rahman>Okay. Is Mac really better than Windows?
+I've never used Mac.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/68-0
+00:06:46.734 --> 00:06:50.565
+<v Muhammad Faraz>Well, if you're going to use one,
+you are never going to use Windows again.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/68-1
+00:06:50.565 --> 00:06:54.698
+<v Muhammad Faraz>I've been using Mac since all my life and
+I was it was very hard working with the</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/68-2
+00:06:54.698 --> 00:06:55.454
+<v Muhammad Faraz>Windows before.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/69-0
+00:06:56.294 --> 00:06:56.854
+<v Nausheen Fazlur Rahman>Okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/71-0
+00:06:56.854 --> 00:06:59.462
+<v Nayab Waseem>I mean,
+that must be a culture shock for you</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/70-0
+00:06:57.374 --> 00:06:57.934
+<v Muhammad Faraz>Windows.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/71-1
+00:06:59.462 --> 00:07:01.374
+<v Nayab Waseem>using Windows for the first time.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/72-0
+00:07:02.014 --> 00:07:05.214
+<v Muhammad Faraz>I do get racist sometime when it comes to
+Mac or Windows.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/73-0
+00:07:06.494 --> 00:07:07.094
+<v Nausheen Fazlur Rahman>What for you?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/74-0
+00:07:06.494 --> 00:07:06.974
+<v Nayab Waseem>Okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/76-0
+00:07:09.294 --> 00:07:13.134
+<v Muhammad Faraz>Yeah,
+so it's that much big of a difference.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/75-0
+00:07:10.534 --> 00:07:11.494
+<v Nausheen Fazlur Rahman>But I heard.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/77-0
+00:07:13.174 --> 00:07:20.294
+<v Nausheen Fazlur Rahman>But I heard developers, they prefer Linux,
+and I'm not sure how much that's true.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/80-0
+00:07:21.214 --> 00:07:23.660
+<v Muhammad Faraz>Well,
+developers do prefer Linux and Mac and</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/80-1
+00:07:23.660 --> 00:07:27.682
+<v Muhammad Faraz>Linux share the same environment because
+they were created under the same</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/78-0
+00:07:25.894 --> 00:07:26.294
+<v Nausheen Fazlur Rahman>Okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/80-2
+00:07:27.682 --> 00:07:28.334
+<v Muhammad Faraz>environment.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/79-0
+00:07:28.614 --> 00:07:29.334
+<v Nausheen Fazlur Rahman>All right, then.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/81-0
+00:07:31.654 --> 00:07:32.214
+<v Nausheen Fazlur Rahman>Okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/82-0
+00:07:32.174 --> 00:07:35.013
+<v Muhammad Faraz>So yeah,
+I do understand what the current state</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/82-1
+00:07:35.013 --> 00:07:36.254
+<v Muhammad Faraz>documented means now.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/83-0
+00:07:36.934 --> 00:07:38.934
+<v Nausheen Fazlur Rahman>Okay, but do we need...</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/84-0
+00:07:40.054 --> 00:07:41.414
+<v Nausheen Fazlur Rahman>OKOK.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/88-0
+00:07:41.454 --> 00:07:45.266
+<v Muhammad Faraz>Because that is an important artifact.
+If it's, you know,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/88-1
+00:07:45.266 --> 00:07:48.946
+<v Muhammad Faraz>like we need to know where we were at the
+start, right?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/88-2
+00:07:48.946 --> 00:07:54.203
+<v Muhammad Faraz>Like there are points of the project.
+There is a starting point and there is an</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/85-0
+00:07:49.134 --> 00:07:50.294
+<v Nausheen Fazlur Rahman>Yes, exactly.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/88-3
+00:07:54.203 --> 00:07:57.226
+<v Muhammad Faraz>ending point, right?
+So if we skip the start,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/86-0
+00:07:54.614 --> 00:07:57.414
+<v Nausheen Fazlur Rahman>That makes sense. Yeah. Yeah,
+that's a good perspective.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/88-4
+00:07:57.226 --> 00:08:00.774
+<v Muhammad Faraz>there is no like definition.
+Where did we start from?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/87-0
+00:08:01.534 --> 00:08:02.134
+<v Nausheen Fazlur Rahman>Right.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/91-0
+00:08:03.214 --> 00:08:07.707
+<v Nausheen Fazlur Rahman>Okay, I'll leave it here.
+I guess we'll be focusing on this meeting</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/89-0
+00:08:03.814 --> 00:08:03.934
+<v Muhammad Faraz>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/91-1
+00:08:07.707 --> 00:08:11.473
+<v Nausheen Fazlur Rahman>and tracking this.
+Maybe I'll put a purple box like over</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/91-2
+00:08:11.473 --> 00:08:16.560
+<v Nausheen Fazlur Rahman>near the gate, at the gates as well,
+so we know exactly what's being tracked</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/91-3
+00:08:16.560 --> 00:08:20.854
+<v Nausheen Fazlur Rahman>and I'll remove everything else.
+So it's going to be easier for.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/92-0
+00:08:19.814 --> 00:08:24.078
+<v Muhammad Faraz>So that's not a purple box,
+that's a purple thingy. And yes,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/93-0
+00:08:23.734 --> 00:08:31.023
+<v Nausheen Fazlur Rahman>Yeah, yeah, I forgot about that. Yeah.
+Yeah, I'll add those. And then, yeah,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/92-1
+00:08:24.078 --> 00:08:26.454
+<v Muhammad Faraz>I was gonna say it should be here.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/93-1
+00:08:31.023 --> 00:08:38.690
+<v Nausheen Fazlur Rahman>and then we're good to go to phase two,
+design and review. So design and review,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/93-2
+00:08:38.690 --> 00:08:42.854
+<v Nausheen Fazlur Rahman>we are going to be generating all of
+these.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/94-0
+00:08:42.894 --> 00:08:47.497
+<v Nausheen Fazlur Rahman>documentation or artifacts,
+domain decomposition,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/94-1
+00:08:47.497 --> 00:08:50.534
+<v Nausheen Fazlur Rahman>and all of that great stuff. And.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/95-0
+00:08:53.014 --> 00:08:57.134
+<v Nausheen Fazlur Rahman>And what are we tracking over here?
+The IPR ticket?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/96-0
+00:08:58.134 --> 00:08:58.534
+<v Muhammad Faraz>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/97-0
+00:08:58.134 --> 00:09:01.574
+<v Nausheen Fazlur Rahman>So I guess let's go back to the gate as
+well.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/101-0
+00:09:03.734 --> 00:09:08.434
+<v Muhammad Faraz>So now the on the IPR,
+the transcript analysis is very important</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/98-0
+00:09:04.294 --> 00:09:04.774
+<v Nausheen Fazlur Rahman>You.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/101-1
+00:09:08.434 --> 00:09:13.567
+<v Muhammad Faraz>thing over there. So the like,
+let me explain the meaning of this word</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/100-0
+00:09:09.254 --> 00:09:10.694
+<v Nausheen Fazlur Rahman>GG Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/101-2
+00:09:13.567 --> 00:09:18.483
+<v Muhammad Faraz>that I understood, right?
+So this transcript analysis was something</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/101-3
+00:09:18.483 --> 00:09:23.254
+<v Muhammad Faraz>that what happened in the meeting,
+did we cover all those points?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/102-0
+00:09:23.294 --> 00:09:28.054
+<v Muhammad Faraz>points that were supposed to be covered.
+So if that's a yes or a no.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/103-0
+00:09:29.414 --> 00:09:33.722
+<v Muhammad Faraz>Right, each point, each heading,
+whether it's a yes or a no.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/103-1
+00:09:33.722 --> 00:09:37.959
+<v Muhammad Faraz>So that's your basic transcript analysis
+that I understood.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/103-2
+00:09:37.959 --> 00:09:43.255
+<v Muhammad Faraz>So it was covering some headings,
+like each meeting of obviously will have</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/103-3
+00:09:43.255 --> 00:09:47.562
+<v Muhammad Faraz>different headings,
+and it will just understand whether that</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/103-4
+00:09:47.562 --> 00:09:48.974
+<v Muhammad Faraz>heading was covered.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/105-0
+00:09:49.414 --> 00:09:55.701
+<v Muhammad Faraz>or if it wasn't covered. On basis of code,
+it had more confidence of saying that it</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/104-0
+00:09:50.134 --> 00:09:52.334
+<v Nausheen Fazlur Rahman>That makes sense, yeah, that.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/105-1
+00:09:55.701 --> 00:09:56.374
+<v Muhammad Faraz>was done.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/106-0
+00:09:57.494 --> 00:10:01.574
+<v Nausheen Fazlur Rahman>That makes sense.
+And like I helped create the deck for the</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/106-1
+00:10:01.574 --> 00:10:06.062
+<v Nausheen Fazlur Rahman>IPR. So we had, you know,
+all these like deltas and scope and out</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/106-2
+00:10:06.062 --> 00:10:09.394
+<v Nausheen Fazlur Rahman>of scope.
+And so I guess the analysis will check</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/106-3
+00:10:09.394 --> 00:10:15.106
+<v Nausheen Fazlur Rahman>for that project within that meeting were
+all of the topics covered and was there a</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/106-4
+00:10:15.106 --> 00:10:15.854
+<v Nausheen Fazlur Rahman>resolution.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/107-0
+00:10:17.414 --> 00:10:17.814
+<v Nausheen Fazlur Rahman>Right.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/108-0
+00:10:18.534 --> 00:10:19.014
+<v Muhammad Faraz>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/109-0
+00:10:18.934 --> 00:10:24.268
+<v Nausheen Fazlur Rahman>I mean, and Nayab, I have a small favor.
+Are you in charge of the IPR meetings?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/109-1
+00:10:24.268 --> 00:10:25.734
+<v Nausheen Fazlur Rahman>Are you the organizer?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/110-0
+00:10:26.454 --> 00:10:27.974
+<v Nayab Waseem>Yep, 100%.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/111-0
+00:10:28.454 --> 00:10:31.106
+<v Nausheen Fazlur Rahman>Uh,
+Qasim has asked me to be added into the</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/111-1
+00:10:31.106 --> 00:10:33.094
+<v Nausheen Fazlur Rahman>meeting, so maybe from next week.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/112-0
+00:10:35.534 --> 00:10:36.374
+<v Nausheen Fazlur Rahman>You can add me.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/113-0
+00:10:35.654 --> 00:10:37.894
+<v Nayab Waseem>Yeah, definitely. Yeah,
+I can add you to that.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/114-0
+00:10:38.214 --> 00:10:40.614
+<v Nausheen Fazlur Rahman>Okay, thank you. So...</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/115-0
+00:10:42.774 --> 00:10:47.432
+<v Nausheen Fazlur Rahman>OK, coming back for us, I, yeah,
+I guess I mean depends if like we have</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/115-1
+00:10:47.432 --> 00:10:50.602
+<v Nausheen Fazlur Rahman>the structure of the IPR right for each
+project,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/115-2
+00:10:50.602 --> 00:10:53.254
+<v Nausheen Fazlur Rahman>and we just have to follow the structure.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/119-0
+00:10:55.494 --> 00:10:58.583
+<v Muhammad Faraz>Okay,
+so my question in this would be very</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/116-0
+00:10:55.574 --> 00:10:56.374
+<v Nausheen Fazlur Rahman>And net.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/119-1
+00:10:58.583 --> 00:11:02.318
+<v Muhammad Faraz>simple. Nayab could answer it,
+you could answer it,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/119-2
+00:11:02.318 --> 00:11:06.413
+<v Muhammad Faraz>because I have not been a part of a lot
+of IPR meetings.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/119-3
+00:11:06.413 --> 00:11:11.944
+<v Muhammad Faraz>I just attended one the last week, right?
+So how many, like Qasim mentioned,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/117-0
+00:11:08.854 --> 00:11:09.414
+<v Nausheen Fazlur Rahman>Okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/119-4
+00:11:11.944 --> 00:11:15.894
+<v Muhammad Faraz>this happens every Wednesday.
+So how many projects do?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/118-0
+00:11:14.974 --> 00:11:15.494
+<v Nausheen Fazlur Rahman>Yes.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/122-0
+00:11:16.214 --> 00:11:19.876
+<v Muhammad Faraz>they discuss in this meeting first.
+Secondly,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/122-1
+00:11:19.876 --> 00:11:23.698
+<v Muhammad Faraz>how will we identify this was the meeting?
+Now,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/122-2
+00:11:23.698 --> 00:11:30.226
+<v Muhammad Faraz>I did the same question with Qasim and he
+was left, you know, with no answer. So,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/120-0
+00:11:29.254 --> 00:11:29.734
+<v Nausheen Fazlur Rahman>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/122-3
+00:11:30.226 --> 00:11:32.694
+<v Muhammad Faraz>how many, how will we identify?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/121-0
+00:11:30.374 --> 00:11:32.214
+<v Nayab Waseem>Okay, I'll tell you the cadence.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/125-0
+00:11:33.974 --> 00:11:36.857
+<v Nayab Waseem>All right,
+so for us what happens is that every</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/123-0
+00:11:34.294 --> 00:11:35.014
+<v Muhammad Faraz>Or not.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/125-1
+00:11:36.857 --> 00:11:40.160
+<v Nayab Waseem>Monday I track commitments from the PMs
+because again,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/125-2
+00:11:40.160 --> 00:11:43.643
+<v Nayab Waseem>when you are a PM on a project,
+they tell you that, okay,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/125-3
+00:11:43.643 --> 00:11:47.487
+<v Nayab Waseem>maybe one week from now,
+this deal is going to be in design and</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/125-4
+00:11:47.487 --> 00:11:51.391
+<v Nayab Waseem>review. So before design and review,
+we have discover and align.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/125-5
+00:11:51.391 --> 00:11:55.174
+<v Nayab Waseem>So any project that is a discover and
+align is moving towards.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/126-0
+00:11:56.054 --> 00:12:00.315
+<v Nayab Waseem>But designer review,
+I asked the team and then they tell me,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/126-1
+00:12:00.315 --> 00:12:05.833
+<v Nayab Waseem>okay, the IPR is going to be happening.
+And one more thing, on our JIRA board,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/126-2
+00:12:05.833 --> 00:12:11.561
+<v Nayab Waseem>on the tickets that we have over there,
+every project has an implementing, sorry,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/126-3
+00:12:11.561 --> 00:12:14.774
+<v Nayab Waseem>IPR date, actual date,
+and IPR expected date.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/127-0
+00:12:15.054 --> 00:12:19.246
+<v Nayab Waseem>So when I populate these dates,
+every time when I get a commitment from</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/127-1
+00:12:19.246 --> 00:12:22.739
+<v Nayab Waseem>the project manager,
+and then based on those commitments on</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/127-2
+00:12:22.739 --> 00:12:25.941
+<v Nayab Waseem>the Monday call,
+I e-mail everyone like on Monday that</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/127-3
+00:12:25.941 --> 00:12:29.433
+<v Nayab Waseem>this is the deal that we will be
+reviewing on the IPR deck.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/127-4
+00:12:29.433 --> 00:12:33.974
+<v Nayab Waseem>And that's the basic cadence that is
+going on. But in case if any project is.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/128-0
+00:12:34.334 --> 00:12:38.840
+<v Nayab Waseem>If a PM says that, okay, I'm not ready,
+there's some problems going on in the</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/128-1
+00:12:38.840 --> 00:12:41.670
+<v Nayab Waseem>project.
+So what we do is that we go back to the</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/128-2
+00:12:41.670 --> 00:12:45.829
+<v Nayab Waseem>Jira ticket, we change the date,
+and then we communicate it to the team</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/128-3
+00:12:45.829 --> 00:12:50.392
+<v Nayab Waseem>that this project is going to be moved to
+the next IPR session that's going to</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/128-4
+00:12:50.392 --> 00:12:51.894
+<v Nayab Waseem>happen into the next week.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/129-0
+00:12:53.494 --> 00:12:55.254
+<v Muhammad Faraz>So that's a lot of manual work.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/130-0
+00:12:56.454 --> 00:12:58.534
+<v Nayab Waseem>I mean, yeah, sort of.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/132-0
+00:12:56.934 --> 00:13:03.110
+<v Muhammad Faraz>Like asking here and here and then
+confirming and reconfirming or even</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/132-1
+00:13:03.110 --> 00:13:09.894
+<v Muhammad Faraz>rescheduling if someone come something
+comes up. So a lot of variable things.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/133-0
+00:13:11.054 --> 00:13:15.334
+<v Muhammad Faraz>When we talk about variable things,
+we need to make sure of one thing.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/131-0
+00:13:11.254 --> 00:13:11.734
+<v Nayab Waseem>Yep.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/134-0
+00:13:16.774 --> 00:13:21.334
+<v Muhammad Faraz>If that was done or that was not done.
+Nothing else could be done.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/135-0
+00:13:22.694 --> 00:13:27.365
+<v Muhammad Faraz>If that was done,
+we can take the meeting link ourselves.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/135-1
+00:13:27.365 --> 00:13:32.679
+<v Muhammad Faraz>We can automate the next piece,
+like if someone marks it as done.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/135-2
+00:13:32.679 --> 00:13:36.383
+<v Muhammad Faraz>So that is when we check the last IPR,
+right?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/135-3
+00:13:36.383 --> 00:13:41.214
+<v Muhammad Faraz>And take out the meeting and then check
+this on that point.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/137-0
+00:13:43.534 --> 00:13:48.625
+<v Muhammad Faraz>Like if that makes any sense.
+So let's say if I am a PM, which I'm not.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/137-1
+00:13:48.625 --> 00:13:52.726
+<v Muhammad Faraz>So I say, yeah, my IPR was done.
+Now my automated system,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/137-2
+00:13:52.726 --> 00:13:57.534
+<v Muhammad Faraz>which Qasim is looking for,
+it's just going to look at the last IPR</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/137-3
+00:13:57.534 --> 00:14:02.200
+<v Muhammad Faraz>that happened because it's going to have
+the name of IPR meeting,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/137-4
+00:14:02.200 --> 00:14:03.614
+<v Muhammad Faraz>something like that.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/136-0
+00:14:02.374 --> 00:14:04.614
+<v Nausheen Fazlur Rahman>Yeah, not not the project name.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/138-0
+00:14:04.134 --> 00:14:09.728
+<v Muhammad Faraz>So it's going to take a look at the last
+meeting of IPR that happened and compare</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/138-1
+00:14:09.728 --> 00:14:12.934
+<v Muhammad Faraz>the transcript.
+Was our IPR over there or not?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/139-0
+00:14:17.334 --> 00:14:17.494
+<v Nayab Waseem>Mm.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/140-0
+00:14:18.134 --> 00:14:22.614
+<v Nausheen Fazlur Rahman>That's the first step. So, right? I mean,
+what if it's not there?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/141-0
+00:14:24.014 --> 00:14:27.871
+<v Muhammad Faraz>If it's not there,
+then it's a simple gate blockage,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/141-1
+00:14:27.871 --> 00:14:30.854
+<v Muhammad Faraz>like a false positive kind of a scenario.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/142-0
+00:14:34.294 --> 00:14:36.134
+<v Nausheen Fazlur Rahman>Okay, so how do we solve that?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/143-0
+00:14:37.454 --> 00:14:43.734
+<v Muhammad Faraz>So that gets solved via something that is
+called physical governance.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/144-0
+00:14:45.254 --> 00:14:45.414
+<v Nausheen Fazlur Rahman>Taha.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/145-0
+00:14:46.814 --> 00:14:47.494
+<v Nausheen Fazlur Rahman>Physical.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/148-0
+00:14:48.454 --> 00:14:52.833
+<v Muhammad Faraz>So you go and ask the PM, hey,
+what do you mean?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/148-1
+00:14:52.833 --> 00:14:56.854
+<v Muhammad Faraz>That is as simple as that.
+What do you mean?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/146-0
+00:14:54.134 --> 00:14:54.694
+<v Nausheen Fazlur Rahman>Action.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/147-0
+00:14:56.214 --> 00:14:56.774
+<v Nausheen Fazlur Rahman>Okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/149-0
+00:14:59.094 --> 00:14:59.334
+<v Nausheen Fazlur Rahman>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/151-0
+00:15:00.694 --> 00:15:03.517
+<v Muhammad Faraz>So,
+like that is the only way I can think of.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/151-1
+00:15:03.517 --> 00:15:07.014
+<v Muhammad Faraz>If you have any better ideas,
+I would love to hear them.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/150-0
+00:15:05.774 --> 00:15:06.774
+<v Nausheen Fazlur Rahman>No, no problem.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/152-0
+00:15:07.974 --> 00:15:10.917
+<v Nausheen Fazlur Rahman>I mean,
+the only idea I have is which Qasim</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/152-1
+00:15:10.917 --> 00:15:16.134
+<v Nausheen Fazlur Rahman>rejected is that add the meeting link,
+but you know, Qasim doesn't want that.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/153-0
+00:15:17.334 --> 00:15:20.148
+<v Muhammad Faraz>Well,
+you do believe that it was a good idea.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/153-1
+00:15:20.148 --> 00:15:21.494
+<v Muhammad Faraz>I thank you, Nausheen.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/154-0
+00:15:23.094 --> 00:15:26.072
+<v Nausheen Fazlur Rahman>I mean, like,
+how else would you let them track the</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/154-1
+00:15:26.072 --> 00:15:29.107
+<v Nausheen Fazlur Rahman>meeting? You know,
+because you know the IPR meeting,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/154-2
+00:15:29.107 --> 00:15:33.574
+<v Nausheen Fazlur Rahman>it it doesn't have, at least in the title,
+it wouldn't have the project name.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/156-0
+00:15:34.694 --> 00:15:39.480
+<v Muhammad Faraz>Exactly, 100% agreed.
+So that's why when we are looking into</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/156-1
+00:15:39.480 --> 00:15:43.717
+<v Muhammad Faraz>the last IPR,
+after the PM comes in and checks, yeah,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/155-0
+00:15:41.494 --> 00:15:41.814
+<v Nausheen Fazlur Rahman>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/156-2
+00:15:43.717 --> 00:15:46.934
+<v Muhammad Faraz>that was done. Now we check the last IPR.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/160-0
+00:15:47.974 --> 00:15:51.740
+<v Muhammad Faraz>That's the only automated gate that can
+happen. Other than that,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/157-0
+00:15:51.414 --> 00:15:51.894
+<v Nausheen Fazlur Rahman>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/160-1
+00:15:51.740 --> 00:15:55.738
+<v Muhammad Faraz>you have to provide the manual evidence.
+That's out of the question,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/160-2
+00:15:55.738 --> 00:15:59.041
+<v Muhammad Faraz>out of the picture now.
+So there is no other way. Nayab,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/158-0
+00:15:57.254 --> 00:15:57.734
+<v Nausheen Fazlur Rahman>Okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/160-3
+00:15:59.041 --> 00:16:03.734
+<v Muhammad Faraz>can you think of anything? I think so.
+You have a very creative brain sometimes.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/159-0
+00:16:04.854 --> 00:16:05.494
+<v Nausheen Fazlur Rahman>All the time.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/161-0
+00:16:06.374 --> 00:16:07.334
+<v Muhammad Faraz>All the times.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/163-0
+00:16:07.294 --> 00:16:07.414
+<v Nayab Waseem>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/162-0
+00:16:07.694 --> 00:16:07.894
+<v Nausheen Fazlur Rahman>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/165-0
+00:16:09.094 --> 00:16:14.718
+<v Nayab Waseem>I mean, I think, because again,
+working with Chris and working with Qasim,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/165-1
+00:16:14.718 --> 00:16:20.491
+<v Nayab Waseem>it's like two different mindsets.
+Like Qasim is more towards like, you know,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/164-0
+00:16:18.054 --> 00:16:18.534
+<v Nausheen Fazlur Rahman>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/165-2
+00:16:20.491 --> 00:16:26.414
+<v Nayab Waseem>how I can make this whole process as an
+organizational level more accurate and</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/165-3
+00:16:26.414 --> 00:16:27.014
+<v Nayab Waseem>fitting.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/166-0
+00:16:28.134 --> 00:16:33.184
+<v Nayab Waseem>Chris has this mindset that, you know,
+if our team has the capacity of doing</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/166-1
+00:16:33.184 --> 00:16:36.529
+<v Nayab Waseem>stuff right,
+so keeping those both things in mind,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/166-2
+00:16:36.529 --> 00:16:41.251
+<v Nayab Waseem>you have to come up with something that's
+more easier to go about with.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/166-3
+00:16:41.251 --> 00:16:45.646
+<v Nayab Waseem>And I think in terms of the,
+if we just speak of the IPR, I think,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/166-4
+00:16:45.646 --> 00:16:48.728
+<v Nayab Waseem>again,
+you're right that there's too much back</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/166-5
+00:16:48.728 --> 00:16:49.974
+<v Nayab Waseem>and forth going on.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/167-0
+00:16:50.254 --> 00:16:54.906
+<v Nayab Waseem>because then there's scheduling,
+there's reporting, and then, you know,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/167-1
+00:16:54.906 --> 00:17:00.203
+<v Nayab Waseem>keeping up the reminders and all of that.
+And I think if you can just automate or</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/167-2
+00:17:00.203 --> 00:17:03.305
+<v Nayab Waseem>maybe integrate something, I'm sure,
+and again,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/167-3
+00:17:03.305 --> 00:17:07.892
+<v Nayab Waseem>we are getting rid of Jira board.
+So if in case we're connecting that,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/167-4
+00:17:07.892 --> 00:17:09.894
+<v Nayab Waseem>we can just track up the dates.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/168-0
+00:17:10.214 --> 00:17:16.223
+<v Nayab Waseem>or maybe like log commitments from the PM
+and connect something if that can help in</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/168-1
+00:17:16.223 --> 00:17:19.442
+<v Nayab Waseem>some way. Again,
+I'm not a technical person,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/168-2
+00:17:19.442 --> 00:17:22.374
+<v Nayab Waseem>so that's what I can, you know, think of.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/169-0
+00:17:24.774 --> 00:17:26.774
+<v Muhammad Faraz>Well, again, that's...</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/170-0
+00:17:26.054 --> 00:17:29.014
+<v Nausheen Fazlur Rahman>Can we link it to Jira with the somehow?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/173-0
+00:17:31.094 --> 00:17:37.154
+<v Nayab Waseem>I mean, Chris wants to get rid of Jira.
+He doesn't want to do back and forth.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/171-0
+00:17:31.494 --> 00:17:31.894
+<v Nausheen Fazlur Rahman>Check.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/172-0
+00:17:33.974 --> 00:17:35.414
+<v Nausheen Fazlur Rahman>CST.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/173-1
+00:17:37.154 --> 00:17:39.174
+<v Nayab Waseem>So I think what we can do.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/174-0
+00:17:38.534 --> 00:17:42.573
+<v Muhammad Faraz>I got a good plan. I got a good plan.
+Sorry to cut you off, Nayab.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/174-1
+00:17:42.573 --> 00:17:47.094
+<v Muhammad Faraz>Nayab fills in this information.
+She does that already. Why not over here?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/175-0
+00:17:50.054 --> 00:17:50.374
+<v Nayab Waseem>Huh?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/176-0
+00:17:50.414 --> 00:17:53.894
+<v Nausheen Fazlur Rahman>Like, at the meeting, Nick, or, or...</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/178-0
+00:17:52.654 --> 00:17:55.683
+<v Muhammad Faraz>No, no, no,
+not at the meeting link at the</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/178-1
+00:17:55.683 --> 00:18:01.176
+<v Muhammad Faraz>appropriate time when a project hits the
+IPR gate, right? Nayab knows, right?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/178-2
+00:18:01.176 --> 00:18:06.811
+<v Muhammad Faraz>She's the one who's putting up all the
+things that this is gonna happen or this</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/178-3
+00:18:06.811 --> 00:18:10.614
+<v Muhammad Faraz>is not gonna happen.
+So why not we leave it to Nayab?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/177-0
+00:18:07.014 --> 00:18:09.734
+<v Nausheen Fazlur Rahman>Right, right, so.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/180-0
+00:18:09.654 --> 00:18:14.507
+<v Nayab Waseem>I mean, the amount of, for us,
+the amount of times that I have to keep</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/180-1
+00:18:14.507 --> 00:18:19.291
+<v Nayab Waseem>up with the dates, I mean,
+I think my math memory has increased like,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/180-2
+00:18:19.291 --> 00:18:23.187
+<v Nayab Waseem>I think, crazily. I mean,
+if you're getting rid of Jira,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/179-0
+00:18:20.614 --> 00:18:20.934
+<v Nausheen Fazlur Rahman>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/180-3
+00:18:23.187 --> 00:18:27.014
+<v Nayab Waseem>then automatically,
+I think the Deliver Pro is gonna...</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/182-0
+00:18:28.094 --> 00:18:34.134
+<v Nayab Waseem>fall into my lap. So I think then again,
+I can populate the dates over there and</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/182-1
+00:18:34.134 --> 00:18:40.249
+<v Nayab Waseem>see what we can do about it because again,
+we are very particular about following</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/182-2
+00:18:40.249 --> 00:18:44.425
+<v Nayab Waseem>the process.
+I'm sure Nausheen can agree because again,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/182-3
+00:18:44.425 --> 00:18:48.675
+<v Nayab Waseem>the dates on the like client,
+the projects and you know,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/182-4
+00:18:48.675 --> 00:18:50.614
+<v Nayab Waseem>the completion date again.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/184-0
+00:18:50.894 --> 00:18:56.151
+<v Nayab Waseem>the IPR dates and you know, all of this,
+like following the dates is something</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/184-1
+00:18:56.151 --> 00:18:58.214
+<v Nayab Waseem>that keeps us all in track. So.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/183-0
+00:18:57.654 --> 00:18:58.134
+<v Nausheen Fazlur Rahman>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/185-0
+00:18:59.574 --> 00:19:01.734
+<v Nayab Waseem>Yeah, I think that's what we can maybe.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/186-0
+00:19:03.654 --> 00:19:05.174
+<v Nayab Waseem>Take, take a look into.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/188-0
+00:19:06.134 --> 00:19:09.254
+<v Muhammad Faraz>Nayab is gonna hate me after this meeting.
+That's fine.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/187-0
+00:19:08.854 --> 00:19:09.334
+<v Nausheen Fazlur Rahman>One.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/190-0
+00:19:10.454 --> 00:19:12.534
+<v Nayab Waseem>It's okay. It's okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/189-0
+00:19:10.774 --> 00:19:10.934
+<v Muhammad Faraz>Yes.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/192-0
+00:19:12.454 --> 00:19:15.974
+<v Muhammad Faraz>So that's discussed.
+Let's move on from the IPR.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/193-0
+00:19:16.454 --> 00:19:22.135
+<v Nausheen Fazlur Rahman>Okay, all right.
+So I think what else do we need to track</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/193-1
+00:19:22.135 --> 00:19:26.934
+<v Nausheen Fazlur Rahman>within this phase? Just the IPR.
+And then let's.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/194-0
+00:19:26.054 --> 00:19:28.655
+<v Nayab Waseem>Guys,
+I just want to add one more thing here.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/194-1
+00:19:28.655 --> 00:19:32.838
+<v Nayab Waseem>Like, you know, after every meeting,
+especially if it's the, you can say,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/194-2
+00:19:32.838 --> 00:19:36.004
+<v Nayab Waseem>the PM was saying,
+if it's the managed services saying,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/194-3
+00:19:36.004 --> 00:19:39.339
+<v Nayab Waseem>or it's the sales,
+like I'm generating reports after that,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/194-4
+00:19:39.339 --> 00:19:43.861
+<v Nayab Waseem>like, you know, using Avoma. So, I mean,
+if you're getting rid of Jira, I mean,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/194-5
+00:19:43.861 --> 00:19:46.349
+<v Nayab Waseem>like,
+we certainly cannot get rid of Avoma.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/194-6
+00:19:46.349 --> 00:19:48.214
+<v Nayab Waseem>It's part of our daily processes.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/195-0
+00:19:48.694 --> 00:19:51.181
+<v Nayab Waseem>But like attaching something like,
+you know,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/195-1
+00:19:51.181 --> 00:19:55.049
+<v Nayab Waseem>having the report system instead of
+moving the report into the Slack,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/195-2
+00:19:55.049 --> 00:19:59.525
+<v Nayab Waseem>we could just create a repository into
+the deliver pro and where all the reports</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/195-3
+00:19:59.525 --> 00:20:02.454
+<v Nayab Waseem>are in one place.
+Like what do you think about that?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/196-0
+00:20:04.054 --> 00:20:04.854
+<v Muhammad Faraz>Good idea.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/197-0
+00:20:08.614 --> 00:20:09.574
+<v Nausheen Fazlur Rahman>Yeah, I like it.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/198-0
+00:20:08.614 --> 00:20:11.977
+<v Muhammad Faraz>Requires a lot of,
+requires a lot of money,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/198-1
+00:20:11.977 --> 00:20:13.734
+<v Muhammad Faraz>but that's a good idea.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/199-0
+00:20:14.374 --> 00:20:14.774
+<v Nausheen Fazlur Rahman>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/200-0
+00:20:17.894 --> 00:20:21.327
+<v Nayab Waseem>Because, you know,
+right now we just we have certain things</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/200-1
+00:20:21.327 --> 00:20:24.015
+<v Nayab Waseem>for a team,
+like we are putting some things on</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/200-2
+00:20:24.015 --> 00:20:26.819
+<v Nayab Waseem>SharePoint,
+then we are uploading some things on</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/200-3
+00:20:26.819 --> 00:20:29.107
+<v Nayab Waseem>Slack.
+I feel like there's not a proper</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/200-4
+00:20:29.107 --> 00:20:32.425
+<v Nayab Waseem>structure to it, so if you're working on,
+like, you know,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/200-5
+00:20:32.425 --> 00:20:35.400
+<v Nayab Waseem>enhancing the overall efficiency of the
+operations,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/200-6
+00:20:35.400 --> 00:20:38.374
+<v Nayab Waseem>we can just move the reports that we have
+on Slack.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/201-0
+00:20:38.734 --> 00:20:41.736
+<v Nayab Waseem>and just for specifically for the
+professional services,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/201-1
+00:20:41.736 --> 00:20:45.107
+<v Nayab Waseem>and we could just put it up in the
+deliver pro. Like, you know,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/201-2
+00:20:45.107 --> 00:20:48.267
+<v Nayab Waseem>this was the same today,
+these were the reports, and maybe,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/201-3
+00:20:48.267 --> 00:20:52.375
+<v Nayab Waseem>maybe we can train the deliver pro to
+extract the information from the report</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/201-4
+00:20:52.375 --> 00:20:54.534
+<v Nayab Waseem>that I put in there, if that makes sense.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/203-0
+00:20:56.294 --> 00:21:00.054
+<v Muhammad Faraz>That does, let's add that,
+add that to the future announcement list.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/202-0
+00:20:57.494 --> 00:20:57.974
+<v Nausheen Fazlur Rahman>Mhm.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/204-0
+00:21:00.534 --> 00:21:01.014
+<v Nausheen Fazlur Rahman>Okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/205-0
+00:21:00.894 --> 00:21:06.134
+<v Muhammad Faraz>Which Nayab is creating again. So Nayab,
+more work for you. Congratulations.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/207-0
+00:21:06.454 --> 00:21:06.574
+<v Nausheen Fazlur Rahman>Good.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/206-0
+00:21:06.774 --> 00:21:06.934
+<v Nayab Waseem>Yes.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/210-0
+00:21:08.054 --> 00:21:10.350
+<v Nayab Waseem>I mean,
+I am generating the reports anyway,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/208-0
+00:21:08.494 --> 00:21:08.734
+<v Muhammad Faraz>Okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/210-1
+00:21:10.350 --> 00:21:13.585
+<v Nayab Waseem>so I could just copy the report that I'm
+putting up on Slack.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/209-0
+00:21:12.214 --> 00:21:12.774
+<v Nausheen Fazlur Rahman>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/210-2
+00:21:13.585 --> 00:21:16.246
+<v Nayab Waseem>I'm just gonna put that on DeliverPro.
+It doesn't,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/210-3
+00:21:16.246 --> 00:21:18.854
+<v Nayab Waseem>it's not gonna change any anything for me,
+but...</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/211-0
+00:21:20.454 --> 00:21:21.654
+<v Muhammad Faraz>Yeah, good work.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/213-0
+00:21:23.654 --> 00:21:29.359
+<v Nausheen Fazlur Rahman>And, and coming back to like Faraz,
+your your like awesome idea about Nayab</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/212-0
+00:21:23.694 --> 00:21:23.814
+<v Nayab Waseem>Yeah.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/213-1
+00:21:29.359 --> 00:21:34.538
+<v Nausheen Fazlur Rahman>doing this, and I think Nayab,
+I wanna ask you a question in the IPR</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/213-2
+00:21:34.538 --> 00:21:35.814
+<v Nausheen Fazlur Rahman>meetings, like...</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/215-0
+00:21:36.854 --> 00:21:41.659
+<v Nausheen Fazlur Rahman>They have to approve the solution, right?
+What if it doesn't get approved and you</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/215-1
+00:21:41.659 --> 00:21:45.760
+<v Nausheen Fazlur Rahman>guys have to do another pass?
+Does that happen for a project or every</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/215-2
+00:21:45.760 --> 00:21:49.334
+<v Nausheen Fazlur Rahman>single project, but the Kelly meeting,
+man, it's like, okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/214-0
+00:21:49.254 --> 00:21:49.534
+<v Nayab Waseem>Well.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/218-0
+00:21:50.694 --> 00:21:54.149
+<v Nayab Waseem>Okay,
+so every IPR process has to go through</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/218-1
+00:21:54.149 --> 00:21:57.834
+<v Nayab Waseem>Ramesh review.
+So until unless if Ramesh is not</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/218-2
+00:21:57.834 --> 00:22:01.443
+<v Nayab Waseem>reviewing it,
+if he's not giving his approval,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/216-0
+00:21:58.614 --> 00:21:59.334
+<v Nausheen Fazlur Rahman>At Taha.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/218-3
+00:22:01.443 --> 00:22:07.508
+<v Nayab Waseem>these projects are not at all moving to
+any other phrase. So that's how it is.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/218-4
+00:22:07.508 --> 00:22:11.654
+<v Nayab Waseem>Ramesh gives the, you know,
+I also shared the report.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/217-0
+00:22:10.494 --> 00:22:10.654
+<v Nausheen Fazlur Rahman>With.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/220-0
+00:22:11.974 --> 00:22:15.756
+<v Nayab Waseem>for the IPR in the e-mail whenever the,
+you know, the IPR is done.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/220-1
+00:22:15.756 --> 00:22:19.030
+<v Nayab Waseem>So the report contains everything that
+what was the deal,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/220-2
+00:22:19.030 --> 00:22:22.529
+<v Nayab Waseem>what was the feedback that was shared,
+what work is going on,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/220-3
+00:22:22.529 --> 00:22:26.932
+<v Nayab Waseem>anything that needs to be changed. So,
+you know, it's a whole sort of report.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/220-4
+00:22:26.932 --> 00:22:30.544
+<v Nayab Waseem>I'll add you to the meeting.
+You'll have an idea about what I'm</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/219-0
+00:22:30.534 --> 00:22:32.774
+<v Nausheen Fazlur Rahman>OK, OK, OK, but.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/220-5
+00:22:30.544 --> 00:22:31.334
+<v Nayab Waseem>talking about.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/221-0
+00:22:32.054 --> 00:22:35.073
+<v Nayab Waseem>So, we can,
+we can like put up a gateway over there</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/221-1
+00:22:35.073 --> 00:22:40.007
+<v Nayab Waseem>that you know Ramesh needs to approve the
+change in the IPR, and if it's good to go,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/221-2
+00:22:40.007 --> 00:22:44.534
+<v Nayab Waseem>then you know we can move towards the
+next phase that is build and implement.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/222-0
+00:22:46.614 --> 00:22:47.174
+<v Nausheen Fazlur Rahman>Okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/223-0
+00:22:51.014 --> 00:22:55.255
+<v Nausheen Fazlur Rahman>Okay, so solution approved by IPR,
+I guess Ramesh is a part of that,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/223-1
+00:22:55.255 --> 00:22:57.960
+<v Nausheen Fazlur Rahman>you know,
+so I don't want to write his name</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/223-2
+00:22:57.960 --> 00:23:01.894
+<v Nausheen Fazlur Rahman>specifically over here,
+but I guess it's understood that it has</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/223-3
+00:23:01.894 --> 00:23:06.319
+<v Nausheen Fazlur Rahman>to pass through like Ramesh and then this
+meeting. And in this meeting,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/223-4
+00:23:06.319 --> 00:23:09.454
+<v Nausheen Fazlur Rahman>Chris and Qasim are there, right?
+Like going over.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/224-0
+00:23:09.574 --> 00:23:13.734
+<v Nausheen Fazlur Rahman>The Projects, OK, and then.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/227-0
+00:23:10.374 --> 00:23:14.850
+<v Nayab Waseem>Yep, yep. It's a very important meeting.
+I mean, without the IPR,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/227-1
+00:23:14.850 --> 00:23:19.801
+<v Nayab Waseem>no deal can move into the build and
+implement, no matter, because again,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/227-2
+00:23:19.801 --> 00:23:24.142
+<v Nayab Waseem>we also had a lot of previous deals that
+are still stuck there,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/225-0
+00:23:20.374 --> 00:23:21.134
+<v Nausheen Fazlur Rahman>Exactly.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/227-3
+00:23:24.142 --> 00:23:28.414
+<v Nayab Waseem>and they're not moving to build and
+implement without the IPR.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/226-0
+00:23:29.014 --> 00:23:29.494
+<v Nausheen Fazlur Rahman>Okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/228-0
+00:23:31.614 --> 00:23:35.318
+<v Nausheen Fazlur Rahman>Okay,
+and so let's go on to the gates of this</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/228-1
+00:23:35.318 --> 00:23:40.953
+<v Nausheen Fazlur Rahman>phase, which is design and review.
+We just have three solution design</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/228-2
+00:23:40.953 --> 00:23:45.864
+<v Nausheen Fazlur Rahman>artifacts reviewed by SA and team,
+solution improved by IPR,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/228-3
+00:23:45.864 --> 00:23:50.614
+<v Nausheen Fazlur Rahman>and then GR stories,
+which are also being generated are...</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/229-0
+00:23:50.694 --> 00:23:53.974
+<v Nausheen Fazlur Rahman>Validated by the the PM, so.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/230-0
+00:23:54.974 --> 00:23:57.414
+<v Nausheen Fazlur Rahman>Human gates, you know, very human games.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/231-0
+00:23:59.094 --> 00:24:04.294
+<v Nausheen Fazlur Rahman>We're not tracking any micro.
+Any questions Faraz on this space?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/233-0
+00:24:05.814 --> 00:24:13.045
+<v Muhammad Faraz>Nope, no questions on phase two,
+but I do have a thing that I might have</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/232-0
+00:24:07.014 --> 00:24:07.494
+<v Nausheen Fazlur Rahman>Okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/233-1
+00:24:13.045 --> 00:24:16.214
+<v Muhammad Faraz>to jump off in next two minutes.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/235-0
+00:24:16.614 --> 00:24:20.676
+<v Nausheen Fazlur Rahman>Okay, okay, same.
+Let me set up another meeting on Monday</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/235-1
+00:24:20.676 --> 00:24:26.139
+<v Nausheen Fazlur Rahman>and we can go over the last two phases,
+but the idea is pretty much the same.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/235-2
+00:24:26.139 --> 00:24:31.602
+<v Nausheen Fazlur Rahman>I think you have a bit of an idea.
+I will work on the Word document for this.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/235-3
+00:24:31.602 --> 00:24:36.294
+<v Nausheen Fazlur Rahman>It may take me a couple of days.
+I have more free time on Tuesday.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/234-0
+00:24:31.734 --> 00:24:31.974
+<v Muhammad Faraz>True.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/238-0
+00:24:36.534 --> 00:24:40.636
+<v Nausheen Fazlur Rahman>So maybe I can share that with you on
+Tuesday and take out.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/236-0
+00:24:39.974 --> 00:24:40.694
+<v Muhammad Faraz>That's perfect.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/238-1
+00:24:40.636 --> 00:24:45.627
+<v Nausheen Fazlur Rahman>And you just want a Word document of this
+whole like methodology, right?</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/237-0
+00:24:42.734 --> 00:24:43.014
+<v Muhammad Faraz>Yes.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/238-2
+00:24:45.627 --> 00:24:47.814
+<v Nausheen Fazlur Rahman>Like nothing more, nothing less.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/243-0
+00:24:48.534 --> 00:24:52.322
+<v Muhammad Faraz>Exactly,
+like I am gonna just change that document,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/239-0
+00:24:49.614 --> 00:24:50.534
+<v Nausheen Fazlur Rahman>Alright, speaking.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/243-1
+00:24:52.322 --> 00:24:57.275
+<v Muhammad Faraz>so just make it in the SharePoint.
+I'm gonna change it in this way,</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/240-0
+00:24:55.814 --> 00:24:56.294
+<v Nausheen Fazlur Rahman>Okay.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/243-2
+00:24:57.275 --> 00:25:01.573
+<v Muhammad Faraz>where we can, you know,
+actually I can actually use it and</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/241-0
+00:25:01.174 --> 00:25:01.974
+<v Nausheen Fazlur Rahman>Okay, got it.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/243-3
+00:25:01.573 --> 00:25:06.963
+<v Muhammad Faraz>deliver, so like it has the idea,
+because currently it has the PDF and it</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/242-0
+00:25:03.254 --> 00:25:03.734
+<v Nausheen Fazlur Rahman>Tigger.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/243-4
+00:25:06.963 --> 00:25:09.294
+<v Muhammad Faraz>doesn't know what to do with it.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/244-0
+00:25:09.894 --> 00:25:12.614
+<v Nausheen Fazlur Rahman>Right, right. Okay. I can do it.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/246-0
+00:25:14.134 --> 00:25:17.425
+<v Nausheen Fazlur Rahman>Okay, thank you. Thank you guys.
+It was a productive meeting.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/245-0
+00:25:14.454 --> 00:25:15.174
+<v Muhammad Faraz>Perfect.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/246-1
+00:25:17.425 --> 00:25:19.654
+<v Nausheen Fazlur Rahman>Thank you for your contributions and help.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/247-0
+00:25:21.094 --> 00:25:22.654
+<v Muhammad Faraz>Thank you. Thank you, Javed.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/249-0
+00:25:21.494 --> 00:25:25.676
+<v Nayab Waseem>No worries, Hashim. Great work, guys.
+Let's see more improvements in the</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/248-0
+00:25:24.054 --> 00:25:24.934
+<v Nausheen Fazlur Rahman>Yeah, and have.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/249-1
+00:25:25.676 --> 00:25:26.134
+<v Nayab Waseem>process.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/251-0
+00:25:26.534 --> 00:25:28.294
+<v Nausheen Fazlur Rahman>Yep, and have a great weekend.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/250-0
+00:25:27.654 --> 00:25:28.054
+<v Muhammad Faraz>All right.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/252-0
+00:25:29.174 --> 00:25:30.134
+<v Muhammad Faraz>Same to you guys.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/254-0
+00:25:29.174 --> 00:25:30.934
+<v Nayab Waseem>You too, guys. Take care. Goodbye.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/256-0
+00:25:30.374 --> 00:25:31.654
+<v Nausheen Fazlur Rahman>Okay, a lot of this.</v>
+
+103e8606-1bb9-4ce9-9546-6e0ba98e93d1/253-0
+00:25:30.974 --> 00:25:31.334
+<v Muhammad Faraz>Right.</v>

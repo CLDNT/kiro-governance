@@ -16,7 +16,7 @@ import {
   Link2,
   Upload,
   ChevronRight,
-  RefreshCw,
+  GitBranch,
 } from 'lucide-react';
 
 import { useProject } from '@/hooks/useProjects';
@@ -27,10 +27,10 @@ import {
   MacroCheckpoint,
   PhaseGateView,
   Project,
-  SyncArtifactsResponse,
+  SyncGatesResponse,
 } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
-import { canManageArtifactAuto } from '@/lib/artifacts';
+import { canManageGateSync } from '@/lib/linkage';
 import MicroArtifactItem from '@/components/gates/MicroArtifactItem';
 import TranscriptAnalysisPanel from '@/components/gates/TranscriptAnalysisPanel';
 import { Badge } from '@/components/ui/badge';
@@ -546,23 +546,24 @@ function ProjectDetailPage(): JSX.Element {
   const projectQuery = useProject(id);
   const gatesQuery = useGates(id);
 
-  const canSyncArtifacts = canManageArtifactAuto(user?.role);
+  const canSyncGates = canManageGateSync(user?.role);
 
-  const syncArtifacts = useMutation({
-    mutationFn: async (): Promise<SyncArtifactsResponse> => {
-      const response = await client.post<SyncArtifactsResponse>(
-        `/api/projects/${id}/sync-artifacts`
-      );
+  // CR-16: repo → macro-gate sync. Reads the linked repo's docs/project-progress.md and resolves
+  // macro_checkpoints. Distinct from syncArtifacts (Level-2 micro reconcile) — different endpoint,
+  // different response shape, admin/leadership only.
+  const syncGates = useMutation({
+    mutationFn: async (): Promise<SyncGatesResponse> => {
+      const response = await client.post<SyncGatesResponse>(`/api/projects/${id}/sync-gates`);
       return response.data;
     },
     onSuccess: (summary) => {
       void queryClient.invalidateQueries({ queryKey: ['gates', id] });
       toast.success(
-        `Kiro sync complete — ${summary.completed} completed, ${summary.matched} matched, ${summary.skipped} skipped.`
+        `Gate sync complete — ${summary.resolved} resolved, ${summary.matched} matched, ${summary.skipped} skipped.`
       );
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : 'Failed to sync artifacts from Kiro');
+      toast.error(err instanceof Error ? err.message : 'Failed to sync gates from repo');
     },
   });
 
@@ -638,7 +639,26 @@ function ProjectDetailPage(): JSX.Element {
               {project.jira_key}
             </Badge>
           </div>
-          <Badge variant="info">{project.current_phase}</Badge>
+          <div className="flex items-center gap-3">
+            {/* CR-16 macro gate sync — distinct from the per-phase "Sync from Kiro" artifact button */}
+            {canSyncGates && project.github_repo && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => syncGates.mutate()}
+                disabled={syncGates.isPending}
+                title="Resolve macro gates from the linked repo's docs/project-progress.md"
+              >
+                {syncGates.isPending ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                ) : (
+                  <GitBranch className="h-3.5 w-3.5" aria-hidden="true" />
+                )}
+                Sync gates from repo
+              </Button>
+            )}
+            <Badge variant="info">{project.current_phase}</Badge>
+          </div>
         </div>
 
         <PhaseStepper currentPhase={project.current_phase} />
@@ -694,25 +714,7 @@ function ProjectDetailPage(): JSX.Element {
               {/* Micro artifacts */}
               {phaseView.micro_artifacts.length > 0 && (
                 <div>
-                  <div className="mb-2 flex items-center justify-between gap-2">
-                    <h4 className="text-sm font-semibold text-foreground">Artifacts</h4>
-                    {canSyncArtifacts && project.github_repo && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => syncArtifacts.mutate()}
-                        disabled={syncArtifacts.isPending}
-                        title="Reconcile Kiro micro-events into artifact completion"
-                      >
-                        {syncArtifacts.isPending ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
-                        ) : (
-                          <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
-                        )}
-                        Sync from Kiro
-                      </Button>
-                    )}
-                  </div>
+                  <h4 className="mb-2 text-sm font-semibold text-foreground">Artifacts</h4>
                   <div className="space-y-2">
                     {phaseView.micro_artifacts.map((a) => (
                       <MicroArtifactItem

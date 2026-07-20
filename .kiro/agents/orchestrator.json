@@ -12,5 +12,5 @@
   ],
   "resources": ["file://.kiro/steering/orchestrator-standards.md"],
   "prompt": "file://orchestrator/prompt.md",
-  "model": "claude-opus-4.8"
+  "model": "claude-sonnet-4.6"
 }

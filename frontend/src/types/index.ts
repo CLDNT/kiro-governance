@@ -190,6 +190,22 @@ export interface SyncArtifactsResponse {
   skipped: number;
 }
 
+/**
+ * Response for POST /api/projects/{projectId}/sync-gates (CR-16). Mirrors the backend
+ * `SyncGatesResponse` (packages/projects/types.ts, specs/api/projects.yaml). Non-secret counts of
+ * the repo → macro-gate sync run:
+ *  - matched:  resolved repo gates that map to a checkpoint AND have a row for the project;
+ *  - resolved: of matched, those newly completed by this run (idempotent — 0 on re-sync);
+ *  - skipped:  unmapped gates, mapped-but-missing rows, or already-resolved checkpoints.
+ * An unlinked project returns all-zero. The GitHub token never appears in the response.
+ */
+export interface SyncGatesResponse {
+  project_id: string;
+  matched: number;
+  resolved: number;
+  skipped: number;
+}
+
 export interface PhaseGateView {
   phase: string;
   phase_name: string;

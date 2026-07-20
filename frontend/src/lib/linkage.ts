@@ -49,6 +49,18 @@ export function canManageLinkage(role: Role | null | undefined): boolean {
   return role === 'admin' || role === 'leadership';
 }
 
+/**
+ * CR-16 authorization mirror: only admin / leadership may trigger the repo → macro-gate sync
+ * (POST /api/projects/{projectId}/sync-gates). sync-gates is part of the projects-linkage function
+ * group and reads the linked GitHub repo. This is a UX gate only — the handler re-enforces
+ * admin/leadership on the Cognito group claim (returns 403 FORBIDDEN otherwise). Distinct from the
+ * Level-2 artifact-auto permission (canManageArtifactAuto) even though both resolve to the same
+ * roles today, so the two controls stay independently governable.
+ */
+export function canManageGateSync(role: Role | null | undefined): boolean {
+  return role === 'admin' || role === 'leadership';
+}
+
 export function isLinkageField(value: string): value is LinkageField {
   return (LINKAGE_FIELDS as readonly string[]).includes(value);
 }

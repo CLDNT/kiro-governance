@@ -1,0 +1,725 @@
+Chris Xenos
+Who are we waiting on?
+
+Nausheen Fazlur Rahman
+Sam and Tarek and Steven, if you can join.
+
+Chris Xenos
+Oh, I'm in the top performers list.
+
+Chris Xenos
+You must not know me.
+
+Chris Xenos
+Just Performer or what?
+
+Arild Jensen
+It's just.
+
+Chris Xenos
+And my vacation was approved. Oh, good. Yeah. Saw that.
+
+Arild Jensen
+That's a relief.
+
+Chris Xenos
+Alright. Well, I I got, do we have updates, or I doubt those other guys are showing.
+
+Nausheen Fazlur Rahman
+They're the same updates as the all hands. I just wanted to get Qasim. Basically, what I'm sort of stuck on is the review for the methodology for migration, app dev and app mod, because and I wanna get especially the migration piece because I've like, Qasim already had, like, a lot of feedback, but it was, a 20 minute feedback, and I'm assuming he's gonna have more, and I don't wanna roll out the training unless I get all of all of these approved, and he still has not gone over the application development one and the. Appmod one, which I have completed, and I'm in the.
+
+Chris Xenos
+Appmod. What's the difference between Appmod and Appdev? Like, what we get?
+
+Nausheen Fazlur Rahman
+Yeah. Yeah. So that was a question Qasim actually asked Tarek. Right? He's like, okay. Do you envision that these two practices will be different or separate, and then Tarek actually said, no. They're actually little bit different in terms of implementation, and what he explained is, like, with app dev, we start everything from scratch. Right? I mean, there are, like, you know, the application, you know, the customer wants to build. We are building the code. We are building, like, everything. But with Appmod, they're, like, additional steps of discovery. Discovery. You know, like, how we had with Gallo. Right? Like, you know, we had to go into their code and.
+
+Chris Xenos
+Take that into their code. I understand. But it's like, okay. How much are we how much value does it you gotta balance value of.
+
+Chris Xenos
+It's expensive to have differences. So is it worth is it is it enough to justify a separate methodology? That's what I'm trying to understand.
+
+Nausheen Fazlur Rahman
+That's a good question, and then I guess And all these things.
+
+Chris Xenos
+We can get them as complicated and detailed and perfect as we want. But the more deviance deviations you have, the more complex it is to roll out. So, you know, we we always get in a situation where we try to get everything as correct as we can. We we spend all this time. We give no time to the rollout, and then then reality is different anyway. So that's the tradeoff is is, balancing, like, how big are the distinctions? Can we do it in the same methodology and just show a different route? Or.
+
+Nausheen Fazlur Rahman
+For example, the discovery bit is quite different for Appmod because you really have to dive deep into their infrastructure, their code, and and you have to do, like, know, if they have regression test coverage. You know? So there there are a bit different steps. But I did ask, I'm making the training, can I combine Appmod and Appdev? Because I don't want his team to go through two separate trainings. That's dumb. Exactly. So methodology wise, we have it different. But training and enablement, we're gonna combine both of them, and I'm gonna show sort of two tracks or something, you know, like, mod, app mod. Just.
+
+Chris Xenos
+Yeah, just show the difference. Like, is it just this gray box that's different?
+
+Nausheen Fazlur Rahman
+Yeah. I mean, I mean, in every single phase, there's a bit of, like, a little bit of a difference, over here, in how things are conducted. But within the training. I see. Okay. That makes sense. Yeah. Yeah. But within the training, I can combine and I can and say, okay. If you're doing app dev, then at at at the discovery phase, you need to follow these steps. If you're doing app mod, then in the discovery, especially the the discovery is bit is different. Right? Because in Appmod, you really have to dive into their code base and and so forth. So that's the difference that, Darek explained. Yeah. But we're combining the trainings.
+
+Chris Xenos
+Yeah. I think as long as you you you yeah. Because what the training that you've done already, Nausheen, have you gone through the phases and the steps in that any of that training for the whole process?
+
+Nausheen Fazlur Rahman
+No. No. Not yet, and I I actually removed the phrasing phase oh, sorry. Phrase. Sorry. Phase. Okay. I'm getting right. So, you know, like, how Thorex had, like, phase one, phase two, but they were different from our methodology? I I converted those to steps. Step zero, step one, step two, whatever.
+
+Chris Xenos
+Oh, but the phases are really important. Like, that's.
+
+Nausheen Fazlur Rahman
+Yeah. That's not been rolled out yet.
+
+Chris Xenos
+But Yeah. These phases are at the top are important because this so this ties the SOW. Are kind of marketing things too.
+
+Nausheen Fazlur Rahman
+Yeah. Absolutely. So, my, like, idea, which Qasim, like, mentioned that we're gonna be building out practice specific methodology, not the baseline. He didn't want, like, us to waste time on the baseline because that's just you know, it it's not really value to anybody. So when I roll out, like, for example, Admob training, I'm gonna be very focused on, okay, phase zero. This needs to be done, and if and you know, and you you have all this gate stuff, you know, like and and you have to, for example, you know, check whether the exit the exit criteria has has met or not. So, like yeah.
+
+Chris Xenos
+So the plan is basically get sign off on these and then start training on the actual methodology. Exactly, and right now, it's all backed up with Qasim approving.
+
+Nausheen Fazlur Rahman
+Yes. That that's one thing.
+
+Chris Xenos
+Okay.
+
+Nausheen Fazlur Rahman
+And the other thing is, like, Tarek and AJ, you know, I know especially, Tarek, I know your team has been working with, you know, with AIDLC, but I don't think they're familiar with for example, this is App Right? Are they familiar that, you know, there needs to be, governance gates, not like the gates that you have, you know, within so.
+
+Chris Xenos
+I don't think they're familiar. They don't know. So so so that's why, look, we gotta remove we've gotta sort of understand that the Qiero adoption is one thing, and and it's a good I'm I'm really sort of pleased with the results, but but it's only half of the equation. Right? They this is where like, until we roll this out, it it we don't we haven't rolled out a a methodology. Exactly. So they they've been exposed to the tooling and how that works and sort of the the logic behind. Agentic, but they have not that's not a methodology in itself. Right? That they need the full blueprint with the governance gauge. Exactly.
+
+Nausheen Fazlur Rahman
+Exactly. So, you know, so even for We're not for example, then.
+
+Chris Xenos
+Yeah. So we're not signed off until we've trained them on this.
+
+Nausheen Fazlur Rahman
+Exactly, and for each practice, you know, so team, app mod, app dev will be one training, and I'm envisioning, as I mentioned in the all hands, that I think, we should have the the the 3 60 learning modules, and we should have a record recorded session for that practice as well. Because.
+
+Chris Xenos
+All of it needs to be recorded and available on 3 60 because that's the only way we can track it.
+
+Nausheen Fazlur Rahman
+Exactly. Exactly.
+
+Chris Xenos
+So when you get somebody new, you just point them at the 3 60, and and and that way you have you're assured they've at least there's a baseline in there. Right? Like and you have a way of measuring it. They can't say they didn't know. Absolutely.
+
+Nausheen Fazlur Rahman
+And, for example, let me show you what I've done for the project managers. So, I've I've started building this Confluence hub, you know, like, here, and then and this page sort of points out, you know, what is, like, this methodology and everything, and then we had this training session with the PMs, right, last week, which was very productive, and I've built everything out. Like, if a new PM comes in, you know, he has no clue about, you know, what goes on at Cloudelligent. He has, like, the learning path, what needs to be done, you know, what training to go through, and what are the expectations, what are the links, and how it is tracked. So, you know, like, for example, like, the AWS training, it is tracked in the 3 60 learning bit.
+
+Nausheen Fazlur Rahman
+Right? So I've spelled it out for everything, and then the sessions we had, I've actually linked them both of and Teams. You know, I made sure to record them on Teams as well, and I've linked all of this together. So if anyone comes in, they know exactly. They have the videos. They have the assessment. They have the the the foundational knowledge, the persona level knowledge, the practice level knowledge. So I'm gonna like, I'm building all of this out piece by piece as soon as I'm getting stuff done, and I'm gonna be building on even this one, the PM. You know, as. I start on the practice stuff, the practice specific, I'm gonna be adding that as well because I think all PMs should go through all practices. Right? Because they're not they're not really limited to practices. Right? Like, Waleed will be working on one data AI ML project and maybe one migration project. Right? It's a little bit random, or is it a bit intentional with the PMs?
+
+Chris Xenos
+Wait. Say that again.
+
+Nausheen Fazlur Rahman
+I'm envisioning that the PMs have to do, like, all practices. Right? They have to know the methodology for data and AI and migration and app mod, app dev because.
+
+Chris Xenos
+Yeah. They're not they're not specific to yeah. They they.
+
+Tariq Khan
+Yeah.
+
+Nausheen Fazlur Rahman
+They do. Yeah. So, for example, you know, based on all of all of this knowledge, you know, I'm I'm gonna be building upon all of this. You know? Like, I'm I'm gonna be building one for solutions architects. So if a new solution architect comes in, he has has to go through the foundational stuff, the assessment, his role, different practices, you know, and all of that. So I'm gonna be building everything up persona and practice based on Confluence, and it's under, like, our Cloudelligent Playbook h group.
+
+Nausheen Fazlur Rahman
+But yeah. Okay.
+
+Chris Xenos
+That's great. That's the.
+
+Nausheen Fazlur Rahman
+And I think we should start at least rolling out the app dev mod training by next week. You know, we should have we should plan a, like, AAAI need kind of your help as well, like, how to, like, structure out this video session. You know, and I wanna try completing the module as well so we we can get at least one rolled out. Because I know Qasim has not gone through the app mod and app dev, but I'm pretty sure there will be minimal changes. Because, you know, and I worked on it pretty diligently and very you know?
+
+Nausheen Fazlur Rahman
+Like, there are a lot of, like, back and forth between us. So.
+
+Chris Xenos
+Yeah. Okay.
+
+Nausheen Fazlur Rahman
+Okay. That's my plan to at least get the app mod, app dev training out, by next week and hopefully by the week after migration and data and AI. But I need Qasim's review on the migration because I I'm anticipating some changes with the migration.
+
+Nausheen Fazlur Rahman
+So that's sort of the idea, and hopefully, by July or even earlier, we can get all of these rolled out, at least the training part.
+
+Nausheen Fazlur Rahman
+Okay.
+
+Chris Xenos
+And.
+
+Nausheen Fazlur Rahman
+While I have you guys here, so I'm not sure if you were able to go through the session. I've sort of. I've scheduled a meeting for us about the discussion we had with Qasim about the governance platform. Tariq, I'm not sure if you had a chance to go through that, the the meeting.
+
+Tariq Khan
+The one that happened yesterday? Yeah. No. Sorry. I'm I'm too stuck up with with the project.
+
+Nausheen Fazlur Rahman
+Yeah. Absolutely. So. Was.
+
+Tariq Khan
+It an onslaught?
+
+Nausheen Fazlur Rahman
+I mean, yeah, it was a very big onslaught, and I I and poor for us.
+
+Chris Xenos
+Yeah. So, I mean, I don't know what I haven't gone I I just read some of the notes, and I'm you know, some of it is like, okay. Yeah. It makes sense. Some of it is good, but I'm like, we I have to talk to Qasim about what the difference between governance and and active management is. Like, is he envisioning that it does most of the stuff for PIII Yeah. Ross did a good job for like, I spent 10 minutes with him, literally. That's all the time he got from me was, do this, and I hadn't talked to him or seen anything for two or 3 weeks. So the structure he had was he had most of the elements there.
+
+Chris Xenos
+It's so don't know what the expectation was, that he would have some polished finished abs and that we're spending hours and hours and hours on this because that's not like, what I thought he did a good job. He has most of the structures there. You know, do we envision somebody has to upload all those evidences? No. But we also need to make sure a human reviewed thing. So it's a compromise. Either you know, I think we need to do something in Avoma because I think we could do a lot more agents in the transcripts. Yeah. But it has to know which meeting to get. So as soon we have to figure out that part. That can happen.
+
+Chris Xenos
+Yeah. But some of it was overly critical, I think, for where we are. So I just need to talk to him about what his expectation is because maybe Qasim, he wants to drive this to a specific point. But I you know, again, I wasn't envisioning that it's somebody uploading evidence for every step, and I don't think that's the end game. But I was pleased to see how much of it he thought through. So. Yeah. Yeah. That's the you know, I that's my takeaway, and I I think. I can see Qasim's points. Like, it should integrate with. I. Tariq, I think, you know, a lot of this should be taken directly from Oscar. So I don't know, you know, the concept about where to get the documents from and like, the artifacts.
+
+Chris Xenos
+Like, it should just like Oscar, it generates to a specific folder. You know? I think what Qasim is saying is you we could generate those the folder structure and all that stuff ahead of time. The PM doesn't have to create it and then attach a document. Like, Oscar generates the folder, and so that's what he's looking at taking away. He's trying to take away all the the mechanical steps a PM has to do around Exactly. Like, that's what he's saying. But there are points where I do want somebody to manually do something to show that it to show that or at least it do we know a human reviewed how do we know the PM approved the the document or reviewed it and proved it?
+
+Tariq Khan
+From the it's like we propose from the agent side, like, when when somebody generates and you're using a Qasim agent. Right? So and in the methodology, we mentioned that, you know, there will be a meeting where they'll both sit down, somebody will share their screen, and then know, they create this. Okay.
+
+Chris Xenos
+So if that's the case, like like.
+
+Tariq Khan
+Do they acknowledge it in Quiro, or So they're gonna push it to Github, and at that time, Github will run an agent and review if a certain gate has been crossed, and it's gonna log it in the database as a macro gate, and then probably, it's gonna show up in the application that that Okay.
+
+Chris Xenos
+Did you see the application, Torek?
+
+Tariq Khan
+I was supposed to see it yesterday before our call. You know, there there was this QURO thing, the the access key the pad access key that. Farad needed. So the night before, I got that sorted out, and yesterday, I was supposed to, you know, get the demo before Qasim. So. I didn't see the app, and he he he kind of walked in. So. I was thinking maybe you could you had time yesterday to review the app before the final.
+
+Chris Xenos
+I I had a few minutes to review it, and then so, again, I think it's not he has most of the structures, and he had he did pretty good for the amount of time I spent with him. But I also think for the things that we can generate, we should we like, the folder structures and all that we should generate. Before the we shouldn't have documents stored in this thing, you know, in a separate directory, but we also need to decide, okay. What what requires, like, what do we wanna. I think there's a lot of data or value in getting the recordings from those meetings because there's a lot of insight in there. Like, when we go back to look at what went wrong with the project or what went right, we can look at those meetings and get those insights or have them generated for us.
+
+Chris Xenos
+You know, like, hey. By the way, you know, they had to kick off meeting, but these topics weren't covered. That would be a good proactive or predictive measure of it's a warning that, yeah, they had the meeting, but it was going through you know, they didn't cover half the topics. That's the kind of stuff that we don't get now. Hey, Carlson.
+
+Nausheen Fazlur Rahman
+Hey, guys.
+
+Qasim Akhtar
+Are we talking about the the feedback yesterday? Yes.
+
+Chris Xenos
+Yeah. Yeah. I think I understand it, Qasim. I I don't think we were envisioning that stuff. The. Tariq hadn't seen it yet, and I just saw it yesterday morning. So I'm not, you know, I'm not too surprised by the feedback.
+
+Qasim Akhtar
+I'm kinda surprised by the the the, you know, the principle to the governance that we're trying to apply. Right? Like, 100. Custom you know.
+
+Arild Jensen
+Custom.
+
+Qasim Akhtar
+100 in 100 inputs to 100 inputs from can you guys hear me? Yeah. Yes. The 100 inputs that we're gonna ask of the team I mean, the problem we have right now, we're we're we can't take the same problems and issues to this governance as well. Right? Which is, we the customer success the customer status tracking took 3 nudges and bumps along the way to get them to update that. It's never true up to date because it requires that people to add links and people to add this and that, and we're we're doing the same thing here.
+
+Chris Xenos
+Qasim, we're not doing any the guy I spent 10 minutes with him. Like, nobody spent any got to spend any time with him in what he developed. So that's not what we're envisioning. What that was was his attempt to take what he'd learned from the artifacts he had and try to construct something. So it wasn't a that's not our vision for what it should be. You know, it it's it's a good first step, and he has most of the constructs there, but that's not what we are envisioning. Makes sense. The same thing. You know, there's some points where I'm not opposed to having a manual acknowledgment in there to say a human did review it, but.
+
+Chris Xenos
+But I understood the criticism. I mean, but that's not the So.
+
+Qasim Akhtar
+Nausheen, that's yeah. So, Nausheen, you probably jumped we jumped the gun with with the demo. Right? So I wanna make sure Tariq has the feedback. I wanna make sure Chris has the feedback, and I'm the last person who's reading this.
+
+Chris Xenos
+Yeah. I mean, yesterday, like I said, that's the first time I saw anything. So and and and prior to that, I spent literally 15 minutes with them explaining what we were looking for. Whatever that you were in that meeting, Tariq. I mean, we didn't spit we didn't get it. That was it. Yeah. So I was impressed with what he came up with for the time he spent. He thought through a lot of things. But the other thing is we're not taking the lessons from Oscar.
+
+Qasim Akhtar
+Yeah. So And and that's all and obviously, he doesn't have the he doesn't have the in my conversation with him, Frost doesn't have the understanding of the challenges that we have in our professional services.
+
+Chris Xenos
+No. He doesn't. He hasn't. He doesn't. He basically, I invited him to to a meeting the other day so he could actually see a PMO sync and get a feel for what the kinds of problems are, but he doesn't understand the board or anything like that and what the issues are. So I it it all makes sense. The context all makes sense. But I also don't.
+
+Chris Xenos
+It doesn't have to generate a whole should be generating insights into where we are, but it doesn't I don't like, I don't want it to take away the all the responsibility of a PM. Meaning, we can do a lot of mechanics for you, but there's still like, I still want regular status reports. I still want right? You need to know.
+
+Qasim Akhtar
+Yeah.
+
+Chris Xenos
+We need to know they're on top of it and they have ownership, and so I don't mind if there's some manual stuff in there.
+
+Chris Xenos
+Like, is it enough just to know that they that they acknowledged it in QIRO? Like, is that enough?
+
+Qasim Akhtar
+And what specifically in QIRO are we talking about? Like, acknowledgement SRS review.
+
+Chris Xenos
+So let's just take that one as an example. That's a big milestone. Right. So the PM's supposed to review and validate the SRS. Right? I think that was one of the steps.
+
+Qasim Akhtar
+I I think everyone I mean, SRS needs to be validated by a solutions architect.
+
+Chris Xenos
+Yeah. I'm just talking about the actual step and the methodology.
+
+Chris Xenos
+I think I think there's, like, a manual validation that they're supposed to do together.
+
+Qasim Akhtar
+Yeah. It says human review SRS. Is that is that project manager? Is that s.
+
+Chris Xenos
+Yeah. A I think we had a I thought we had a yeah, right there, that red box. That's a so that human review, like. With the team. Is.
+
+Qasim Akhtar
+It an off combined SRS with the team to provide our clients and check. So it's an internal meeting. Right, and everyone's reviewing SRS.
+
+Chris Xenos
+So how do you know that meeting actually occurred? Like, there's gotta be.
+
+Chris Xenos
+You know, looking it up, you following the Oscar model, what we do is we the meeting's tagged with the customer name, and you choose which one which meeting applies.
+
+Chris Xenos
+And then you generate the SRS. Right? So there is a human interaction there that takes place. So my point is is, like, okay. You do want we need some a, I think there's a lot of value in the recordings of of what actually took place in the recording. You know, it's one thing to have the meeting. It's another thing to do some analysis on that meeting to see what was actually discussed.
+
+Qasim Akhtar
+A 100% agree. Like, I think I'm not I'm not disagreeing there. So so My my my feedback was to to to Fraz yesterday. I was like, okay. If I'm gonna have a first, I'm gonna schedule the call, and then I'm gonna after I have a call, I need to go take a link and go and update the display. Not gonna happen. Right? We know people are not gonna. Yeah. Yeah. Not gonna do that, and the second part to that is you're you're always gonna have you're you're always gonna have different for for customer meeting, you're or you you know, if it's if if our governance is if that meeting happened, didn't happen. Well, I think what we what we really care about the call the qualitative aspect of it rather than just the binary of one and zeros.
+
+Qasim Akhtar
+Right? At least as of right now. I think what we're trying to figure out is, like, sure, wanna know if it happened or not happened, but then like, do we wanna really do we wanna really take that governance to internal syncs and internal meetings today as we're rolling it out, or should we take this maturity to of the internal syncs and internal meetings to later on?
+
+Chris Xenos
+Oh, I think it's yeah. I think we just wanna do. I mean, it depends on what we. I mean, I would not prioritize that as evolution one. I would even with the manual uploads, it's better than what we're doing in. Jira, and it's better than that. So even iteration one, even if we deployed it as is, if it had, like mean, I think it's a little clunky. But even if we did what we have right now, it's still better than than where we are, and I don't know what it's gonna take to get the the qualitative aspects are in the recordings and things like that. That's what that's where I think the agentic that analysis from the calls and to make sure that's the stuff we're looking for, Qasim. Like, again, it's one thing to go through. You know, I'm just gonna mention some names here just so you know what I'm talking about. But moment moment is inter.
+
+Chris Xenos
+Internal kickoff is not Andrew's internal kickoff. Right, and so we wanna make sure, okay, are you covering the topics we expect covered, and that that's a whole layer of that's where we get predictive. Right? Like, we could probably tell ahead of time and stop, and that's where we should get the intelligence and the agenda analysis from. Like, yes, the meeting happened, but not everybody was there. They only discussed these 3 topics, and so that's a confidence thing, and that's where agents will be really good. So I think if we. I think at a minimum, we figure out the creation of the we follow Oscar's model with generating the folder structures and and all those artifacts for all those mechanisms, even creating the Slack channel. Like, all that stuff could be in version one.
+
+Qasim Akhtar
+Yep. So so I told him, you know, I I would rather have. I'd rather have programmatically picking up whatever information that we need rather than.
+
+Qasim Akhtar
+Go back and forth and upload links. Yeah, and and.
+
+Qasim Akhtar
+The the way we pick so I told him further on from there, sorry, for your perspective, is, like, today from Oscar, we we look at we look at a deal ID. So we look at the company name, and we look at the deal ID. I challenged for us to go figure out if he could come up with a project ID metadata in Avoma. So that way, Oscar looks at deal ID associated, and then we create a project ID for the same customer in Avoma, and Deliverpro or this governance platform We could pick up using a project ID. So that way, we're not asking folks to go and plug in single links in the time.
+
+Chris Xenos
+We could take that. We could use the same deal ID from actually, we don't wanna do that No.
+
+Qasim Akhtar
+You don't wanna do that because there's multiple deals going on at the same time. Right? So what you care about is once customer is a customer and they are in post signatures, any conversations that were. I mean, whatever conversations we're having with them, I think this is the the next set of layered, the problems that will come in. But we see how there are 5 associations of this deal because there are 5 deals in Oscar, and there 5 deals in our Hubspot, actually. So there's one.
+
+Chris Xenos
+But the other thing we could do.
+
+Qasim Akhtar
+We have multiple deals.
+
+Chris Xenos
+We could use a Clockify project ID. Or.
+
+Qasim Akhtar
+Just a yeah, or a project ID. Now I don't know how do we associate that. You know, this this this is the Hubspot association. I think that's that was the that was, like, the the r and d that that we need to figure out is, like, if you wanna have if you wanna have a meeting intelligence in your governance, the mechanisms can't be, I have a call first, and I now have to wait for that the meeting to to be able to generate that. It takes 30 minutes to an hour on Avoma or sometimes 30 minutes. I get a wait on that, and now I take that. It's a delayed governance. It's gonna be always gonna be day 3.
+
+Chris Xenos
+Yeah. We're we're yeah. We're in violent agreement. We just gotta we gotta.
+
+Qasim Akhtar
+Yeah. We just.
+
+Chris Xenos
+This is why he had he he had the links in there, not because he thought they were a good idea. Just because it he had them in there because he didn't know how to solve that problem yet, I think.
+
+Qasim Akhtar
+Yeah. No. Most probably, that's that's that's the thing. Right? So so that's that's the metadata or whatever that we need to take it off with with the moment and figure out, like, hey. We another another it's not a Hubspot association. It's not deal ID. How do we how do we tackle that programmatically? How do we create a metadata on a company so that way we can we can Qasim.
+
+Chris Xenos
+Qasim couldn't we use? The reason deal ID works is because it's it's upstream. Right. So what would create what would create that.
+
+Qasim Akhtar
+The upstream number?
+
+Chris Xenos
+So if here's what I would argue. If you create that project number on the SOW signed in Clockify, that could be the ID that that drives everything.
+
+Qasim Akhtar
+So this is what Avoma does. Right? It guesses so so there there are two there are two projects going on too right now. There's a control tower, and then there's a Snowflake. Azure to AWS migration. Right, and you see you see how it's talking about Snowflake schema, but it auto auto auto map to, a deal. Virtual tower. Yeah.
+
+Chris Xenos
+Yeah. Because that was the deal in.
+
+Qasim Akhtar
+It's making a wrong association. Right? So the thing is, like, it's guessing it. Right, and and when you have in this situation, when you have a j when you have one customer and you have two deals going on or you have one customer who's metasources customer, you also have a professional services engagement going on, if you rely on just the deal ID and the current mapping, which is basically a I don't know how they map it, but I think there's some kind of guessing there that is involved. It's it it always results into this confusion, and that's not gonna help our also on the governance side of things. Because you want meta sources governance to be taken care of by meta sources piece, and the profession professional services, you wanna be really reflective on that specific deal or that project.
+
+Chris Xenos
+So I would yeah. So that's why I would argue project number out of Clockify, and that aligns that aligns. I hope that that will delineate between a managed services project and a it's still my guess wrong, but. Yep. But you it would at least it would tie those things together. Yeah. So I think.
+
+Qasim Akhtar
+It might be in the beginning where today, in Oscar, we are presenting all the all the calls associated with that so that way you can select the right call, right, to do to and eventually, maybe we'll find a way to get better. But either way, I think that's just a call. Not hung up on that. I just wanted to give him, like, a mechanism of what should work. But there are other concerns I had, Tarek, around just full file creation and like, binary one and zero, right, on the governance side of things. There there based on feedback, there was not there's no governance around the folder structure or the file specifically or the namings of a file or whatever that might be, and there's no there's no informant enforcement mechanism either to make sure that that is consistent, and the third feedback that I had was, like, it was, you know, the with his governance platform, the one that he created, which we haven't reviewed yet, it's it's kind of like those those you call micro versus macro governance, which is basically he had, like, a a different lens for, like, agents and a different lens for people.
+
+Qasim Akhtar
+I said, you don't wanna do that because everything that is just gets generated by agents is really by people, so don't break that principle. So so I wanna hear your input on gamification or just unintentional not following the consistency or structure because there is no enforcement of the mechanism of keeping the same folder structures and the files. Because if your delivery is looking at is file there or not to be able to get you through the the governance check, you need to have really strong enforcements at at a file structure level, file naming level. Won't you agree? So.
+
+Tariq Khan
+So if if someone is using the AI DLC and they are using those agents, they will create that same location every time. How people create those files in their repository, I I don't have any way of putting a governance on that besides the agents. So so if somebody's using the agent, it will create in the same location, and we follow the same structure for the progress file, for the files that are being generated in the docs folder, for the architecture documents, and everything else. Right now, I can't think of a way of enforcing that besides using the agents. But I was I was of the view that that's good enough, but maybe it's not. Maybe we need to think one layer above on.
+
+Chris Xenos
+How we. Wouldn't isn't that an enforcement structure almost in its own? Like, if the a that's proving you're using the like, we don't want people to be able to do it without agents. Right? Yeah. So if it's not in that location, you can't force it and gamify it. Right?
+
+Tariq Khan
+I mean, I can't think of any other way of doing it. I mean, besides something. Yeah. So I think what we need to do, Tarik, is take another run through it.
+
+Chris Xenos
+With him and give him more context into this feedback, and and I also wanna get him that information on, like, let's look at Clockify and see if that can be the upstream because you're not gonna have a project. Once the deal's signed, we should be creating the project in Clockify, and I don't know. I gotta go look and see if there's a like, I don't wanna use name. I wanna use a project ID, so I'm sure it's in there somewhere. But I don't know if it's exposed or you know, I gotta figure that out. But, ideally, I think that would be you don't you don't have a project till you have an SOW that's signed. Instead of right now, what we should do, the first thing when we get a SOW signed, just go create a project in Clockify, and that can be the driver for, marking the the artifacts and the like, I'm sure we could plug that into even.
+
+Chris Xenos
+That'll be the tie together, just like Hubspot is the deal tie.
+
+Tariq Khan
+Yep. Okay. Yeah. But we were just focusing on the steps after this so that, you know, in this POC that we were that we're doing, so we didn't think of linking it back to Oscar. So that's probably missing piece and how Well It's maybe a better way of doing.
+
+Chris Xenos
+Yeah, and maybe we don't even need. I mean, this is a question for you, Qasim, is do do you think we need a team structure if it's in Github already? Do we just store all the artifacts in Github?
+
+Chris Xenos
+There's pluses and minuses. The plus is that.
+
+Qasim Akhtar
+It's You can't share anything. So look. Any artifact oh, so you have to you have to understand you have to you have to think through first the okay. What is the artifact being created for? Is it created for just internal use, or is it created for customer facing? If it's for customer facing, the markdown files with with green checks and and and all agent generated is not gonna it's gonna look pretty ugly in today's day and age. Right? So. Yeah. Yeah. It can't be marked down. It's gonna be So, well, that's I think when if you keep them in Github, it's gonna be marked down. You're not gonna have APP you know? So so, also, the other part of that is this you know, in my mind, we should have a separate documenting system.
+
+Qasim Akhtar
+It should be in Teams. Sharepoint Sharepoint Teams has the same thing. So that way we can we can create governance at the source at the document source level and make sure that people actually have provided their input in there. Right, and they have actually generated that. A good example great example would be implementation plan review. We need or SOW re or SOW reviews. Right? You have those SOWs at a specific source. It's a live link. You know exactly, and you could put that governance there to make sure that Yeah. I only have specific place.
+
+Chris Xenos
+I think we have that those processes already documented too, so we can actually just replicate it. So those are the things that.
+
+Qasim Akhtar
+Github is for a lot of your code generation and some of the markdown files and the skill files and whatever we need for the agents and SRS stuff. But at the end of the day, when you are providing the the artifacts that you're gonna review with the customer, you're gonna review at some governance gate with the leadership team, like, that should not be in there. That should be at the documentation structure with the proper standard structure, photo structure, and every expectation of that. So that way, every project is following that same set of artifacts and structures. It doesn't matter which practice. Right? It could be migration data AI or or or migration.
+
+Chris Xenos
+The PM creates now manually.
+
+Qasim Akhtar
+And and it's not at one place. Right? It it's it's shared only in Slack here and there. No. I mean, they they the.
+
+Chris Xenos
+The policy that we wrote out actually has what what you do. So it's whether they're following it or not is is is different story. I mean, it's a separate issue. But we Yep. We should use we should start with what we already have so we're not trying to recreate some of the wheel. It may not be perfect, but at least it'll be consistent.
+
+Qasim Akhtar
+Yeah. So so it should be in Teams then It should be in Teams under a proper folder structure. Yeah, and and the governance should be on both sides. Github for those specific files and and and and teams for for the set of artifacts you expect expect over there. Okay.
+
+Chris Xenos
+So, Tariq, it sounds like let's. I mean, things that we can do shortly is I can go check Clockify and see if it generates a number that's exposed when you create a project I when you create a new project.
+
+Chris Xenos
+Nausheen, maybe you can get with Nausheen and Andrew and and take a look at what the current process is for where you create a Teams folder because we've changed a couple times. But Okay. Yeah. He doesn't have any of this context. Yeah, and then and then we can have Andrew. I'm trying not to tie it up with me right now. So Okay. Maybe we could have Andrew walk him through the the. Jira board and show him how it actually works, and then he'll understand what the problems Qasim's referring to are. Like, even me trying to figure out project on time percentages. Yeah. It's like 50% of the time or 60% of the time, the the actual completion date isn't populated in Jira when we close the project, and so you can't some of these calculations that we're trying to make you know, some of these KPIs are very difficult if nobody builds on the freaking date, and so that's a good example of the brittle things Qasim's talking about.
+
+Nausheen Fazlur Rahman
+Okay. I can look at our folder structure, project for each project, with Andrew and Aroosa, and Yeah. It's it should be documented.
+
+Chris Xenos
+Yeah. So the first thing is, like, just just make sure it's documented, the current process. I I thought I reviewed it in Confluence. So, hopefully, it's something easy for him to follow because it's documented.
+
+Nausheen Fazlur Rahman
+Right. But do we follow, like, phase zero and or phase one, phase two? Because I'm imagining if the governance app is gonna work on top of the team's folder structure, you know, like, it needs to sort of see, okay. It has to be divided by phases. Right, and then within each phase, you'll have your artifacts or any evidence.
+
+Chris Xenos
+It doesn't necessarily need to be it doesn't need to be by phase. So, like Okay. Part of it is you're gonna be a human going in there, and you know, if you're going to get artifacts and and not every artifact that is generated is gonna go in there. Right? Some are gonna be in Github. So it may my point is it may not be a lot of files. So you may you know, why create a phase 4 file folder if there's only one artifact in there? So I'm open to changing it as long as we also keep in mind we don't want a bunch of empty folders or one document folders. You know what I mean? So I'm not in in the case of document storage, I'm not too worried about the phase as long as it's the right customer and project. But, you know, if it does make sense to have phase, then I'm open to that too. Okay.
+
+Nausheen Fazlur Rahman
+I'll look into it and and see how it's currently being done, and on with your point yeah. Yes.
+
+Chris Xenos
+So two things. One is to and and this is for for us just to get them oriented. Right? So this is an opportunity for you to get oriented too. So it's it's what's the current doc artifact storage for for customer and internal documents? What's the what's the, how does the current status tracker work? Okay, and then we I can tell you all the things wrong with it. Okay.
+
+Qasim Akhtar
+Nausheen, any any other we have a leadership off site next week. Right? So and and we're gonna be out of pocket Yeah. At least for the first couple of day actually, for the first 4 days, to be honest. It's gonna be pretty packed day for us. So, you know.
+
+Nausheen Fazlur Rahman
+Yeah.
+
+Qasim Akhtar
+What things are you expecting of me, at least, so I think so now that I can guide you ahead rather than waiting up to you.
+
+Nausheen Fazlur Rahman
+Yeah. If you could just review the the migration methodology, the app dev and app mod, because I'm sort of like I wanna get started on the trainings and but I wanna, like, really make sure that we're in the right direction before I roll the training out. So yeah.
+
+Tariq Khan
+Yeah. Sure. Aksheen, one quick thing. Were you able to put that IP protection thing that I discussed in the methodology?
+
+Nausheen Fazlur Rahman
+No. I didn't. Forgot to do that.
+
+Tariq Khan
+Yeah. Okay. So maybe we can we can bring it up then Okay. I'll just review it. Yeah. Does it even belong in the sort of methodology document or not? But I I think it does. But. Sorry.
+
+Nausheen Fazlur Rahman
+What was the IP thing again? Could you just.
+
+Tariq Khan
+Yeah. So so if if the customer has a repository, like, an external repository, we create an internal repository for the QIA agents, and we don't leak our QIRO agents into the external repository of the customer. That should be because if we kind of commit our QIRO agents directly into the customer's repository, we leak our agents into the repository of the customer. So that is even if and at the end of the build and implement phase, if we have developed the whole project internally, when we give the repository or or transfer the code to the customer's repository, we don't transfer the Qiro folder with the the code that we are transferring over. So that should be in the methodology and and known to everybody. But that's my take on it. I don't know if.
+
+Nausheen Fazlur Rahman
+If Is is that, like, a real issue that, you know, the repos can get mixed up? Yeah. I mean.
+
+Tariq Khan
+Real issue sorry. Can you ask me again? Real issue one? I mean.
+
+Nausheen Fazlur Rahman
+Like, if the customer repo is it's not, like, totally segregated from our internal repo that we're using to run the project?
+
+Tariq Khan
+No. It is segregated, I mean, in Okay. At the repository level level, but we don't wanna ship our Kiro folder into the customer's own repository. Right? It always stays on our account. We.
+
+Chris Xenos
+Don't wanna leave our IP. So.
+
+Nausheen Fazlur Rahman
+Right. Right.
+
+Chris Xenos
+By making that IP restriction, it knows that this is a Cloudelligent address or repo versus the customers.
+
+Nausheen Fazlur Rahman
+Right, and you want me to add this and build and implement? Like, is this the phase that, you know, that we do this action?
+
+Tariq Khan
+I think it should be something at the beginning of the project. I mean, we have to Okay. We have to create an internal repository where we put all these agents in, and then we.
+
+Chris Xenos
+Oh, yeah.
+
+Tariq Khan
+Clone the repositories of the customer, and we index those repositories, and we, work off of our internal one. So they say.
+
+Chris Xenos
+That is that an can can we have a guardrail for that, Tariq, in in our deployment of Kiro so that we don't rely on somebody to have to do that?
+
+Tariq Khan
+Either that or we put a ignore file into the customer's repository where we ignore all the dot Qiro folder pushes day one. We can we can clone the customer's repository, but we ignore our dot Kiro folder so the dot Kiro folder never gets committed to the customer's repository from day one.
+
+Chris Xenos
+I mean, we need a reliable way that's not gonna be somebody forgetting.
+
+Tariq Khan
+I mean, if if it's in the separate methodology, they shouldn't forget it. Right? So. Yeah. Just. So internal prep.
+
+Nausheen Fazlur Rahman
+It will have the stage.
+
+Tariq Khan
+So the lead engineer or the solution architect needs to make sure, you know, that get ignore file is there. Otherwise, we'll leak out it. You know, even even if it's checked in once, that's enough to.
+
+Nausheen Fazlur Rahman
+Okay.
+
+Tariq Khan
+Leak that into the customer's account.
+
+Chris Xenos
+That's what I'm worried about. Like, having it in in the methodology is one thing, but enforcing it's another, like, making sure it actually happens.
+
+Chris Xenos
+At what point is the repo created? Is that it it does it exist?
+
+Tariq Khan
+So in app monetization, it will exist. In app dev, it's probably created on our internal. Cloudelligent. Github account.
+
+Chris Xenos
+Well, is this something we can enforce via Delivery Pro? I'm I'm wondering. Like, through the tool that that we're building outside of Giro where it creates the look. We create the project. We create all the folder structures. We create the Git repos.
+
+Chris Xenos
+See what I'm saying?
+
+Tariq Khan
+Yeah, and and we create a Git ignore file there, ignoring the dot queue.
+
+Chris Xenos
+So so if we're gonna do all the. Teams folder structures, why not do the repos too?
+
+Tariq Khan
+So it doesn't matter in the internal one. I think the app dev, it doesn't matter that much. But with app mod, we have to be more careful. Because in app app dev, we essentially do a manual transfer of all the files. We can enforce it there. Yeah. It's get it it gets tricky because if if, you know, the dot folder is updated so that the Github team like, if you're working with other team members, the the dot Qiwi folder won't get, you know, updated through Github. That is where you have to kind of keep your knowledge folder out of the cure fold cure folder and also if there are any updates to the agents.
+
+Chris Xenos
+Could we is there some other way to restrict it programmatically? Like, okay. It don't don't use the the dot curo unless it's from, c l d e n t prefix?
+
+Tariq Khan
+Yeah. Probably, we have to think about it. Nausheen, sorry to take this up. I think, if you could see.
+
+Chris Xenos
+This one big one, to where if somebody forgets, then that's IP out the door. So it'd be worth the investment to to programmatically do something there, whether it's from the from, Firazza's side or some other mechanism.
+
+Nausheen Fazlur Rahman
+And we should do this in phase zero, right, internal prep as soon as, you know, we make our own repo and we have access to the customer's repo.
+
+Nausheen Fazlur Rahman
+Which phase are you thinking? It's phase zero.
+
+Chris Xenos
+Okay. Okay.
+
+Tariq Khan
+There's a couple of use cases I can think of, like, on phase zero as well. Maybe not it's but but maybe, yeah, phase zero. Yes. Yeah. Okay. So you own that one. Maybe phase zero. You.
+
+Chris Xenos
+Own that one. I mean, to figure out a programmatic way because it I mean, somebody's gonna forget. Yeah. Okay.
+
+Tariq Khan
+Okay. Yeah. Think about it.
+
+Nausheen Fazlur Rahman
+But.
+
+Tariq Khan
+It does belong in the service delivery methodology overall. Right? Overall. Yeah. I just don't wanna. It does the manual.
+
+Tariq Khan
+Do do we need to spell this out in the methodology? Is the.
+
+Chris Xenos
+Not if we have a programmatic way of doing it, or I mean, it could belong in there to to just to let people know, that that's the standard. I would I think it's We could always take it out. But.
+
+Nausheen Fazlur Rahman
+Yeah. Exactly.
+
+Nausheen Fazlur Rahman
+If it's important, it should be there, and I can just just make one box, one additional box, add it over here. You know, just make sure to do this. Whatever, like, Tara comes up with, and then you know, we can just have it in the baseline and yeah, and just. Extend it to other practices, and I think it can apply to data, AI, and ML as well.
+
+Chris Xenos
+Everybody. Any project we're working on brownfield. Yeah. Exactly.
+
+Nausheen Fazlur Rahman
+Brownfield projects.
+
+Nausheen Fazlur Rahman
+Thank you. So, yes, can you review the methodologies?
+
+Qasim Akhtar
+Yeah. No. I'm I'm so for the migration.
+
+Qasim Akhtar
+I was thinking there there's there is an event. I'm trying to figure out where that event is. There's there's a Tuesday event that Steve is going to, which is about migration and modernization. I know, Danish, AJ, you're gonna be there as well. What I wanted was, like, a one last kind of, like, look at the strategy AWS proposing for migration and modernization and bring that input into into to to to this before we put a label before we put a ribbon on this. Okay. I'm I'm trying to figure out where is that. I.
+
+Nausheen Fazlur Rahman
+Think do you wanna share the link? Let me find it for you guys.
+
+Chris Xenos
+Is that the Tuesday meeting.
+
+Qasim Akhtar
+That, yeah, that's a Tuesday meeting. So I'm trying to figure out. It's this one. It's called AWS modernization and Yeah. This AI.
+
+Nausheen Fazlur Rahman
+The road show. Yeah. Let me share it. Okay. So you wanna get, like, the some updates from AWS before we roll this out?
+
+Qasim Akhtar
+Yeah. Just, like, one last kind of, like, check in. Right to to to see if you guys can, and that's perfectly fine, and I was looking at I was comparing that with the agenda to see, you know, what's going on at that time. Okay. You know, even if it's hey, Jay. Even if it's, like, for the first 3 to 4 hours over there, and then you guys can be back, like, noon time that we can do we can continue our metasources. Augentic metasources conversation on a Tuesday. I think it'll it'll still not be a bad idea for you guys to, you know, just get that perspective.
+
+Qasim Akhtar
+But, again, it's it's it's modernization and AI both. I haven't looked at the the agenda itself. So maybe we look at the agenda, and then we can we can probably take a look at the if it's worth it or not. Okay.
+
+Nausheen Fazlur Rahman
+Aj?
+
+Qasim Akhtar
+Yeah. This is the one that.
+
+Arild Jensen
+Yes. That one. That's Tuesday, I think.
+
+Nausheen Fazlur Rahman
+Yeah. Tuesday, July 14.
+
+Arild Jensen
+Yeah. I I gotta sign up for that. It's gonna ask if that's.
+
+Qasim Akhtar
+Can you scroll down? Let me see.
+
+Arild Jensen
+It's 9 to 2PM, I think it is. Hey, guys. I gotta drop.
+
+Chris Xenos
+Okay.
+
+Qasim Akhtar
+Yeah. So so you see there AWS transform and AIDLC deep dives? Right? So this AI like, for solutions are like, that's the key thing. If you. Oh, that transform yeah. That was one.
+
+Chris Xenos
+Yeah. That's remember we were talking about this? We were trying to prove out transform and the Google. GCP at the very beginning in the tooling.
+
+Qasim Akhtar
+Yep. Yeah. I'm not sure if we plug do do we plug in transform in our in our migration machine? Yes.
+
+Nausheen Fazlur Rahman
+Yeah. We yes. So for on prem to AWS, it's not in a lot of detail here, but in the actual written migration blueprint, we can spell it out. Yeah. So if you wanna check on prem to AWS, you can use AWS Transform.
+
+Qasim Akhtar
+Aj, how well and worse are you in Transform?
+
+Arild Jensen
+Not not much at all.
+
+Qasim Akhtar
+Okay. So I guess more reasons for Tuesday conversation. But I would suggest, I think, you and Donish then see if you could still sign up for this.
+
+Arild Jensen
+Yeah. IIII sign up and I did confirm on on this. Okay. I don't think Nausheen did.
+
+Arild Jensen
+Okay.
+
+Qasim Akhtar
+So I think this will be important. Okay. For and and and the input machine should be from coming from AJ on, like, what are we missing in our migration blueprint as part of this conversation on transform on Tuesday.
+
+Nausheen Fazlur Rahman
+Right, and Qasim, just quick update. I did add the AWS map angle as well. I connected with Sam. He guided me through everything, and I even found this, like, this funding guide from maps. So I pulled in a lot of information from there. So that is also done. I added these icons as well. I think it makes it a bit easier than what is agentic and what is human. So if you guys like it, I I yeah. I can and Qasim yeah, and Qasim, can I get started on the ABDEV training at least and have that session with team next week? Because I don't wanna delay. At least I wanna get started with one, and ABDEV is pretty safe. I feel we've gone over the methodology. Like, the baseline is based on on ABDEV, so I wanna plan that for next week, if that's okay. 100%.
+
+Qasim Akhtar
+I think you're you're you're good you're good to go with that one.
+
+Nausheen Fazlur Rahman
+Okay, and then migration and data and AI, like, I'm gonna be working with you guys next week and get all this information, update the methodology, and then roll it out as soon as I can.
+
+Qasim Akhtar
+They are reviewing the final data and AI methodology as part of the agenda. I've had them to.
+
+Nausheen Fazlur Rahman
+Yeah to share that.
+
+Qasim Akhtar
+And, Nausheen, I'm gonna pull you into some of these conversations as well so you have some context. Yes.
+
+Nausheen Fazlur Rahman
+Please do, If if I can be there, if I can listen in.
+
+Qasim Akhtar
+The one that you need to jump in, I'll I'll. I'll send you the invite so you can have you can you can actually have those. But. Okay.
+
+Qasim Akhtar
+There's this connect there's a connect practice, and if you jump in, there's a new go to market motion, you should jump in. Okay, and now.
+
+Nausheen Fazlur Rahman
+Send me to mutations.
+
+Qasim Akhtar
+Tarek, you're the only one probably who's not gonna be there physically. So so we're gonna try to like, from the from, like, practice leads and everyone because AJ is gonna be there. Steve is gonna be there. Sam's gonna be there. So we're gonna try to get you plugged into some key conversations as well so you have that as, like, a perspective of this leadership off site. So just, you know, look at some of those meetings coming in today for for the next week. But the the agentic methodology by data and AI practice is due Wednesday, and they're gonna be reviewing that machine. Okay. I'm gonna I'm gonna add you in there as well as they talk through it, but they should have this plugged in before that.
+
+Qasim Akhtar
+So if I were you, I'll just check in with them, like, Monday and Tuesday, whenever they have chance to make sure you kind of, like, figure out the remaining stuff with them, and Yeah. Sure. See, Tariq, if you can help them think through because they're going through the variables right now of, like, what are the different sub agents? What are those artifacts? Do do should we take SRS? Should we not take like, if there's a guide for SRS, what includes of SRS, if you could share that with them as well, that'll be that'll be good. Not not, like, huge markdown file, but, like, a condensed kind of, like, what is a framework around SRS and what is it meant for and what does it like, what are the outcomes of it? So that way they they can either take it as is or or call out the deviations that they want for their framework if needed.
+
+Qasim Akhtar
+K. Sure. Okay. Awesome. Ajay, I think we're solid on the managed services part of it. I don't think, Nausheen, you're on managed services side yet. That's in the next you know, that don't you know, you already have enough on your plate, but that's that's another beast that AJ and team are working on just to give you an idea. Like Yeah. Okay. Well, I know we have a a big week ahead of us. So, you know, rest well, relax over the weekend, and safe travels. Same to you. We'll we'll see you guys next week. Yeah. Best of luck Fun.
+
+Nausheen Fazlur Rahman
+Team.
+
+Qasim Akhtar
+Awesome. Thank you.
+
+Arild Jensen
+Awesome. Take care.
+
+Qasim Akhtar
+Send the invites. Alright. Thank you. Bye. Bye. Bye bye.
