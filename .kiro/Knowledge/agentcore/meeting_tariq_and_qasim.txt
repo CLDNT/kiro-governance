@@ -1,0 +1,791 @@
+Nausheen Fazlur Rahman
+Platform and everything. But I feel this is this is I mean, I'll do the same thing for migration, and it it is basically a blueprint. Right? Because it's going through, like, okay. What is Cloudelligent service to the methodology, which. Which you know, migration will have that piece as well. Right, and then so it's essentially a blueprint, which I can feed into, you know, the training.
+
+Arild Jensen
+K. Hey.
+
+Nausheen Fazlur Rahman
+Qasim. Hey, Tarek.
+
+Qasim Akhtar
+Hey, guys. So.
+
+Nausheen Fazlur Rahman
+Happy Friday. Happy Friday.
+
+Nausheen Fazlur Rahman
+Yeah. So how was the Dallas get together? Was it fruitful? It was good.
+
+Arild Jensen
+It's really good.
+
+Qasim Akhtar
+Yeah. I think I think overall, was it was amazing. I think I've just like everything else, I've I've packaged too many things in in in in 3 days.
+
+Arild Jensen
+I have a feeling you'll always do that, Qasim.
+
+Qasim Akhtar
+I feel like I always do that to myself. But then it it was still it was still great because I I think in a limelight, AJ got to spend time with Danish. Steve got to spend time with Sam.
+
+Qasim Akhtar
+We had about 20 different meetings, sessions in 3 days to give you guys a perspective. 6 of those 5 of those were interviews of essays that we brought outside. Two from Toronto, I know it's not Toronto is not the right way to say it. It's Toronto. But yeah. But we got we got, like, two people two folks from there, 3 from, like, different parts of US, and like, and and then a day and a half of, like, just leadership stuff and like, half a day with AJ, and It was amazing. It was like it was like our mini reinvent, we honest.
+
+Chris Xenos
+Yep. Most of the time, I have to disagree with Qasim just to maintain sanity, but this time, I have to fully agree.
+
+Chris Xenos
+It was really we had a great great week.
+
+Qasim Akhtar
+Okay. Shall we get started?
+
+Chris Xenos
+Yes, please.
+
+Nausheen Fazlur Rahman
+Okay. Right. So so in terms of the governance app, like, the team and I, Faraz, myself, we did meet up towards the beginning of the week, and we did have, like, sort of a thorough session, and and if you can explain what the plan is moving forward, and and I think for us, he's out today. I think he's out at 6, so we don't know how much of this is done, but this was basically the plan at the beginning of the week.
+
+Chris Xenos
+Yeah. That's okay. Yeah. I also Qasim, I also set a meeting for us at the end of the day today, just to formalize this up and get. Faiza into the conversation so we can start to manage this like a product.
+
+Chris Xenos
+So we wanna get Yeah. We.
+
+Qasim Akhtar
+Will I think you guys had a meeting? Or.
+
+Chris Xenos
+No. I've scheduled it just for the end of the day today. Okay.
+
+Qasim Akhtar
+Okay. The end of the day.
+
+Chris Xenos
+Because I wanna because I know we talked about leaving it till I get back, but, you know, I just wanna set the ground rules and sort of you know, we you've already talked about the vision and everything, but I wanna get it organized and on a on a plan. So I've got the project manager set for the meeting and everything else. So that way next week when you meet, we should already have some structure to this and some short term goals. Yep, and then it's just you giving guidance.
+
+Qasim Akhtar
+Yeah. Plus it takes, you know, the designer, a a product manager, designer some time at least a week to, like, put things in motion, PRD and whatnot as well by the time you have. But but do you do you see us delivering that which you already have in flight with Derek and Faraz first, and then this comes on the backend for the next version, or do you think this conversation you would you want their input before we actually release?
+
+Qasim Akhtar
+This is your point. This version that you're working on already.
+
+Chris Xenos
+Yeah. I I think my goal would be if we could do everything we're doing in the in the Jira dashboard or in in what we have now, then I'm good to go, and even if it's manual tagging of things, then we're good to go with what we have. So to, to answer your question directly, I don't I didn't get enough time with it to know that we can, if we can completely, replace the Jira status delivery board. If we can do that, then I'm good moving out. If we can't do that, then I don't then I don't to me, that the biggest benefit of moving forward faster is just replacing Jira and having AAAA good database structure and you know, something we can already start using and get away from Jira. That would be my first priority.
+
+Qasim Akhtar
+Yeah. So if you would ask me last week, I I think that my answer was whatever we could do quickly to get it done. But since we're putting structure to it and knowing that Jira itself like, whatever we do in Jira today is literally what we can do in an Excel sheet, which is just adding assignments, adding those nodes, and I think we can we can and and adding links manually, think we should definitely just I I don't think from delivery from development point of view, that's a lot of. Yeah. That's a lot of work, to be honest. But I think we'll have to get then So I think I think it answers basically, which is for this version one, you would need that extra design help, or the product manager help. So that way, we could pull this geo functionality, and we could get off of that, and Right.
+
+Chris Xenos
+So that would be my first short term I don't think we're far off from that. But I don't know.
+
+Qasim Akhtar
+The the key thing is the mechanisms. Right? The and the governance engine itself of, like, what have we.
+
+Qasim Akhtar
+What are our thoughts on that and how we are how far are we? So this governance piece, like, I think the feedback that I provided, I don't know if if it made it to you or from from AIDLC perspective. Is there any progress on the on the on the governance mechanism itself?
+
+Tariq Khan
+So we yeah. So what I did discuss with was that instead of having a binary structure to it, we need to create a set of agents on agent strands with the with with the orchestration flow between those agents to kind of validate whatever is being sent into meetings and you know, analyze the meeting notes and and produce, you know, meaningful results without hallucinations. So if we don't do that looping structure that we have right now, it will hallucinate stuff, and my vision with this is that we can probably then use the same set of agents, and that that's that's probably gonna take us away from the c s CES team governance app, but I wanna use the same in Oscar for evaluation of presales on the SOW and and create a sort of a guideline or or a guideline document that kind of explains the potential problems with the SOW. So so we kill kind of two birds with one stone. So that's my vision about, you know, creating this you know, analyze the meeting notes with this this set of agents or agent code.
+
+Chris Xenos
+Okay. Custom, one thing I just keying off of what Tarik said in a conversation you and I had earlier in the week is, also, we wanna have alignment between Oscar and Deliverpro. Like, we don't wanna reinvent the whole wheel with the so whatever whatever patterns we're using in Oscar should be repeated from interface all the way through. Like, however it's doing Avoma, we should replicate that in Deliverpro.
+
+Chris Xenos
+You you know what I mean? We already have a good foundation, so we don't need to go back and research how to do all these different things. Whatever we can borrow from. Oscar, let's borrow it. They're not gonna be completely disconnected eventually. I mean, they they'll be separate, but they're not gonna be disconnected. Meaning, we might have things that when a SOW is committed in Oscar, it would flow into Deliver Pro eventually. So look at Oscar while we're designing Deliver Pro. That's that that would be. Yeah. That's something we touched on this week, Qasim and I, and I just I keyed off it based on what you were just saying.
+
+Qasim Akhtar
+Yeah. For for the integration, for the agentic kind of, like, workflows, we we could we could use Oscar. I think I'm I'm I'm zeroing on our thought process around the governance itself. Whether we use it whether we do it through agents, whether we do it through. I'm I'm trying to figure out what what is that that we have figured that like, what what is the.
+
+Qasim Akhtar
+The mechanism that, Darek, that you're pointing to here? So, okay, you find you have an agent core. Okay. What happens from there?
+
+Tariq Khan
+So, what hap like, essentially, this is the the first phase zero. Right? So phase zero, we wanna generate this set of artifacts based and then you know, we generate that through these agents based on the SW and create those internal sort of checklist of documents, and we do the SLA elicitation checks and everything, and we create these documents, upload it to the Microsoft Teams folder that we discussed. But, essentially, these 8 I mean, that's the primary purpose in phase zero. But then on from there on, there are meetings that happen, and we wanna analyze those meetings and and keep on updating. So so this was so I had just one meeting with Prahlad on this, and and I I kind of laid out the structure for him that if you wanna go with agents on kind of getting these documents delivered, you need the hallucination checks and all that stuff.
+
+Tariq Khan
+So just develop these set of agents, and then later on, we kind of analyze meetings with it, produce other documents. That's that piece, and then there's the MCP that will upload documents and and the macro flags that we kind of set up. So that's the idea. But we can But that would one agent? No. It won't so so it's it's gonna be 3, I think, based on the discussion I have had so far. So there there will be an orchestrator agent. There will be AWS architect, and there is another reviewer agent that's gonna review the work of AWS architect, and so it's gonna be 3 on agent strands, and they are gonna create this set of documents that are gonna be uploaded with hallucination checks. Sort of what we do with our set of agents offline with QU.
+
+Qasim Akhtar
+It doesn't okay. So I think what you're referring to is there's a prep work, right, today that we're expecting originally, my feedback was, like, to this could be, this could be tackled. Right? The that this could be tackled with our because we have the SOW. We have all these different things. So this is, like this is more of the workflow, piece that we can we can actually, plug into deliver flow. That's amazing. I think we should definitely head towards that. We don't so that way we can avoid, the preliminary SRS or whatever that framework is in the beginning to be able to basically create that, package. Right? Yeah. That's awesome. That still doesn't solve the governance piece.
+
+Qasim Akhtar
+Right? Those two to 3 agents will solve the preliminary SRS piece. So what happens to the look. That is, like, week one stuff. Right? Our delivery is for the next 3 months, let's say. Right? How do we tackle governance in our delivery using similar model, agent core model in in So there.
+
+Tariq Khan
+Yeah. So these set of agents have an LTM and an STM with them. Right? So when we use the LTM, that's long term memory. It's gonna store all that context for that particular conversation for that project in the LTM, and I'm envisioning, like, you get subsequent meetings, and we upload that into LTM, and then we run the same set of agents to to find out meaningful you know, in the meeting notes, we find out if the the, you know, actual stuff that we are tracking to in the macro flags actually happen in the meeting notes or not. So if if these agents produce, you know, the initial documents, they can also do the same set of validation on the meeting notes, putting all the contacts in their LTMs, and then provide you with those macro flags to the Chris the the app that Chris was developing, like, the the original app. Right? The the dashboard. So I still have to discuss what happened with that piece, but just the agents use of I think that can really help us out with with the the governance going forward from the agentic piece. So you're saying the same.
+
+Qasim Akhtar
+That you have over here that will tackle the first piece of the prep work, the preliminary SRS, will then using this long term memory to to keep that check on it. Right? Is that what you're saying?
+
+Tariq Khan
+Yeah. Yeah. We can constantly I mean, we constantly keep pinging them with the as long as the project is active. This is yeah. So I may mention.
+
+Tariq Khan
+Yeah. I I still have to validate certain aspects of it, but but, I mean, this is what I initially thought of in one meeting. So this should be our way of doing it, and you know, how we do it for all the projects, I still have to figure that out with Raj. Okay.
+
+Chris Xenos
+There's one there's a couple aspects too that I wanna make like, at the end of this, everything has to we have to know the state of everything. Like, it has to have a state because we're gonna use that for status reporting. Don't worry too much about what we do, like, in in Quicksight afterwards. That's as long as the data is available in a structured way, we can get to it. But from what I'm from what I'm hearing is the more qualitative analysis will be done by these agents.
+
+Tariq Khan
+Yeah. That's which was essentially it was a human task, I mean, through these agents previously. Now these agents will handle all of that automatically and raise those flags, put the data in structure format, you know, the the stuff that we were doing through the agents manually by a human. I think these agents would be able to raise those flags and everything through Okay. Through automation. So so.
+
+Chris Xenos
+Qasim, I think this we'll we'll discuss in this next meeting so that we don't use this whole meeting is like, we'll just we have to start getting a a a, like, 3, maybe you guys or you know, subsequent to the meeting we have this afternoon, just start putting together a.
+
+Chris Xenos
+Some kind of backlog that we either we need to validate or prove out in order to advance to the next step. So there's a lot of stuff you guys talked about, but you don't know, occurred. So you gotta validate all that first so that you know the state, and then just I think we have to validate the technical architecture, it sounds like.
+
+Qasim Akhtar
+Yeah. From the binary, if it's there, if it's not there, kind of, like, approach from qualitative governance perspective, I see separate agents for those because one is the qual like, I'll tell you the two blind spots that we have right now in our delivery. The the first one is apart from look. The the how you get there from start to the end is taken care of by the methodology. Right? But but let's say that's let's say that's being done 100% of the time. The two things that we'll never we'll never have any information about is customer sentiment and and and conversation intelligence. Right? Like, around conversation intelligence and any customer sentiment around that. It was like, how are things happening, like, on the external part of it, like, with the customers themselves? So that checkpoints, like.
+
+Qasim Akhtar
+I'm kind of forecasting that we're gonna just because of our model of solutions architects where they're over they're relying on implementation needs to pull through, and then they're just gonna jump into some of these well, majority of the initial conversations. But then when they get to the delivery, you're gonna have essays kind of, like, multi you know, they're gonna be single threaded into multiple other things. So I think that that. I see that as a, like, a conversation intelligence kind of, like, separate agent, which we are evaluating in Oscar for to do sentiment sentiment analysis and bunch of other things. Right? Right now, it's a bunch of Avoma scripts. We don't have any perspective off that. Right, and even today, if you look at, like, some of the updates that we get, some great, some not so great, we don't understand the customer point of view, customer perspective into it.
+
+Qasim Akhtar
+So I think that qualitative agent could probably help with that. That's number one. We don't have that's a blind spot for us right now. We only get to know, like, way later, right, if if something was to to go sideways with the customer. Number two, you're creating this we're we're creating this structure. How, to a certain extent, like, how are we measuring against it? Right? So.
+
+Qasim Akhtar
+In the in other words, you have a framework of SRS. So think of, like, a an agent that gives you, like, a differential differential of Vindu. What your standard should've was as part of the structure and when and and where we have deviated from those. So so so that's that's another thing that's a that's gonna be a blind spot until and unless we don't have someone looking into the portfolio view of it. So think of it like a portfolio manager in a way, right, who's who's looking into, again, the qualitative perspective, but looking into the artifacts, looking into the standard structure that you have created, and and and seeing if we are gonna be off from this overall picture or not. Those are the two blind spots that, at least from my level, at least what I'm seeing, and I'm guessing that'll be true for Chris as well.
+
+Chris Xenos
+Can I say it another way, Qasim? It just. Yeah. Ultimately, what we're trying to do is predict. Ultimately, we want to focus as as executives. We want to focus our attention on activities that are worthy of our attention, and so we want to predict how well or off track a project is through before we get into implement you know, throughout the project life cycle. Right? So this analysis has to help us predict that. So it should be analyzing deliverables, analyzing phone calls, analyzing, you know, whatever these artifacts are throughout, analyzing those relative to what our guidance is to start to raise flags on is this likely to be do we need to call a customer out of cycle to to head something off? Do we need to have a a discussion with the project team? So become it needs to become more of a predictive tool to tell us when something's about to go off track rather than waiting for it to think about our our stuff with Chad, Dareek.
+
+Chris Xenos
+So this tool should help us shift left in our management, and and the sooner we solve a problem, the better it is for a customer and the better it is for Cloudelligent and the better it is for our employees.
+
+Chris Xenos
+Is that is that does that help?
+
+Tariq Khan
+Yeah. I I need to think of how how we can predict it and and how we kind of give this context to to to to predict what context.
+
+Qasim Akhtar
+Yeah. That's take the prediction as a north star of where we were trying to get to, I don't think we're gonna get the prediction, like, right away because there I think and that's why I called out those two blind spots is, like because as you're bubbling up those information into the product, into the platform, we can add one and one together and figure out where we are off. Like, for example, we don't have that functionality today in Oscar to tell us which deal is going sideways. But if we add one and one together, we can see which deal has been sitting in that one stage for a longer time, and we kinda know what's going sideways, kinda.
+
+Qasim Akhtar
+Right? So we so there's, like, a direct implication implied kind of, like, prediction and then an actual production. Right? So we don't think let's not overcomplicate into that, but but take that as, like, a as a strategic direction of what we are heading heading. Right? Now you're creating the building blocks of those agent core that. I'm glad that we're thinking of those. That's amazing. But I wanted to dissect that in two different paths. Like, one is, yes, you're using the automation initially to kind of, like, create your preliminary SRS and whatever that is in the beginning. That's perfect. But that still doesn't add the the governance intelligence. That just takes care of the automation and the prep work to make it more efficient.
+
+Qasim Akhtar
+The outcome is standard, but automation. The these two pointers that I'm sharing here, now how we tackle that, I you know, I'll leave it up to you guys. But, like, qualitative agents should be you know, there's there's two types of inputs for context sharing. One is conversational. Second is code, documentations, and artifacts. Would you guys agree? These these are the two things that make themes, right, into the delivery.
+
+Stephen Furlong
+And Maybe maybe scheduling as well. So are we hitting milestones related to the project plan? Right?
+
+Arild Jensen
+Yep. So that on time.
+
+Stephen Furlong
+So maybe that's a that's a that's another. Don't worry about time.
+
+Chris Xenos
+Yeah. Yeah. Oh, sorry.
+
+Stephen Furlong
+Yeah. No.
+
+Chris Xenos
+I'm so no. I meant, like, I don't wanna get caught up with, like, the timekeeping part of it yet.
+
+Qasim Akhtar
+The but that's an important point, Steve. Right? I think I think that will be definitely in there in future.
+
+Stephen Furlong
+Well, since it's a governance app, I mean, that's an important signal. Right?
+
+Qasim Akhtar
+Agreed. 100%. So that basically means your work that is being done properly in a structured format in in in Github, right, or whatever source code. Number two, what what is the other input? The other input for that second deviation part would be all the artifacts that we are generating. Right? Because you're generating certain artifacts, but there's no kind of, like, governance around that, and then what, you know, Steve's talking about is, like, the, you know, the the work and the time. Like, we have all that backlog in Jira, and So that's the planning deliverables.
+
+Stephen Furlong
+Are we are things starting.
+
+Chris Xenos
+To run late?
+
+Stephen Furlong
+Yeah. There I mean, there's all sorts of signals you can get from from Jira from a project perspective.
+
+Qasim Akhtar
+So to create that, like, a third that could be, like, the third agent. Right? The time specific time sensitivity and delivery and and if you're off or not. So standard deviations would be more around the stat the the the second agent will be more around the the the artifacts that we are supposed to have and and what's the deviation like, what's what's the structure and how how off are we, and and the time delivery, that could be, like, a Jira plus the Gantt chart that we already have plus where we are kind of, like, off or not. So I think this now becomes the breed of, like, your governance agents, purely governance.
+
+Qasim Akhtar
+So that these 3 themes are kinda, like, the key things, and these are our blind spots today. There's nothing there's no fourth today. If we were to invent a fourth, that will probably be, like, a thinking of 2027 and and and later on. Right? This is kinda, like, our current pain point, and this serves not just me or Chris. This serves, like, practice leads like Steve and yourself. Right? So it's just more of, like, self serving for you guys to be able to because your spot check is probably going to the Slack channel, right, and and and asking. I was I was giving this example of, you know let's say we're, like, 100% utilization. Not I mean, today, we're not that much utilized.
+
+Qasim Akhtar
+I think we're probably individual perspective of things was probably busy and not busy. But my point I'm trying to make is, like, today, like, you know, today's governance is. I'll ask Chris. Chris will ask one of the project managers. The project managers will ask one of the essays or practice leads. The the the essays and practice lead will ask the implementation engineer. An implementation engineer will go probably and look at their will will spin up their Qura, generate generate whatever that update or whatever that question or answer was, and then that was top to bottom, and here's a bottom to top flow of of of those updates, or we'll probably and if we find any gaps over there, then I'll myself or Chris will will jump into Avoma, and we'll dig through, and and and I hope we don't have to look into the and our inbox is at Clutter right now because we have added delivery at Cloudelligent everywhere because that's our governance mechanism right now.
+
+Qasim Akhtar
+Delivery at Cloudelligent, just put us in the email so at least we know everything going on. So, like, I have, like, 5 emails going on in my inbox just looking at back and forth to a lead and tough non are having with the customers on onboarding. But, hey, that's our current governance. So so that's that's what we're trying to get out of, and and and we're not just it's not just for me or Chris or eventually AJ. This is for for you guys as well. So this governance should be an uplift for everyone in this chain. So so as we are building this, don't think of this as just serving to the c c suite here.
+
+Stephen Furlong
+Yeah. Hey. Is there a I I I've seen some of the hooks in the CAS. DM for this app, but I haven't really seen, like, a spec doc for this. So just curious if there's anything out there or we're kinda it's still in the ideation phase. So kinda pre pre spec doc right now.
+
+Tariq Khan
+Yeah. No. Not yet. I mean, probably after when Chris is back, I think we can create an SRS. Okay. On on what we're work on. Okay, and maybe, Chris, we need to add someone from AIML. I mean, can generate it for sure. Don't know. If if it's completely now agent core and maybe do we need to add someone development wise from AIML, or do you want app dev guys to kind of go ahead?
+
+Chris Xenos
+Yeah. I think we can have Ramesh take a look at it is what we decided on.
+
+Tariq Khan
+Yeah. Okay. Yeah. For what?
+
+Qasim Akhtar
+What is that, Chris?
+
+Chris Xenos
+To to take a look at the architecture and you know, we we discussed that with Ramesh today that we might have him.
+
+Qasim Akhtar
+That was for. Agentek managed services, not for the Deliver Pro app.
+
+Chris Xenos
+Okay. You you okay.
+
+Qasim Akhtar
+But we could still have him look at it. I mean, that's not I mean.
+
+Chris Xenos
+Well, I'm just yeah. So I don't wanna so what I'm just. I mean, if Steven has bandwidth, that would be great. I'd like to take a look at it. I'd like so.
+
+Stephen Furlong
+You know, this agent core harness, is which is new, very quick and agile way to do put together agent core agents, I would love to look at it from that perspective to make sure we're using all the cool latest features. Because it's the kind of thing where we wanna use these on projects, and we can add some of our bench people, to help out as well.
+
+Qasim Akhtar
+So yeah. I just want to kinda.
+
+Chris Xenos
+Work with You know the process, Steven. You know what we're trying to so.
+
+Chris Xenos
+I think that would be great if you could do that, if you could prioritize that.
+
+Stephen Furlong
+Yeah. We would love to.
+
+Qasim Akhtar
+Yeah. So I think it's not Steve, it's not just the I think the features are important, but also, like, the orchestration of of the architecture itself. Like, I know we we know it's gonna be Lambda functions and agent core, but, like, what mix would that be? Because there's some there's some architecture decisions that we made mistakes in, like, Oscar, and we're trying to, like, take that and and and and enhance it. Right? Because over here, there are if you go deeper into some of these touch points we have talked about, there's a lot of workflows and orchestrations and like, going through a formal figuring that out, going through these different, like, repos and capturing that information going to I mean, there's a and they need to be able to kind of, like, orchestrate between them.
+
+Qasim Akhtar
+Right? So I think I think capturing this into into and creating an architecture will be great. Ramesh, I've asked him to kind of build that up by next Wednesday. So I think next week, we're probably gonna have, like, a genetic managed services piece figured out. So so if you're able to get to this, that'll be awesome. In case if that doesn't happen next week, then it will just push it push it to to the following week, and then the next thing you know, one hour deep in August. So it'll happen.
+
+Chris Xenos
+Sounds like a plan. Yep. Yeah. Steven, I'll be I'll be curious to see what we saw yesterday on on harness and how that helps. Yeah. For sure.
+
+Stephen Furlong
+Yeah. So for us is well, I mean, I guess the the actual next step, I think, of what I heard is that we are I mean, for us, it's gonna take what he knows and put together an agent core architecture, and we are gonna review it. Is that right, and then make recommendations.
+
+Tariq Khan
+Yeah, and me and Chris and for us, we're probably gonna have a call later today, and we figure out the missing stuff in that, and then we create an SRS.
+
+Stephen Furlong
+Just wanted to make sure I didn't sign up for building building up the whole thing.
+
+Chris Xenos
+Well, I can I'll invite you to this call. We have I mean, the really, the purpose of this call is to hash out well, it's it's a few things. We're trying to bring together the product team. Yeah. The initial you know, Tariq and for us, the initial conception and initial. I wouldn't even call it a prototype. It's like the initial ideation tool and start to bring these into a formal product development process. So this this call is just to bring everybody together.
+
+Chris Xenos
+Talk about what we're trying to achieve and start putting dates and things into it, and so I think I'll invite you to that, and it'll help bring more context. Okay.
+
+Stephen Furlong
+Cool. Thank you.
+
+Nausheen Fazlur Rahman
+Move forward? Yes. Okay. So the updates on practice specific blueprints were pretty much finalized with app dev and app mod. Next week, I do plan on setting up two meetings, one for migration for the migration piece and the other for data and AI. For migration, I'm gonna be inviting AJ and San and Qasim, and for data and AI, I'm gonna be inviting San and Steven as well. So I wanna get these finalized so I can start working on building the training content. But I feel like and then Qasim mentioned that the training that you guys went to earlier this week, it was okay. It wasn't that, like, helpful. It was very introductory. So perhaps not a lot of input, from from the meeting.
+
+Chris Xenos
+Oh, yeah. We were we were just, I think for migrations, Qasim was really trying to make sure there weren't any announcements or big developments in the modernization that might adjust our approach and that it was more like a marketing event than anything else. So we didn't see any new we didn't see any new developments in in, the Frontier agents, for example, or or capabilities that we're not already covering. Okay.
+
+Nausheen Fazlur Rahman
+So.
+
+Qasim Akhtar
+Yes. I think the big big question now is what happens with migration and data AI next steps? Like and what can we put a timeline to this of of but I don't want this to be a long tail of just figuring out. Like, we need to put some timeline to fit let's say that these are the decision made, these are the changes proposed, and we review that, and lock them into into as a blueprint.
+
+Chris Xenos
+Yeah. So so let me just step in here again. I'm sorry to keep interjecting, but I wanna keep things moving. So my understanding is you guys we already have the the flows done or near done, and so the see, the expectation is next week is the review with Qasim to get them blessed, and then the the following steps from that is adapt any training we have to, and the approach is gonna go is is each practice manager is gonna work with their team and Nausheen to make sure they get trained appropriately with whatever whatever incremental content we had to develop.
+
+Nausheen Fazlur Rahman
+Yeah.
+
+Chris Xenos
+So that would be the the you know, if we put weeks to that, you know, that's, like, another two to 3 weeks max.
+
+Nausheen Fazlur Rahman
+Yeah. That is the plan, and for both migration and data, this idea was suggested both by Qasim and SAN. So I actually went, I found, like, recent SOWs. I pulled out the deliverables. So, you know, I I'm I've been doing all incorporating all the feedback. So I feel there are pretty much solidified changes should be minor, should be covered within a day. So I just need the final blessings. Everything is done. I I just quickly wanna show you some other few things I'm. I've added to the flow. I've added these icons, everyone, like meetings.
+
+Nausheen Fazlur Rahman
+Your gate, you know, your AI agents. So, you know, when people are looking at it, they know exactly what needs to be done. So it's pretty much, like, spelled out. We just need the final blessing from from the practice leads and Qasim.
+
+Chris Xenos
+And that should be what we that's that's gotta be the goal for next week. Yeah. Exactly. Because Nausheen's gonna need some time to figure out what, you know, how to adjust the training from what she's already built, and then the following week, each of the practice leads will have to work with Nausheen and her and their team to get everybody trained.
+
+Nausheen Fazlur Rahman
+Exactly, and then Qasim gave earlier gave me this new idea for workshops. Right? Because and he brought up a really great point. I've been working really hard on the Appmon Ciao.
+
+Qasim Akhtar
+It was through, Chris.
+
+Chris Xenos
+I'm I'm chuckling because.
+
+Nausheen Fazlur Rahman
+Perfect. Yeah. I mean, learning on.
+
+Qasim Akhtar
+There's a there's a reason why I get all these awards and Chris doesn't. Yes. Yeah. Well, the thing is.
+
+Chris Xenos
+Qasim, is III really I know the truth, so I view those as my awards too. Right? It's it's yeah. Not like.
+
+Qasim Akhtar
+I'm only bouncing on your shoulders. You know what I mean? Like, at at the of the day.
+
+Chris Xenos
+I might say a little bit is is that I just enhance your capabilities. That's that's what and and competency. Right? Like, that's what I do.
+
+Qasim Akhtar
+Yeah. Yeah. But we but everyone in this room definitely take the confidence from you. You're you're the fountain of confidence here in this room. Let's just say that, and and helps us excel in whatever we do. So appreciate it. I'll take that.
+
+Chris Xenos
+That is Man.
+
+Qasim Akhtar
+That is.
+
+Stephen Furlong
+It's but the you've you left out one of the adjectives. Oh. It's predatory self confidence. Predatory self we're self confidence. You have to remember. It's not just straight up confidence.
+
+Qasim Akhtar
+That is so true.
+
+Chris Xenos
+I just I just put it this way. I'm probably the the the least intelligent person on the call, and so if I understand it and it makes sense to me and the plan is clear to me, then I'm really confident we're gonna be successful.
+
+Stephen Furlong
+Yeah. Yeah. Now there was some predatory motion that that's taken, Chris. I haven't figured.
+
+Nausheen Fazlur Rahman
+Out what what it is yet. But.
+
+Qasim Akhtar
+But, Nausheen, sorry. We we we.
+
+Nausheen Fazlur Rahman
+This is good. Yeah. No. This is good.
+
+Qasim Akhtar
+But that's what happens when you have a really solid off site. Right? That's this is kind of, like, the next day of things. So, look, we the the two things before we talk about.
+
+Qasim Akhtar
+The enablement idea that I shared this morning. So I'll I'll I'll talk to it in details as well. But please make sure that these workshops or or these, sorry, these working sessions are in place with Steve, Sam for the data AI, and then and and also, Tarek, you will have to probably just I know you have lots of stuff going on, but your presence will help guide them into whatever the baseline is. So that way, we're not we're not reinventing things, and we're just adding on top of it, and then send and AJ for, like, this migration piece, right, to close the loop on that.
+
+Qasim Akhtar
+So if you have those working sessions set up if if you don't, please set up those for next week so that way folks know and they come prepared, and they can help drive towards that. That that's one. The second thing is, Chris, what I shared with Nausheen was, like, you know, we're we're working through this 3 60 learning and everything. That is great. I think we need to kind of like what we did earlier in this year, which was, like, we we don't have to do that drastic of, like, a whole week. I think even if you do, like, a two, 3 hours worth of, like, a mock project and run through, for example, per practice. Right?
+
+Qasim Akhtar
+So one. AIML project, right, mock project, Steve, so to so that way the team can actually the the beauty of this is, like, okay. Not not the beauty. The the challenge is, like, can we have team collaborate on this new methodology with different personas? A project manager collaborating with an SA, an SA collaborating with an implementation lead, an implementation lead collaborating with with a junior engineer. That piece is not gonna come from individual learning. Right? So I think the bridge here from they learn the basics and the foundations in 3 60, before we deploy them to the project, we just have, like we could a pod we could set up a pod for a specific practice, give them a mock project for two hours, and bizhack our way. Kinda like the way we did the bizhack workshops, like, run through each persona collaborating while the machine kind of, like, helps them through. So they figured out why.
+
+Chris Xenos
+Yeah. Qasim, as long as they do the pretraining, I think that's a pretty viable approach. Like Yes, and and we could do parts of it offline and parts of it online.
+
+Qasim Akhtar
+Yes. 100%. I think the the the training is the prereq. This this collaboration session is or or a mock session is gonna help us getting prepared, get everyone prepared into delivery. So that way, Steve, you'll have confidence that, you know what, the implementation needs and the engineers that run this through, and they're not gonna mess up on the project and learn in the project. Because the key the key thing here is the collaboration between different personas into the delivery. We don't know that yet effectively. Right, and every the whole weight has been on the SA to be able to do that, and this is the way for where we kind of, like, set that motion, internally, and then we work towards this actual projects, and they'll learn that over there as well.
+
+Qasim Akhtar
+I would hate for us to have leave all of our collaborative learnings for actual projects, and and then and then the next thing you know, it's a hurdle, and everyone just left it in the air and then went back into the individual key role in my laptop and just back back to the isolation mode.
+
+Stephen Furlong
+Yeah, and I I think there's also needs to be this enforcement and responsibility.
+
+Stephen Furlong
+Concept here, and and the way I've been looking at it is that the assays on the project are responsible are the responsible party and enforcement for correct usage by the team of the. CASTM, on the project team. Right? So Yes. So they're they're ultimately responsible for that. It's being the the the platform is being used correctly, and yeah. I mean, they're they're not the ones operating the platform necessarily. It could be the implementation leads. No. But. They're the enforcement and responsible party that is being used.
+
+Chris Xenos
+There's going to be so so in our KPIs where where we have this adoption of Blueprint as a KPI, adoption of the tools as AAP as a KPI, some of that will be in in this delivery, pro. But, ultimately, you need you need to know how people are using it because it's this is like, what what capabilities do we may need to add or remove as we go from the from the actual agentic tooling? Yeah, and that deal if you're not monitoring that or or or enforcing the adhesion to that practice, then you're not we're not gonna know that. We're gonna miss that feedback loop.
+
+Qasim Akhtar
+Yeah, and and we kinda talked about, Steve, it's like, with this new methodology, there's Chris is gonna work on some of these rules, responsibilities kind of, like, hashed out. So that way, you know, it should it should be distributed. Right? We that that's one thing that we want to you know, with this methodology should help clear out the shared responsibility and also the specifics of those responsibility as well. So that way, we don't have to second guess who the responsibility of a project manager versus implementation lead versus an essay. Like, we should have the clear lanes and understanding of responsibility, or else our our governance is gonna be really surface level. It's you know, even if we get in other way in other words.
+
+Qasim Akhtar
+On the leadership side, if that's not cleared out, then we're gonna you know, the deliver pro is gonna bubble up these governance points or or or or or breakages, and we're probably just gonna go back to the essay each time. Right, and that's that shouldn't be true for everything. Right? So there's definitely yes. Essays have the largest pie into this, but there's other shared responsibility as well in this in this whole ecosystem. So I wanna.
+
+Chris Xenos
+Yeah. So yeah. Like, we need to talk about what what's the what's the responsibility the implementation lead, for example. Like, the the methodology now has an implementation lead, which is we just need to put some meat behind that, explain what that means and how it's I mean, it the logical representation is on the paper, but we wanna make it more explicit and provide some training on, okay. This is what we're expecting you to do.
+
+Stephen Furlong
+Yeah. That's fair. Like.
+
+Chris Xenos
+We can't have the same problems that we talked about in the off site going into next year. Right? So the tool tooling and and the methodology is one thing, but, you know, changing the culture and the results is another.
+
+Stephen Furlong
+Yeah. Hey. I apologize. I have to be on this, wait. You have to be on this finca.
+
+Qasim Akhtar
+Finca meeting.
+
+Chris Xenos
+You're you're trying to we're we're we're I'm trying to survive.
+
+Stephen Furlong
+Just letting you know. Ed, super cool. Awesome updates.
+
+Chris Xenos
+You know, Steven's Steven's probably there with his girlfriend. You know, it's you know, I'm running this company. It's really hard for me. Like, I'm gonna be in every key decision. That's You're okay, Steven. That's right.
+
+Stephen Furlong
+That's right. I can't do anything. There goes the predatory self confidence.
+
+Qasim Akhtar
+There's it it always comes back. We go again. You're right. It always comes back to me. There's Yeah.
+
+Nausheen Fazlur Rahman
+There's this.
+
+Stephen Furlong
+Well, so I so I mean, it it is so true what he said. I mean, at least he's honest about. I am on. How we how we operate.
+
+Qasim Akhtar
+It's such a yin and a yang with Chris. It's like, he goes into this Buddhist. Buddhist kind of like, you know, feelings and perception about him, and the next thing you know, that predatory thing come kicks in and it's like, back to the real Chris. So. They're both the real Chris.
+
+Chris Xenos
+I'm the yin and the yang.
+
+Qasim Akhtar
+In the yin and the yang. Exactly, and Zarek is trying to figure out his life. He's like, what did I do to, oh, okay.
+
+Stephen Furlong
+No. He's he's just he's just not going. What the **** did I get into? Whoops. Sorry.
+
+Qasim Akhtar
+Sorry for that language. Sorry for that language.
+
+Stephen Furlong
+But. I'm just I was just channeling what was going on in his head. Maybe not that language. So okay. On that note, I'm gonna jump. Happy Friday. See you guys.
+
+Nausheen Fazlur Rahman
+Happy Friday. Happy Friday, Steven.
+
+Qasim Akhtar
+Good weekend. That's so funny. I was at a.
+
+Tariq Khan
+Yeah. I was at a sixth yeah. I was at a I was at a second century BCE. Buddhist site this weekend. I was I I just zoned out there. It was it's supposed to be the first. Buddhist university. It's there in. So. Really? Pretty cool to see. Yeah. Interesting. Pretty.
+
+Qasim Akhtar
+I didn't know that there was that one. Do you have pictures? Yeah. Yeah. Okay.
+
+Tariq Khan
+You wanna make sure it now?
+
+Qasim Akhtar
+Yeah. Yeah. Yeah. That might that will have some impact on Chris, you know? Well, if I'm too Buddhist.
+
+Chris Xenos
+Then I can't do my job.
+
+Qasim Akhtar
+Oh, that's so true. Well, by the way, this this thing is between it's it's it's so fascinating to see two different personalities singing in the tape same table like Sam and and Chris. It's, like, completely different opposite, but then there's some force that binds them together. You know what I mean? Like, it's it's it's fascinating. So you guys I mean, AJ got to see some part of that. Steve obviously sees it every time we're together. But, Tariq, it's it's it's it's it's it's it's worth seeing that. You know what I mean? Like, hopefully hopefully, you get this nice, and Nausheen as well, like, in in person somewhere. Sorry, Nausheen.
+
+Tariq Khan
+Yeah.
+
+Chris Xenos
+I have the same thing with with with 3.
+
+Qasim Akhtar
+Oh.
+
+Tariq Khan
+Yeah? These are the sundials that they used to have. Oh.
+
+Qasim Akhtar
+Wow. And.
+
+Tariq Khan
+This is supposed to be, like, a like, a kitchen area where they sat and ate. Sorry. These are some informational stuff. This is the actual university, and this this was supposed to be a a pond between the university where rainwater they collected rainwater here, and there were a lot of flowers on it.
+
+Chris Xenos
+Yeah. Wow.
+
+Tariq Khan
+These are dorm these are dorm rooms for, like, two peep two students per room. Oh, wow, and it's supposed to be, like, like, double. This is, like, 200 years before Christ.
+
+Qasim Akhtar
+Yeah. Even the rock even the rocks themselves look they don't I mean, it's obviously not bricks. This is like.
+
+Chris Xenos
+No. Look at the workmanship. Look at the workmanship, man.
+
+Tariq Khan
+Yeah. I I took this this part of view because the walls were so straight. Yeah. I was just amazed by this. I mean, you can stand here and literally see all of them straight, and and I I can't do this. Yeah. How do.
+
+Nausheen Fazlur Rahman
+You put them in these days?
+
+Qasim Akhtar
+Like, they're all different sizes, obviously.
+
+Tariq Khan
+Yeah, and So it's awesome, and the the tooling.
+
+Chris Xenos
+Like, think about the tooling they probably had or the lack of tooling. I mean, this is all hand done.
+
+Qasim Akhtar
+So wait. You said this is February.
+
+Chris Xenos
+It's April.
+
+Qasim Akhtar
+So 200 years before. Christianity. Price.
+
+Tariq Khan
+So February before the death. Yeah. Before the death of Pope Price. Okay. Yeah, and they were like, it was destroyed by the Huns in fifth century. AD. Oh.
+
+Nausheen Fazlur Rahman
+Wow Talk about White Huns.
+
+Chris Xenos
+Talk about the yin and the yang, the Huns, man. There's no no Buddhists in there.
+
+Nausheen Fazlur Rahman
+And all the Buddhists.
+
+Tariq Khan
+Yeah. This is supposed to be their language. This is, a 2,000 year old language. Kosher or something.
+
+Qasim Akhtar
+Oh, wow. These are stupas. Okay. Now I got it. Look, I'll make the make the connection machine. If you really want these migration practice blueprints to be done, you start with this with in the beginning for the first 5 minutes and watch it get done by the end of it. Like, this is gonna energize me.
+
+Nausheen Fazlur Rahman
+Yeah. Yeah. Okay. This is this is really cool. I had no clue. This is outside of Islam?
+
+Tariq Khan
+This is a daxilai. Yeah. TAXIA Oh god.
+
+Nausheen Fazlur Rahman
+Yeah.
+
+Qasim Akhtar
+That's beautiful.
+
+Tariq Khan
+And this is supposed to be their.
+
+Qasim Akhtar
+Oh, is it like a tomb?
+
+Tariq Khan
+Yeah. These these are stupas, and they are, like, 21 of these across this this is their so they had a university, and they had a sort of a temple. Right. Double story temple, and these are stupas there?
+
+Chris Xenos
+Doreek, what what is the stupa?
+
+Tariq Khan
+So so stupas are are sort of you know, this is a wishing sort of temple. People come here. They make a wish, and if if they kind of get what they wish for, they create a sort of a tribute to Buddha here in the shape of these stupas, and and they they kind of show the different philosophies of Buddhism here. This is a this is a wishing Buddha. I mean, you put your finger in that hole and you ask for whatever you wanna do. Okay. It's the name of actually.
+
+Chris Xenos
+You had me until that. Graphic.
+
+Tariq Khan
+Yeah. I mean But I I do.
+
+Chris Xenos
+They what what did they do with these? I mean, they all looked like a a flat surface on the top. Did they serve as kind of an alter where you leave something? Or.
+
+Tariq Khan
+No. No. So so is it it's actually like, they have this concept of 7 heavens and 7 earths. So. There there are 7 realms. So there are exactly, like, 7 of them that that denote 7 7 earths, and they have people like you, Chris, who kind of hold the earth on their shoulders.
+
+Qasim Akhtar
+I can definitely see Chris. Oh.
+
+Tariq Khan
+That's me. This what? Right there.
+
+Qasim Akhtar
+So I'm getting depressed by a costume stream.
+
+Chris Xenos
+That's me.
+
+Nausheen Fazlur Rahman
+Oh my god.
+
+Tariq Khan
+So every layer is is, you know, kind of held by these lions or men. So and and each each of the urges, you know, kinda it kind of shows that, and then on top of that.
+
+Chris Xenos
+That is cool.
+
+Tariq Khan
+The yeah. The that's the so they're they're supposed to be much bigger, but they've kind of removed the 7 heavens piece. They have a 7 earth piece. But it's the Buddhist philosophy. Right? They have the 7 earths and 7 heavens.
+
+Chris Xenos
+So these are actually places for a for a full monument almost to to the philosophy. Exactly. Exactly.
+
+Tariq Khan
+And there was stuff here at the top that kind of denoted, you know, earths or the big earth, but they have removed that. You know, pieces of it have been removed and put in the museum, but this side is too big to kind of move. So they have about 21 of these blocks and all have different, you know, all have different shapes. This is this is their prayer area, basically, and and it has two floors. Yeah, and that's the, you know, the stuff there. Yeah. Stuff that they have kind of.
+
+Qasim Akhtar
+These.
+
+Tariq Khan
+Are different Buddhas at different stages. You know, what is a preaching Buddha? There's a teaching Buddha, and then there is a meditating Buddha. Mean, depending on the hand signs. Yeah. So pretty cool stuff.
+
+Qasim Akhtar
+Yeah. That's that's really interesting. I think we've learned about Buddhism a lot more in I I didn't realize we'll learn about that in the program update, but this is. Yeah. I'm thinking about that. What I've learned about with this this entire 15 minutes with that visual topic, I probably never have had. I didn't really dig into anything, but this is fascinating. I mean, this is this this is a treasure. I mean, they was it pretty well guarded in in in that area?
+
+Tariq Khan
+Yeah. It's a World Heritage Site protected by UNESCO. Okay. I mean, they have they have two sort of people there who kind of take care of this place, and you know, it was a British who kind of dug it out. It was in the 19th century, and since then it had been protected.
+
+Qasim Akhtar
+It's amazing. Well, thank you for sharing that. That was awesome. That is.
+
+Qasim Akhtar
+Anything else that we that we need to talk about before we.
+
+Nausheen Fazlur Rahman
+Yeah. I just wanna, yeah, I just wanna update you. I'll I'll take two minutes, not more than that. So I have been working on the training content for Appmod and Appdev. It's pretty extensive. It's almost 35 pages, but you know, and I still have to sort of, like, brand this and everything, but it starts with what exactly is, like, our Cloudelligent Agenetic service methodology. I I asked the marketing department to help me with some visuals as well, you know, just to, like, talk about the core components, and then we sort of dive into. Appmod and Abdev flavored phase the phases. Right? So I've been working on this. I'm gonna share this with Darek as well. What he gives me is blessing. I'll convert this to 3 60 learning, and we can start sessions next week, Tarek, you know, the workshops that Qasim mentioned. At least with Appmod and Appdev, we're pretty much ahead.
+
+Qasim Akhtar
+Yeah, and I have this mandated to, like, Tarek, Even if it's a Pfizer or project managers who are on the AI development, like, if everyone should go through this this training, even a QA engineer like someone. Right? Like it's gonna be great.
+
+Chris Xenos
+Yeah, and and we and Nausheen, I didn't tell Andrew yet, but I think we just try to have the project managers all attend all of them if we can.
+
+Nausheen Fazlur Rahman
+Okay. Yeah. I I guess with this session, what Qasim mentioned that we can have it, like because we're gonna be, like, going through, like, a mock project. Right? So we'll have and we're gonna be having many sessions. Right? Like, Tarek, how many folks do you have on your team approximately? Like, 15, 20?
+
+Tariq Khan
+So I can think of 11 that I mean, including two UI UX.
+
+Nausheen Fazlur Rahman
+Okay. Okay.
+
+Tariq Khan
+How many of those are.
+
+Qasim Akhtar
+Like, implementation leads?
+
+Tariq Khan
+So. I can take it to take up 3. Every one of them kind of works as an implementation lead on and off. I think I just have one person who hasn't done an end to end project yet, one or two. Yeah. But, otherwise, everybody has a.
+
+Qasim Akhtar
+Yeah. So in those 11 folks, I'm pretty sure 3 to 4 are at least 3 are implementation leads that you can actually say, right, go ahead. You could drive it. Right? Yeah, and the other 3 will be in that supporting engineer role. Right? So that that kind of, like that structure is important because when we go through the next phase of from this offline learning to the on the the the live workshop, we don't wanna Chris Chris, we don't wanna create, like, 20 people, 30 people learning workshop. It's gonna be, like, you what I've told Nausheen is, like, she can she can look at creating a pod structure in a way so that way we can do the mock problem in there.
+
+Qasim Akhtar
+Because if you have people not really doing hands on in the in in that session, then there's no point, and she can it might not even be 3, 4 hours. It might be just one to two hours, but she can have multiple of those so that way everyone is you know, you have a project manager, like, when he jumps in, you have an implementation lead, you have a supporting engineer. Right? Maybe two Yeah. That's fine.
+
+Chris Xenos
+As long as they. I guess once you do one, you've as a project manager, you should know, but they need to know the differences between the methodologies. So the between the so it's okay. If we do if we do one in each session, but also I don't want the excuse of I didn't know that that's how that kind of project works. So. But I do agree. We don't wanna block off that much time for the whole team anyway. So that's a good approach. I think we just figure out how we have to yeah.
+
+Qasim Akhtar
+We don't have to take everyone to the same thing. Like, you'll just chunk it out.
+
+Chris Xenos
+Yeah. I agree. That makes sense. That makes a lot of sense.
+
+Nausheen Fazlur Rahman
+Yeah. Yeah. So I'll work with Darek. Darek, we may need, like, some artifacts or something pregenerated, right, for a mock project so, you know, we can have a smooth run through from a to z. Right? Because I know your team is familiar with AI DLC in general, but, like, the actual for example, you know, if you look at, you know, the concept of gates will be brand new for them or even the concept of governance. It's gonna be completely brand new for them, or you know, how like, what like, even, like, the agentic. Right? I know you've really drilled into, you know, agents and the human review, but we really go in deep within our methodology. Right?
+
+Nausheen Fazlur Rahman
+So they need to be very, like, sure of exactly how this is run and what what their expectations are, project manager, essays, implement engineers, and everything. Right? So I wanna run. I wanna run through the whole, like, mock project with them. So I'll work with you next week on getting this set up, and we can have maybe we'll have a couple maybe couple or two or 3 workshops for each batch, and yeah. Okay.
+
+Tariq Khan
+So.
+
+Nausheen Fazlur Rahman
+That's the plan, and then I will replicate that for the migration as well and then data and AI as well. Like. Okay. The the the the training modules and the then the workshops for professional services. One.
+
+Chris Xenos
+Thing I wanna be a little bit careful of is where we put this content, because this now.
+
+Chris Xenos
+Like, as we develop, we've got a balance, like, making sure of what everybody knows how to do, but I don't want people downloading this stuff, and and and this becomes, like, this is real IP now.
+
+Nausheen Fazlur Rahman
+Oh, okay. Yeah. I think you cannot download the trainings. I I was looking at it. But.
+
+Chris Xenos
+Yeah. So what so, like, where normally we just put everything in confluence, maybe we don't do that with this just because the investment we've made. Like, the other stuff where it was just generic flows, that that's one thing, but this is now, like, really IP.
+
+Qasim Akhtar
+Yeah. No. I was gonna actually you know, that's a really good point. Yeah. Yeah. We let's not make it too public. Like, I think training, that's perfect. You know, you have to be careful about overextending the IP. K. Yeah. Because things get you know, as as a maturing organization, we just have to keep those things in mind as well.
+
+Chris Xenos
+Yeah. We just don't it's not that I don't trust, but it's also, like, I just don't want it to be too easy to download a whole methodology in one document and and be able to share around.
+
+Nausheen Fazlur Rahman
+I I was planning on, like, making this into sort of a Word document blueprint as well, but do you guys not wanna release that?
+
+Chris Xenos
+No. I think we just have to be careful about how we do it. I'm not sure what the answer is, but, like, it maybe it's you have to be authenticated or something, and and we only share the relevant parts on confluence. I don't know what the answer is. I'm just looking at this, and I'm starting to think.
+
+Nausheen Fazlur Rahman
+No. I think it.
+
+Qasim Akhtar
+Might be. It might be where we take it a little bit of a zoom out approach with with with sharing the blueprint with them, where they learn at the deeper granular level, and you take it a little bit of a zoom out approach so that way they kinda understand the they kinda understand the perspective without the the deeper IP element to it.
+
+Chris Xenos
+Yeah. Just something to think about, Qasim. Just as long as long as we're not spelling out every detail and Yeah, and making it a downloadable document, and Nausheen, can I add a.
+
+Arild Jensen
+Little blurb about the first page? Like, you know, for internal use only something kind of reminder for everyone not not to share it.
+
+Chris Xenos
+Actually, we should just put up we we should put a a water a a footer on every one of these that it's, it's it's quite a legit property.
+
+Nausheen Fazlur Rahman
+And.
+
+Arild Jensen
+For internal use only, do not share or something. You know? Is that an average?
+
+Chris Xenos
+Yes. We can I can you know, there's plenty of, like, language around that we can Yeah?
+
+Nausheen Fazlur Rahman
+Yeah. I can check it with you.
+
+Chris Xenos
+And we can tie that. Actually, there there might be language in the the the employee manual. Yeah. That we can use. You know? So it ties back to the thing we saw in an employee manual. Okay.
+
+Arild Jensen
+And maybe check employee manual, make sure that there's nothing in there about not sharing confidential or compensation. Mean.
+
+Chris Xenos
+They're they're they're they're.
+
+Arild Jensen
+Okay. Okay.
+
+Nausheen Fazlur Rahman
+Okay. I've made a note of that, and I will yeah. That's pretty much it for the major updates, and I'm gonna be working on migration and data AI training content as well and the workshops.
+
+Nausheen Fazlur Rahman
+Sounds good.
+
+Chris Xenos
+Nice work. Yeah. Thank you. Really nice work. Okay. Alright, everybody. Appreciate it.
+
+Nausheen Fazlur Rahman
+Alright. Have a great Thank.
+
+Chris Xenos
+You for the spiritual development, Arild.
+
+Nausheen Fazlur Rahman
+Yeah. That was the highlight of the meeting.
+
+Tariq Khan
+We can schedule more sessions if you need.
+
+Chris Xenos
+I I think I need you, though.
+
+Tariq Khan
+Alright, Sascha. Thank you, everyone. Alright. Thanks. Alright. Take care, everyone. Take care. Bye bye.
